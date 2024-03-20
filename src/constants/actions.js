@@ -13,14 +13,92 @@ const selector = (editor) => {
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
 const onAddCircle = (editor) => {
-  editor?.addCircle();
-  repeat(editor.canvas);
+  const canvas = editor.canvas;
+  repeat(canvas);
+  canvas.on("mouse:down", (event) => {
+    const pointer = canvas.getPointer(event.e);
+    const circle = new fabric.Circle({
+      left: pointer.x,
+      top: pointer.y,
+      radius: 50,
+      fill: "transparent",
+      stroke: "black",
+      strokeWidth: 2,
+    });
+    canvas.add(circle);
+    canvas.setActiveObject(circle);
+    canvas.renderAll();
+
+    canvas.on("mouse:move", (event) => {
+      const pointer = canvas.getPointer(event.e);
+      const radius = Math.abs(pointer.x - circle.left); // distance formula for radius
+      circle.set({ radius });
+      canvas.renderAll();
+    });
+
+    canvas.on("mouse:up", () => {
+      repeat(canvas);
+    });
+  });
 };
 
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
 const onAddRectangle = (editor) => {
-  editor?.addRectangle();
+  const canvas = editor.canvas;
+  repeat(canvas);
+  canvas.on("mouse:down", (event) => {
+    const pointer = canvas.getPointer(event.e);
+    const rect = new fabric.Rect({
+      left: pointer.x,
+      top: pointer.y,
+      fill: "transparent",
+      stroke: "black",
+      strokeWidth: 2,
+      width: 50,
+      height: 50,
+    });
+    canvas.add(rect);
+    canvas.setActiveObject(rect);
+    canvas.renderAll();
+
+    canvas.on("mouse:move", (event) => {
+      const pointer = canvas.getPointer(event.e);
+      rect.set({ width: Math.abs(pointer.x - rect.left), height: Math.abs(pointer.y - rect.top) });
+      canvas.renderAll();
+    });
+
+    canvas.on("mouse:up", () => {
+      repeat(canvas);
+    });
+  });
+};
+
+// addLine function is used to add a line to the canvas and call the repeat function.
+const addLine = (editor) => {
   repeat(editor.canvas);
+  const canvas = editor.canvas;
+  canvas.on("mouse:down", (event) => {
+    const pointer = canvas.getPointer(event.e);
+    const points = [pointer.x, pointer.y, pointer.x, pointer.y];
+    const line = new fabric.Line(points, {
+      strokeWidth: 2,
+      stroke: "black",
+    });
+    canvas.add(line);
+    canvas.setActiveObject(line);
+    canvas.renderAll();
+
+    canvas.on("mouse:move", (event) => {
+      const pointer = canvas.getPointer(event.e);
+      line.set({ x2: pointer.x, y2: pointer.y });
+      canvas.renderAll();
+    });
+
+    canvas.on("mouse:up", () => {
+      repeat(canvas);
+    });
+  });
+  
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
@@ -102,6 +180,41 @@ const pan = (editor) => {
   });
 };
 
+const zoomIn = (editor) => {
+  editor.canvas.setZoom(editor.canvas.getZoom() * 1.1);
+};
+
+const zoomOut = (editor) => {
+  editor.canvas.setZoom(editor.canvas.getZoom() / 1.1);
+};
+
+const arrow = (editor) => {
+  const canvas = editor.canvas;
+  repeat(canvas);
+  canvas.on("mouse:down", (event) => {
+    const pointer = canvas.getPointer(event.e);
+    const points = [pointer.x, pointer.y, pointer.x, pointer.y];
+    const line = new fabric.Line(points, {
+      strokeWidth: 2,
+      stroke: "black",
+      // arrowhead: true,
+    });
+    canvas.add(line);
+    canvas.setActiveObject(line);
+    canvas.renderAll();
+    // line.set({ arrowhead: true });
+    canvas.on("mouse:move", (event) => {
+      const pointer = canvas.getPointer(event.e);
+      line.set({ x2: pointer.x, y2: pointer.y });
+      // line.set({ arrowhead: true });
+      canvas.renderAll();
+    });
+
+    canvas.on("mouse:up", () => {
+      repeat(canvas);
+    });
+  });
+};
 
 // export all the functions.
 export {
@@ -113,4 +226,8 @@ export {
   clearAll,
   eraser,
   pan,
+  addLine,
+  zoomIn,
+  zoomOut,
+  arrow
 };

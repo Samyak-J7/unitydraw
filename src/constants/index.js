@@ -8,6 +8,10 @@ import {
   MousePointer,
   Eraser,
   Trash2,
+  Minus,
+  ZoomIn,
+  ZoomOut,
+  MoveRight
 } from "lucide-react";
 import {
   onAddCircle,
@@ -17,7 +21,11 @@ import {
   selector,
   eraser,
   clearAll,
-  pan
+  pan,
+  addLine,
+  zoomIn,
+  zoomOut,
+  arrow
 } from "./actions";
 
 const Tools = [
@@ -42,6 +50,16 @@ const Tools = [
     action: onAddRectangle,
   },
   {
+    name: "Add Line",
+    icon: <Minus />,
+    action: addLine,
+  },
+  {
+    name: "Add Arrow",
+    icon: <MoveRight />,
+    action: arrow,
+  },
+  {
     name: "Add Text",
     icon: <Type />,
     action: onAddText,
@@ -61,6 +79,16 @@ const Tools = [
     icon: <Trash2 />,
     action: clearAll,
   },
+  {
+    name: "Zoom In",
+    icon: <ZoomIn />,
+    action: zoomIn,
+  },
+  {
+    name: "Zoom Out",
+    icon: <ZoomOut />,
+    action: zoomOut,
+  }
 
 ];
 

@@ -1,50 +1,54 @@
 "use client";
-import React, { useRef, useEffect, useState } from 'react';
-import { fabric } from 'fabric';
+import React from "react";
+import { useState, useEffect } from "react";
+import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 
-const FabricCanvas = () => {
-  const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+const Draw = () => {
+  const { editor, onReady } = useFabricJSEditor(); // Get the editor instance
+  const onAddCircle = () => {
+    editor?.addCircle(); 
+  };
+  const onAddRectangle = () => {
+    editor?.addRectangle();
+  };
+  const onAddText = () => {
+    editor?.addText("Text here");
+  };
+
+  const [isDrawing, setIsDrawing] = useState(false); // State to toggle drawing mode
 
   useEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      isDrawingMode: false // Initially set to false, we will toggle this later
-    });
+    if (!editor) return;
 
-    // Set up event listeners for mouse down, move, and up events
-    canvas.on('mouse:down', (options) => {
-      setIsDrawing(true);
-      const pointer = canvas.getPointer(options.e);
-      const brush = new fabric.CircleBrush(canvas);
-      brush.color = 'red'; // Set brush color
-      brush.width = 10; // Set brush width
-      brush.shadow = new fabric.Shadow(); // Optional: add shadow
-      brush.shadow.blur = 10;
-      brush.shadow.color = 'rgba(0,0,0,0.5)';
-      canvas.freeDrawingBrush = brush;
-      canvas.freeDrawingBrush.onMouseDown(pointer);
-    });
+    const canvas = editor.canvas;
+    canvas.isDrawingMode = isDrawing;
+    canvas.freeDrawingBrush.width = 5; // Adjust brush width as needed
+    canvas.freeDrawingBrush.color = "black"; // Adjust brush color as needed
+  }, [editor, isDrawing]);
 
-    canvas.on('mouse:move', (options) => {
-      if (isDrawing) {
-        const pointer = canvas.getPointer(options.e);
-        canvas.freeDrawingBrush.onMouseMove(pointer);
-      }
-    });
+  const handleMouseDown = () => {
+    setIsDrawing(true);
+  };
 
-    canvas.on('mouse:up', () => {
-      setIsDrawing(false);
-      canvas.freeDrawingBrush.onMouseUp();
-    });
-
-    // Cleanup function
-    return () => {
-      canvas.dispose();
-    };
-  }, [isDrawing]); // Re-run effect when isDrawing state changes
-
-  return <canvas ref={canvasRef} style={{ border: '2px solid black' }} />;
+  const handleMouseUp = () => {
+    setIsDrawing(false);
+  };
+  return (
+    <div className="h-screen">
+      <button onClick={onAddCircle}>Add circle</button>
+      <button onClick={onAddRectangle}>Add Rectangle</button>
+      <button onClick={onAddText}>Add Text</button>
+      <button onClick={() => setIsDrawing(!isDrawing)}>
+        Toggle Paintbrush
+      </button>
+      <FabricJSCanvas 
+        className="h-screen"
+        onReady={onReady}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+      /> 
+    </div>
+  );
 };
 
-export default FabricCanvas;
-
+export default Draw;

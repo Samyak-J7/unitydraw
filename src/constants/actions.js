@@ -24,6 +24,7 @@ const onAddCircle = (editor) => {
       fill: "transparent",
       stroke: "black",
       strokeWidth: 2,
+      shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
     });
     canvas.add(circle);
     canvas.setActiveObject(circle);
@@ -56,6 +57,7 @@ const onAddRectangle = (editor) => {
       strokeWidth: 2,
       width: 50,
       height: 50,
+      shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
     });
     canvas.add(rect);
     canvas.setActiveObject(rect);

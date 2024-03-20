@@ -17,9 +17,15 @@ import {
   selector,
   eraser,
   clearAll,
+  pan
 } from "./actions";
 
 const Tools = [
+  {
+    name: "Pan",
+    icon: <Hand />,
+    action: pan,
+  },
   {
     name: "Selector",
     icon: <MousePointer />,
@@ -55,6 +61,7 @@ const Tools = [
     icon: <Trash2 />,
     action: clearAll,
   },
+
 ];
 
 

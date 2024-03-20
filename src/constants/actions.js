@@ -71,6 +71,35 @@ const clearAll = (editor) => {
   editor?.deleteAll();
 };
 
+// pan function is used to enable panning on the canvas.
+const pan = (editor) => {
+  const canvas = editor.canvas;
+  repeat(canvas);
+  let isPanning = false;
+  let lastPosX = 0;
+  let lastPosY = 0;
+
+  canvas.on("mouse:down", (event) => {
+    isPanning = true;
+    lastPosX = event.e.clientX;
+    lastPosY = event.e.clientY;
+  });
+
+  canvas.on("mouse:move", (event) => {
+    if (isPanning) {
+      const deltaX = event.e.clientX - lastPosX;
+      const deltaY = event.e.clientY - lastPosY;
+      canvas.relativePan({ x: deltaX, y: deltaY });
+      lastPosX = event.e.clientX;
+      lastPosY = event.e.clientY;
+    }
+  });
+
+  canvas.on("mouse:up", () => {
+    isPanning = false;
+  });
+};
+
 // export all the functions.
 export {
   onAddCircle,
@@ -80,4 +109,5 @@ export {
   selector,
   clearAll,
   eraser,
+  pan,
 };

@@ -1,6 +1,8 @@
 // repeat function is used to remove the event listener from the canvas and set the isDrawingMode to false.
 const repeat = (canvas) => {
   canvas.off("mouse:down");
+  canvas.off("mouse:move");
+  canvas.off("mouse:up");
   canvas.isDrawingMode = false;
 };
 
@@ -99,6 +101,7 @@ const pan = (editor) => {
     isPanning = false;
   });
 };
+
 
 // export all the functions.
 export {

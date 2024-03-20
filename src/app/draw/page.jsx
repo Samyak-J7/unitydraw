@@ -1,11 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import Tray from "@/components/tray";
 
 const Draw = () => {
-  const { editor, onReady } = useFabricJSEditor(); // Get the editor instance
-
+  const { editor, onReady } = useFabricJSEditor();
   return (
     <div>
       <Tray editor={editor} />

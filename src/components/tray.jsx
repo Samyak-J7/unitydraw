@@ -1,7 +1,7 @@
 import React from "react";
 import { Tools } from "../constants";
 
-const Tray = () => {
+const Tray = (props) => {
   console.log(Tools);
   return (
     <div>

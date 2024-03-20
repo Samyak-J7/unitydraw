@@ -1,5 +1,6 @@
 import React from "react";
-import { Hand } from "lucide-react";
+import { Hand, Circle, Square, Type, Brush } from "lucide-react";
+import { onAddCircle, onAddRectangle, onAddText } from "./actions";
 
 const Tools = [
   {
@@ -9,22 +10,22 @@ const Tools = [
   },
   {
     name: "Add Circle",
-    icon: "circle",
-    action: "addCircle",
+    icon: <Circle />,
+    action: onAddCircle,
   },
   {
-    name: "Add Rectangle",
-    icon: "rectangle",
-    action: "addRectangle",
+    name: "Add Square",
+    icon: <Square />,
+    action: onAddRectangle,
   },
   {
     name: "Add Text",
-    icon: "text",
-    action: "addText",
+    icon: <Type />,
+    action: onAddText,
   },
   {
     name: "Toggle Paintbrush",
-    icon: "brush",
+    icon: <Brush />,
     action: "togglePaintbrush",
   },
 ];

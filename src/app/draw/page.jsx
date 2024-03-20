@@ -6,15 +6,6 @@ import Tray from "@/components/tray";
 
 const Draw = () => {
   const { editor, onReady } = useFabricJSEditor(); // Get the editor instance
-  const onAddCircle = () => {
-    editor?.addCircle(); 
-  };
-  const onAddRectangle = () => {
-    editor?.addRectangle();
-  };
-  const onAddText = () => {
-    editor?.addText("Text here");
-  };
 
   const [isDrawing, setIsDrawing] = useState(false); // State to toggle drawing mode
 
@@ -36,10 +27,7 @@ const Draw = () => {
   };
   return (
     <div className="h-screen">
-      <Tray />
-      <button onClick={onAddCircle}>Add circle</button>
-      <button onClick={onAddRectangle}>Add Rectangle</button>
-      <button onClick={onAddText}>Add Text</button>
+      <Tray editor={editor}/>
       <button onClick={() => setIsDrawing(!isDrawing)}>
         Toggle Paintbrush
       </button>

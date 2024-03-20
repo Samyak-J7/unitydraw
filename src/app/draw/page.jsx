@@ -2,6 +2,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
+import Tray from "@/components/tray";
 
 const Draw = () => {
   const { editor, onReady } = useFabricJSEditor(); // Get the editor instance
@@ -35,6 +36,7 @@ const Draw = () => {
   };
   return (
     <div className="h-screen">
+      <Tray />
       <button onClick={onAddCircle}>Add circle</button>
       <button onClick={onAddRectangle}>Add Rectangle</button>
       <button onClick={onAddText}>Add Text</button>

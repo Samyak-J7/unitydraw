@@ -10,8 +10,17 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div>
-    <SignedIn><UserButton afterSignOutUrl="/" /><Button> <Link href="/draw" >Get Started</Link> </Button></SignedIn> 
-    <SignedOut><SignInButton afterSignInUrl="/" ><Button>Get Started</Button></SignInButton></SignedOut>   
+    <SignedIn>
+      <UserButton afterSignOutUrl="/" />
+      <Button> 
+        <Link href="/draw" >Get Started</Link>
+      </Button>
+    </SignedIn> 
+    <SignedOut>
+      <SignInButton afterSignInUrl="/" >
+        <Button>Get Started</Button>
+      </SignInButton>
+    </SignedOut>   
     
     </div>
     

@@ -15,7 +15,7 @@ import {
   onAddText,
   paintBrush,
   selector,
-  deleteSel,
+  eraser,
   clearAll,
 } from "./actions";
 
@@ -48,7 +48,7 @@ const Tools = [
   {
     name: "Eraser",
     icon: <Eraser />,
-    action: deleteSel,
+    action: eraser,
   },
   {
     name: "Clear All",
@@ -56,5 +56,6 @@ const Tools = [
     action: clearAll,
   },
 ];
+
 
 export { Tools };

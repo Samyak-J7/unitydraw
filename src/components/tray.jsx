@@ -2,13 +2,12 @@ import React from "react";
 import { Tools } from "../constants";
 
 const Tray = (props) => {
-  console.log(Tools);
   return (
     <div>
       {Tools.map((tool, index) => {
         return (
-          <button key={index} onClick={tool.action}>
-            {tool.name} {tool.icon}
+          <button  key={index} onClick={() => tool.action(props.editor)}>
+             {tool.icon}
           </button>
         );
       })}

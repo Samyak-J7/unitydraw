@@ -23,8 +23,23 @@ const onAddRectangle = (editor) => {
 
 // onAddText function is used to add text to the canvas and call the repeat function.
 const onAddText = (editor) => {
-  editor?.addText("Text here");
-  repeat(editor.canvas);
+  const canvas = editor.canvas;
+  repeat(canvas);
+  canvas.on("mouse:down", (event) => {
+    const pointer = canvas.getPointer(event.e);
+    const text = new fabric.Textbox("", {
+      left: pointer.x,
+      top: pointer.y,
+      width: 100,
+      height: 50,
+      fontSize: 16,
+      fill: "black",
+    }); 
+    canvas.add(text);
+    canvas.setActiveObject(text);
+    canvas.renderAll();
+    canvas.off("mouse:down");
+  });
 };
 
 // paintBrush function is used to set the isDrawingMode to true and set the brush width and color.

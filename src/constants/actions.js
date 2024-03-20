@@ -63,7 +63,10 @@ const onAddRectangle = (editor) => {
 
     canvas.on("mouse:move", (event) => {
       const pointer = canvas.getPointer(event.e);
-      rect.set({ width: Math.abs(pointer.x - rect.left), height: Math.abs(pointer.y - rect.top) });
+      rect.set({
+        width: Math.abs(pointer.x - rect.left),
+        height: Math.abs(pointer.y - rect.top),
+      });
       canvas.renderAll();
     });
 
@@ -98,7 +101,6 @@ const addLine = (editor) => {
       repeat(canvas);
     });
   });
-  
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
@@ -114,7 +116,7 @@ const onAddText = (editor) => {
       height: 50,
       fontSize: 16,
       fill: "black",
-    }); 
+    });
     canvas.add(text);
     canvas.setActiveObject(text);
     canvas.renderAll();
@@ -130,7 +132,6 @@ const paintBrush = (editor) => {
   canvas.freeDrawingBrush.width = 5;
   canvas.freeDrawingBrush.color = "black";
 };
-
 
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.
 const eraser = (editor) => {
@@ -197,16 +198,30 @@ const arrow = (editor) => {
     const line = new fabric.Line(points, {
       strokeWidth: 2,
       stroke: "black",
-      // arrowhead: true,
+      selectable: false,
+      hasControls: false,
     });
-    canvas.add(line);
+
+    const arrow = new fabric.Triangle({
+      width: 10,
+      height: 20,
+      fill: "black",
+      selectable: false,
+      angle: 90,
+      originX: "center",
+      originY: "center",
+    });
+
+    canvas.add(line, arrow);
     canvas.setActiveObject(line);
     canvas.renderAll();
-    // line.set({ arrowhead: true });
+
     canvas.on("mouse:move", (event) => {
       const pointer = canvas.getPointer(event.e);
       line.set({ x2: pointer.x, y2: pointer.y });
-      // line.set({ arrowhead: true });
+      const angle =
+        Math.atan2(pointer.y - line.y1, pointer.x - line.x1) * (180 / Math.PI); // angle formula for arrow
+      arrow.set({ left: pointer.x, top: pointer.y, angle: angle + 90 }); // +90 to make the arrow point in the right direction
       canvas.renderAll();
     });
 
@@ -229,5 +244,5 @@ export {
   addLine,
   zoomIn,
   zoomOut,
-  arrow
+  arrow,
 };

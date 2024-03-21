@@ -7,7 +7,7 @@ import { ZoomIn, ZoomOut } from "lucide-react";
 const Draw = () => {
   const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
-  const [stroke, setStroke] = useState(5);
+  const [stroke, setStroke] = useState(1);
   const [bgColor, setBgColor] = useState("transparent" /* white */);
   const [selectedObjects, setSelectedObjects] = useState([]);
   const [zoom, setZoom] = useState(1);
@@ -47,7 +47,7 @@ const Draw = () => {
   const handleObjectSelection = () => {
     const activeObjects = editor?.canvas?.getActiveObjects() || [];
     setSelectedObjects(activeObjects);
-  
+
     // Get color of the first selected object, assuming all selected objects have the same color
     if (activeObjects.length > 0) {
       const color = activeObjects[0].get("stroke");
@@ -60,14 +60,14 @@ const Draw = () => {
       setOpacity(opacity);
     }
   };
-  
+
   const clearSelection = () => {
     setSelectedObjects([]);
   };
 
   const handleDrawing = (val) => {
     setIsPainting(val);
-  }
+  };
 
   const onColorChange = (newColor) => {
     setColor(newColor);
@@ -134,7 +134,7 @@ const Draw = () => {
           <ZoomOut />
         </button>
       </div>
-      {selectedObjects.length > 0 || isPainting ? ( 
+      {selectedObjects.length > 0 || isPainting ? (
         <Settings
           color={color}
           stroke={stroke}
@@ -145,7 +145,7 @@ const Draw = () => {
           onbgColor={onBgColorChange}
           onOpacity={onOpacityChange}
         />
-      ) : null} 
+      ) : null}
 
       <FabricJSCanvas
         className="h-[100vh] bg-gray-100"

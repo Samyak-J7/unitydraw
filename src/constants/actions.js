@@ -102,6 +102,7 @@ const addLine = (editor, color, stroke) => {
     const line = new fabric.Line(points, {
       strokeWidth: stroke,
       stroke: color,
+      fill:'transparent',
     });
     canvas.add(line);
     canvas.setActiveObject(line);
@@ -133,7 +134,8 @@ const onAddText = (editor, color, stroke,bgColor) => {
       height: 50,
       strokeWidth: stroke,      
       stroke: color,
-      fill:bgColor
+      fill:bgColor,
+      textAlign: "center",
     });
     canvas.add(text);
     canvas.setActiveObject(text);

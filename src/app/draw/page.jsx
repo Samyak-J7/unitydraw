@@ -105,7 +105,7 @@ const Draw = () => {
         onbgColor={onBgColorChange}
       />
       <FabricJSCanvas
-        className="h-[80vh] border-2 border-indigo-600"
+        className="h-[80vh] bg-gray-50 border-2 border-indigo-600"
         onReady={(canvas) => setEditor({ canvas })}
       />
     </div>

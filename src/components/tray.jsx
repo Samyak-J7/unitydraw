@@ -10,7 +10,7 @@ import {
 import { handleFileChange } from "@/constants/actions";
 const Tray = (props) => {
   const fileInputRef = useRef(null);
-  const [active, setActive] = React.useState(null);
+  const [active, setActive] = React.useState(Tools[1]);
 
   useEffect(() => {
     if (props.editor) {
@@ -26,13 +26,13 @@ const Tray = (props) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 absolute top-40 left-0 z-10 bg-red-500  ">
+    <div className="flex flex-col absolute top-40 left-0 z-10 bg-white border-2  shadow-[0_10px_25px_rgba(8,_132,_184,_0.3)]  mx-3 rounded-xl  ">
       {Tools.map((tool, index) => {
         return (
-          <TooltipProvider>
+          <TooltipProvider delayDuration={100}>
             <Tooltip key={index}>
               <TooltipTrigger asChild>
-                <button key={index} onClick={() => handleclick(tool)}>
+                <button className={`hover:bg-blue-200 p-2 rounded-md  ${ active.name === tool.name  ? "bg-blue-300":"bg-transparent"} `} key={index} onClick={() => handleclick(tool)}>
                   {tool.icon}
                 </button>
               </TooltipTrigger>

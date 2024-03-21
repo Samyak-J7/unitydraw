@@ -68,6 +68,11 @@ const Tools = [
     action: paintBrush,
   },
   {
+    name: "Image",
+    icon: <Image />,
+    action: openFilePicker,
+  },
+  {
     name: "Eraser",
     icon: <Eraser />,
     action: eraser,
@@ -77,11 +82,7 @@ const Tools = [
     icon: <Trash2 />,
     action: clearAll,
   },
-  {
-    name: "Image",
-    icon: <Image />,
-    action: openFilePicker,
-  },
+ 
 ];
 
 export { Tools };

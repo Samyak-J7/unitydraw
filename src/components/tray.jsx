@@ -31,12 +31,11 @@ const Tray = (props) => {
                       props.bgColor
                     );
                     setActive(tool);
-                  }}
-                >
+                  }}>
                   {tool.icon}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side='right'>
+              <TooltipContent side="right">
                 <p>{tool.name}</p>
               </TooltipContent>
             </Tooltip>

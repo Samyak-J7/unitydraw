@@ -16,7 +16,7 @@ const selector = (editor) => {
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color,stroke , bgColor ) => {
+const onAddCircle = (editor, color, stroke, bgColor) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -49,7 +49,7 @@ const onAddCircle = (editor, color,stroke , bgColor ) => {
 };
 
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
-const onAddRectangle = (editor, color,stroke , bgColor) => {
+const onAddRectangle = (editor, color, stroke, bgColor) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -85,7 +85,7 @@ const onAddRectangle = (editor, color,stroke , bgColor) => {
 };
 
 // addLine function is used to add a line to the canvas and call the repeat function.
-const addLine = (editor, color,stroke) => {
+const addLine = (editor, color, stroke) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
@@ -113,7 +113,7 @@ const addLine = (editor, color,stroke) => {
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
-const onAddText = (editor, color,stroke) => {
+const onAddText = (editor, color, stroke) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "text";
@@ -124,7 +124,7 @@ const onAddText = (editor, color,stroke) => {
       top: pointer.y,
       width: 100,
       height: 50,
-      fontSize: stroke*10,
+      fontSize: stroke * 10,
       fill: color,
     });
     canvas.add(text);
@@ -136,7 +136,7 @@ const onAddText = (editor, color,stroke) => {
 };
 
 // paintBrush function is used to set the isDrawingMode to true and set the brush width and color.
-const paintBrush = (editor, color,stroke) => {
+const paintBrush = (editor, color, stroke) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   canvas.off("mouse:down");
@@ -196,9 +196,7 @@ const pan = (editor) => {
   });
 };
 
-
-
-const arrow = (editor, color,stroke) => {
+const arrow = (editor, color, stroke) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -209,7 +207,6 @@ const arrow = (editor, color,stroke) => {
       strokeWidth: stroke,
       stroke: color,
       selectable: false,
-      
     });
 
     const arrow = new fabric.Triangle({

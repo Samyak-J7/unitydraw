@@ -10,7 +10,7 @@ import {
   Trash2,
   Minus,
   MoveRight,
-  RectangleHorizontal
+  RectangleHorizontal,
 } from "lucide-react";
 import {
   onAddCircle,
@@ -22,7 +22,7 @@ import {
   clearAll,
   pan,
   addLine,
-  arrow
+  arrow,
 } from "./actions";
 
 const Tools = [
@@ -76,9 +76,6 @@ const Tools = [
     icon: <Trash2 />,
     action: clearAll,
   },
-  
-
 ];
-
 
 export { Tools };

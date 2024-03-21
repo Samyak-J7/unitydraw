@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FabricJSCanvas } from "fabricjs-react";
 import Tray from "@/components/tray";
 import Settings from "@/components/settings";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { Image, ZoomIn, ZoomOut } from "lucide-react";
 
 const Draw = () => {
   const [editor, setEditor] = useState(null);
@@ -12,6 +12,7 @@ const Draw = () => {
   const [bgColor, setBgColor] = useState("transparent" /* white */);
   const [selectedObjects, setSelectedObjects] = useState([]);
   const [zoom, setZoom] = useState(1);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (editor) {
@@ -22,7 +23,7 @@ const Draw = () => {
 
       // Add keyboard event listener for backspace key
       const handleKeyPress = (event) => {
-        if (event.code === "Backspace" && selectedObjects.length > 0) {
+        if ((event.code === "Backspace" || event.code === "Delete") && selectedObjects.length > 0) {
           selectedObjects.forEach((obj) => editor.canvas.remove(obj));
           setSelectedObjects([]);
           editor.canvas.renderAll();
@@ -84,15 +85,43 @@ const Draw = () => {
     editor.canvas.setZoom(editor.canvas.getZoom() - 0.1);
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const imageUrl = event.target.result;
+      fabric.Image.fromURL(imageUrl, (img) => {
+        editor.canvas.add(img);
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const openFilePicker = () => {
+    fileInputRef.current.click();
+  };
+
   return (
     <div>
       <Tray editor={editor} color={color} stroke={stroke} bgColor={bgColor} />
-      <button onClick={zoomIn}>
+      <div className="flex gap-2 absolute bottom-0 left-50 z-10 bg-red-500">
+        <button onClick={zoomIn}>
         <ZoomIn />
       </button>
       <button onClick={zoomOut}>
         <ZoomOut />
       </button>
+      <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+        <button onClick={openFilePicker}><Image /></button>
+      </div>
       <Settings
         oncolor={onColorChange}
         onstroke={onStrokeChange}

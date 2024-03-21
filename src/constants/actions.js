@@ -4,16 +4,21 @@ const repeat = (canvas) => {
   canvas.off("mouse:move");
   canvas.off("mouse:up");
   canvas.isDrawingMode = false;
+  canvas.selection = false;
+  canvas.hoverCursor = "move";
 };
 
 // selector function is used to remove the event listener from the canvas and set the isDrawingMode to false.
 const selector = (editor) => {
+  editor.canvas.defaultCursor = "default";
   repeat(editor.canvas);
+  editor.canvas.selection = true;
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
 const onAddCircle = (editor) => {
   const canvas = editor.canvas;
+  canvas.defaultCursor = "crosshair";
   repeat(canvas);
   canvas.on("mouse:down", (event) => {
     const pointer = canvas.getPointer(event.e);
@@ -38,7 +43,7 @@ const onAddCircle = (editor) => {
     });
 
     canvas.on("mouse:up", () => {
-      repeat(canvas);
+      selector(editor);
     });
   });
 };
@@ -46,6 +51,7 @@ const onAddCircle = (editor) => {
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
 const onAddRectangle = (editor) => {
   const canvas = editor.canvas;
+  canvas.defaultCursor = "crosshair";
   repeat(canvas);
   canvas.on("mouse:down", (event) => {
     const pointer = canvas.getPointer(event.e);
@@ -73,7 +79,7 @@ const onAddRectangle = (editor) => {
     });
 
     canvas.on("mouse:up", () => {
-      repeat(canvas);
+      selector(editor);
     });
   });
 };
@@ -82,6 +88,7 @@ const onAddRectangle = (editor) => {
 const addLine = (editor) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
+  canvas.defaultCursor = "crosshair";
   canvas.on("mouse:down", (event) => {
     const pointer = canvas.getPointer(event.e);
     const points = [pointer.x, pointer.y, pointer.x, pointer.y];
@@ -100,7 +107,7 @@ const addLine = (editor) => {
     });
 
     canvas.on("mouse:up", () => {
-      repeat(canvas);
+      selector(editor);
     });
   });
 };
@@ -109,12 +116,13 @@ const addLine = (editor) => {
 const onAddText = (editor) => {
   const canvas = editor.canvas;
   repeat(canvas);
+  canvas.defaultCursor = "text";
   canvas.on("mouse:down", (event) => {
     const pointer = canvas.getPointer(event.e);
     const text = new fabric.Textbox("", {
       left: pointer.x,
       top: pointer.y,
-      width: 100,
+      width: 100, 
       height: 50,
       fontSize: 16,
       fill: "black",
@@ -123,12 +131,15 @@ const onAddText = (editor) => {
     canvas.setActiveObject(text);
     canvas.renderAll();
     canvas.off("mouse:down");
+    selector(editor);
+    
   });
 };
 
 // paintBrush function is used to set the isDrawingMode to true and set the brush width and color.
 const paintBrush = (editor) => {
   const canvas = editor.canvas;
+  canvas.defaultCursor = "crosshair";
   canvas.off("mouse:down");
   canvas.isDrawingMode = true;
   canvas.freeDrawingBrush.width = 5;
@@ -138,6 +149,8 @@ const paintBrush = (editor) => {
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.
 const eraser = (editor) => {
   const canvas = editor.canvas;
+  canvas.defaultCursor = "pointer";
+  canvas.hoverCursor = "pointer";
   canvas.isDrawingMode = false;
   canvas.on("mouse:down", (event) => {
     const target = event.target;
@@ -146,6 +159,7 @@ const eraser = (editor) => {
       canvas.renderAll();
     }
   });
+  
 };
 
 // clearAll function is used to remove all the objects from the canvas.
@@ -157,6 +171,7 @@ const clearAll = (editor) => {
 // pan function is used to enable panning on the canvas.
 const pan = (editor) => {
   const canvas = editor.canvas;
+  canvas.defaultCursor = "grab";
   repeat(canvas);
   let isPanning = false;
   let lastPosX = 0;
@@ -193,6 +208,7 @@ const zoomOut = (editor) => {
 
 const arrow = (editor) => {
   const canvas = editor.canvas;
+  canvas.defaultCursor = "crosshair";
   repeat(canvas);
   canvas.on("mouse:down", (event) => {
     const pointer = canvas.getPointer(event.e);
@@ -200,8 +216,6 @@ const arrow = (editor) => {
     const line = new fabric.Line(points, {
       strokeWidth: 2,
       stroke: "black",
-      selectable: false,
-      hasControls: false,
     });
 
     const arrow = new fabric.Triangle({
@@ -209,6 +223,7 @@ const arrow = (editor) => {
       height: 20,
       fill: "black",
       selectable: false,
+      hasControls:false,
       angle: 90,
       originX: "center",
       originY: "center",
@@ -228,7 +243,7 @@ const arrow = (editor) => {
     });
 
     canvas.on("mouse:up", () => {
-      repeat(canvas);
+      selector(editor);
     });
   });
 };

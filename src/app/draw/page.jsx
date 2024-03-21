@@ -1,24 +1,64 @@
 "use client";
-import React, { useEffect } from "react";
-import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
+import React, { useEffect, useState } from "react";
+import { FabricJSCanvas } from "fabricjs-react";
 import Tray from "@/components/tray";
 import Settings from "@/components/settings";
-import { useState } from "react";
+
 const Draw = () => {
-  const { editor, onReady } = useFabricJSEditor();
+  const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
   const [stroke, setStroke] = useState(1);
-  const oncolor = (c) => {
-    setColor(c);
-  }
-  const onstroke = (s) => {
-    setStroke(s);
-  }
+  const [selectedObject, setSelectedObject] = useState(null);
+
+  const handleObjectSelection = () => {
+    const activeObject = editor?.canvas?.getActiveObject();
+    setSelectedObject(activeObject);
+  };
+
+  const clearSelection = () => {
+    setSelectedObject(null);
+  };
+
+  useEffect(() => {
+    if (editor) {
+      // Add event listener for object selection
+      editor.canvas.on("selection:created", handleObjectSelection);
+      editor.canvas.on("selection:updated", handleObjectSelection);
+      editor.canvas.on("selection:cleared", clearSelection);
+
+      return () => {
+        // Cleanup: remove event listeners
+        editor.canvas.off("selection:created", handleObjectSelection);
+        editor.canvas.off("selection:updated", handleObjectSelection);
+        editor.canvas.off("selection:cleared", clearSelection);
+      };
+    }
+  }, [editor]);
+
+  const onColorChange = (newColor) => {
+    setColor(newColor);
+    if (selectedObject) {
+      selectedObject.set("stroke", newColor);
+      editor.canvas.renderAll(); // Render canvas to see the changes
+    }
+  };
+
+  const onStrokeChange = (newStroke) => {
+    setStroke(newStroke);
+    if (selectedObject) {
+      selectedObject.set("strokeWidth", newStroke);
+      editor.canvas.renderAll(); // Render canvas to see the changes
+    }
+  };
+
   return (
     <div>
       <Tray editor={editor} color={color} stroke={stroke} />
-      <Settings oncolor={oncolor} onstroke={onstroke} />
-      <FabricJSCanvas className="h-[80vh] border-2 border-indigo-600" onReady={onReady} />
+      <Settings oncolor={onColorChange} onstroke={onStrokeChange} />
+      <FabricJSCanvas
+        className="h-[80vh] border-2 border-indigo-600"
+        onReady={(canvas) => setEditor({ canvas })}
+      />
     </div>
   );
 };

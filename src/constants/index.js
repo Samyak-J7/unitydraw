@@ -9,8 +9,6 @@ import {
   Eraser,
   Trash2,
   Minus,
-  ZoomIn,
-  ZoomOut,
   MoveRight
 } from "lucide-react";
 import {
@@ -23,8 +21,6 @@ import {
   clearAll,
   pan,
   addLine,
-  zoomIn,
-  zoomOut,
   arrow
 } from "./actions";
 
@@ -54,11 +50,11 @@ const Tools = [
     icon: <Minus />,
     action: addLine,
   },
-  {
-    name: "Add Arrow",
-    icon: <MoveRight />,
-    action: arrow,
-  },
+  // {
+  //   name: "Add Arrow",
+  //   icon: <MoveRight />,
+  //   action: arrow,
+  // },
   {
     name: "Add Text",
     icon: <Type />,
@@ -79,16 +75,7 @@ const Tools = [
     icon: <Trash2 />,
     action: clearAll,
   },
-  {
-    name: "Zoom In",
-    icon: <ZoomIn />,
-    action: zoomIn,
-  },
-  {
-    name: "Zoom Out",
-    icon: <ZoomOut />,
-    action: zoomOut,
-  }
+  
 
 ];
 

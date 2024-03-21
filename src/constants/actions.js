@@ -16,7 +16,7 @@ const selector = (editor) => {
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color,stroke ) => {
+const onAddCircle = (editor, color,stroke , bgColor ) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -26,7 +26,7 @@ const onAddCircle = (editor, color,stroke ) => {
       left: pointer.x,
       top: pointer.y,
       radius: 50,
-      fill: "transparent",
+      fill: bgColor,
       stroke: color,
       strokeWidth: stroke,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
@@ -49,7 +49,7 @@ const onAddCircle = (editor, color,stroke ) => {
 };
 
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
-const onAddRectangle = (editor, color,stroke) => {
+const onAddRectangle = (editor, color,stroke , bgColor) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -58,7 +58,7 @@ const onAddRectangle = (editor, color,stroke) => {
     const rect = new fabric.Rect({
       left: pointer.x,
       top: pointer.y,
-      fill: "transparent",
+      fill: bgColor,
       stroke: color,
       strokeWidth: stroke,
       width: 50,
@@ -163,7 +163,7 @@ const eraser = (editor) => {
 // clearAll function is used to remove all the objects from the canvas.
 const clearAll = (editor) => {
   editor.canvas.off("mouse:down");
-  editor?.deleteAll();
+  editor?.canvas.clear();
 };
 
 // pan function is used to enable panning on the canvas.
@@ -196,13 +196,7 @@ const pan = (editor) => {
   });
 };
 
-const zoomIn = (editor) => {
-  editor.canvas.setZoom(editor.canvas.getZoom() * 1.1);
-};
 
-const zoomOut = (editor) => {
-  editor.canvas.setZoom(editor.canvas.getZoom() / 1.1);
-};
 
 const arrow = (editor, color,stroke) => {
   const canvas = editor.canvas;
@@ -214,6 +208,8 @@ const arrow = (editor, color,stroke) => {
     const line = new fabric.Line(points, {
       strokeWidth: stroke,
       stroke: color,
+      selectable: false,
+      
     });
 
     const arrow = new fabric.Triangle({
@@ -257,7 +253,5 @@ export {
   eraser,
   pan,
   addLine,
-  zoomIn,
-  zoomOut,
   arrow,
 };

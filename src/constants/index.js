@@ -9,7 +9,8 @@ import {
   Eraser,
   Trash2,
   Minus,
-  MoveRight
+  MoveRight,
+  RectangleHorizontal
 } from "lucide-react";
 import {
   onAddCircle,
@@ -26,7 +27,7 @@ import {
 
 const Tools = [
   {
-    name: "Pan",
+    name: "Panning",
     icon: <Hand />,
     action: pan,
   },
@@ -36,13 +37,13 @@ const Tools = [
     action: selector,
   },
   {
-    name: "Add Circle",
+    name: "Circle",
     icon: <Circle />,
     action: onAddCircle,
   },
   {
-    name: "Add Square",
-    icon: <Square />,
+    name: "Rectangle",
+    icon: <RectangleHorizontal />,
     action: onAddRectangle,
   },
   {

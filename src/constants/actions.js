@@ -16,7 +16,7 @@ const selector = (editor) => {
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color) => {
+const onAddCircle = (editor, color,stroke ) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -28,7 +28,7 @@ const onAddCircle = (editor, color) => {
       radius: 50,
       fill: "transparent",
       stroke: color,
-      strokeWidth: 2,
+      strokeWidth: stroke,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
     });
     canvas.add(circle);
@@ -49,7 +49,7 @@ const onAddCircle = (editor, color) => {
 };
 
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
-const onAddRectangle = (editor, color) => {
+const onAddRectangle = (editor, color,stroke) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -60,7 +60,7 @@ const onAddRectangle = (editor, color) => {
       top: pointer.y,
       fill: "transparent",
       stroke: color,
-      strokeWidth: 2,
+      strokeWidth: stroke,
       width: 50,
       height: 50,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
@@ -85,7 +85,7 @@ const onAddRectangle = (editor, color) => {
 };
 
 // addLine function is used to add a line to the canvas and call the repeat function.
-const addLine = (editor, color) => {
+const addLine = (editor, color,stroke) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
@@ -93,7 +93,7 @@ const addLine = (editor, color) => {
     const pointer = canvas.getPointer(event.e);
     const points = [pointer.x, pointer.y, pointer.x, pointer.y];
     const line = new fabric.Line(points, {
-      strokeWidth: 2,
+      strokeWidth: stroke,
       stroke: color,
     });
     canvas.add(line);
@@ -113,7 +113,7 @@ const addLine = (editor, color) => {
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
-const onAddText = (editor, color) => {
+const onAddText = (editor, color,stroke) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "text";
@@ -124,7 +124,7 @@ const onAddText = (editor, color) => {
       top: pointer.y,
       width: 100,
       height: 50,
-      fontSize: 16,
+      fontSize: stroke*10,
       fill: color,
     });
     canvas.add(text);
@@ -136,12 +136,12 @@ const onAddText = (editor, color) => {
 };
 
 // paintBrush function is used to set the isDrawingMode to true and set the brush width and color.
-const paintBrush = (editor, color) => {
+const paintBrush = (editor, color,stroke) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   canvas.off("mouse:down");
   canvas.isDrawingMode = true;
-  canvas.freeDrawingBrush.width = 5;
+  canvas.freeDrawingBrush.width = stroke;
   canvas.freeDrawingBrush.color = color;
 };
 
@@ -204,7 +204,7 @@ const zoomOut = (editor) => {
   editor.canvas.setZoom(editor.canvas.getZoom() / 1.1);
 };
 
-const arrow = (editor, color) => {
+const arrow = (editor, color,stroke) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -212,7 +212,7 @@ const arrow = (editor, color) => {
     const pointer = canvas.getPointer(event.e);
     const points = [pointer.x, pointer.y, pointer.x, pointer.y];
     const line = new fabric.Line(points, {
-      strokeWidth: 2,
+      strokeWidth: stroke,
       stroke: color,
     });
 

@@ -5,7 +5,7 @@ const Tray = (props) => {
   const [active , setActive] = React.useState(null);
   useEffect(() => {
     if (props.editor) {
-      active.action(props.editor, props.color);
+      active.action(props.editor, props.color , props.stroke);
     }   
   }, [props.color]);
   return (
@@ -13,7 +13,7 @@ const Tray = (props) => {
       {Tools.map((tool, index) => {
         return (
           <button key={index} onClick={() => { 
-            tool.action(props.editor, props.color);
+            tool.action(props.editor, props.color , props.stroke);
             setActive(tool); 
           }}>
             {tool.icon}

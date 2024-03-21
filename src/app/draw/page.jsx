@@ -7,13 +7,17 @@ import { useState } from "react";
 const Draw = () => {
   const { editor, onReady } = useFabricJSEditor();
   const [color, setColor] = useState("#000000" /* black */);
-  const onselect = (c) => {
+  const [stroke, setStroke] = useState(1);
+  const oncolor = (c) => {
     setColor(c);
+  }
+  const onstroke = (s) => {
+    setStroke(s);
   }
   return (
     <div>
-      <Tray editor={editor} color={color} />
-      <Settings onselect={onselect} />
+      <Tray editor={editor} color={color} stroke={stroke} />
+      <Settings oncolor={oncolor} onstroke={onstroke} />
       <FabricJSCanvas className="h-[80vh] border-2 border-indigo-600" onReady={onReady} />
     </div>
   );

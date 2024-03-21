@@ -1,19 +1,14 @@
 "use client";
 import React from "react";
-import { useState } from "react";
 
-export const colorState = React.createContext();
-
-const Settings = () => {
-  const [color, setColor] = useState("#000000");
-
+const Settings = (props) => {
   const handleColorChange = (event) => {
-    setColor(event.target.value);
+    props.onselect(event.target.value);
   }
 
   return (
     <div>
-      <input type="color" value={color} onChange={handleColorChange} />
+      <input type="color" onChange={handleColorChange} />
     </div>
   );
 };

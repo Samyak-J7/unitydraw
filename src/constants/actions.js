@@ -148,8 +148,10 @@ const paintBrush = (editor, color, stroke) => {
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.
 const eraser = (editor) => {
   const canvas = editor.canvas;
-  canvas.defaultCursor = "pointer";
-  canvas.hoverCursor = "pointer";
+  canvas.defaultCursor =
+    "url('https://img.icons8.com/ios-filled/50/000000/eraser.png'), auto";
+  canvas.hoverCursor =
+    "url('https://img.icons8.com/ios-filled/50/000000/eraser.png'), auto";
   canvas.isDrawingMode = false;
   canvas.on("mouse:down", (event) => {
     const target = event.target;
@@ -196,6 +198,7 @@ const pan = (editor) => {
   });
 };
 
+// arrow function is used to add an arrow to the canvas and call the repeat function.
 const arrow = (editor, color, stroke) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
@@ -239,6 +242,25 @@ const arrow = (editor, color, stroke) => {
   });
 };
 
+// handleFileChange function is used to handle the file change event and add the image to the canvas.
+const handleFileChange = (e, editor) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = "";
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const imageUrl = event.target.result;
+    fabric.Image.fromURL(imageUrl, (img) => {
+      editor.canvas.add(img);
+    });
+  };
+  reader.readAsDataURL(file);
+};
+
+const openFilePicker = (fileInputRef) => {
+  fileInputRef.current.click();
+};
+
 // export all the functions.
 export {
   onAddCircle,
@@ -251,4 +273,6 @@ export {
   pan,
   addLine,
   arrow,
+  handleFileChange,
+  openFilePicker,
 };

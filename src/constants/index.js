@@ -2,7 +2,6 @@ import React from "react";
 import {
   Hand,
   Circle,
-  Square,
   Type,
   Brush,
   MousePointer,
@@ -11,6 +10,7 @@ import {
   Minus,
   MoveRight,
   RectangleHorizontal,
+  Image,
 } from "lucide-react";
 import {
   onAddCircle,
@@ -23,6 +23,7 @@ import {
   pan,
   addLine,
   arrow,
+  openFilePicker,
 } from "./actions";
 
 const Tools = [
@@ -75,6 +76,11 @@ const Tools = [
     name: "Clear All",
     icon: <Trash2 />,
     action: clearAll,
+  },
+  {
+    name: "Image",
+    icon: <Image />,
+    action: openFilePicker,
   },
 ];
 

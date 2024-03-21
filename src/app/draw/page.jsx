@@ -12,7 +12,7 @@ const Draw = () => {
   const [bgColor, setBgColor] = useState("transparent" /* white */);
   const [selectedObjects, setSelectedObjects] = useState([]);
   const [zoom, setZoom] = useState(1);
-  const fileInputRef = useRef(null);
+  
 
   useEffect(() => {
     if (editor) {
@@ -85,23 +85,7 @@ const Draw = () => {
     editor.canvas.setZoom(editor.canvas.getZoom() - 0.1);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const imageUrl = event.target.result;
-      fabric.Image.fromURL(imageUrl, (img) => {
-        editor.canvas.add(img);
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const openFilePicker = () => {
-    fileInputRef.current.click();
-  };
+  
 
   return (
     <div>
@@ -113,14 +97,7 @@ const Draw = () => {
       <button onClick={zoomOut}>
         <ZoomOut />
       </button>
-      <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
-        <button onClick={openFilePicker}><Image /></button>
+     
       </div>
       <Settings
         oncolor={onColorChange}

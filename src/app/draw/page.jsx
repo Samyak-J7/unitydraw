@@ -13,7 +13,6 @@ const Draw = () => {
   const [selectedObjects, setSelectedObjects] = useState([]);
   const [zoom, setZoom] = useState(1);
   
-
   useEffect(() => {
     if (editor) {
       // Add event listener for object selection
@@ -90,11 +89,11 @@ const Draw = () => {
   return (
     <div>
       <Tray editor={editor} color={color} stroke={stroke} bgColor={bgColor} />
-      <div className="flex gap-2 absolute bottom-0 left-50 z-10 bg-red-500">
-        <button onClick={zoomIn}>
+      <div className="flex gap-2 absolute bottom-0 left-50 z-10 m-4">
+        <button onClick={zoomIn} className="hover:bg-gray-200 p-4 rounded-md">
         <ZoomIn />
       </button>
-      <button onClick={zoomOut}>
+      <button onClick={zoomOut} className="hover:bg-gray-200 p-4 rounded-md">
         <ZoomOut />
       </button>
      
@@ -105,7 +104,7 @@ const Draw = () => {
         onbgColor={onBgColorChange}
       />
       <FabricJSCanvas
-        className="h-[80vh] bg-gray-50 border-2 border-indigo-600"
+        className="h-[100vh] bg-gray-50"
         onReady={(canvas) => setEditor({ canvas })}
       />
     </div>

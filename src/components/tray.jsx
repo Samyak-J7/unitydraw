@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { handleFileChange } from "@/constants/actions";
+
 const Tray = (props) => {
   const fileInputRef = useRef(null);
   const [active, setActive] = React.useState(Tools[1]);
@@ -50,7 +51,6 @@ const Tray = (props) => {
         style={{ display: "none" }}
         onChange={(e) => handleFileChange(e, props.editor)}
       />
-
     </div>
   );
 };

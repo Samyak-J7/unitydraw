@@ -13,7 +13,8 @@ const Settings = (props) => {
   };
 
   return (
-    <div>
+    // TODO: Implement styling for the settings panel
+    <div className="absolute right-0 top-32 flex flex-col">
       <input type="color" onChange={handleColorChange} />
       <input type="range" min="1" max="10" onChange={handleStrokeChange} />
       <input type="color" onChange={handlebgColorChange} />

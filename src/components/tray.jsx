@@ -14,16 +14,18 @@ const Tray = (props) => {
   const [active, setActive] = React.useState(Tools[1]);
 
   useEffect(() => {
-    if (props.editor) {
-      active.action(props.editor, props.color, props.stroke, props.bgColor);
+    if (active.name === "Paintbrush" ) {
+      active.action(props.editor, props.color, props.stroke, props.bgColor );
     }
-  }, [props.color]);
+  }, [props.color,props.stroke, props.bgColor]);
 
   const handleclick = (tool) => {
+    tool.action.name === "paintBrush" ? props.handleDrawing(true) : props.handleDrawing(false);
     tool.action.name === "openFilePicker"
       ? tool.action(fileInputRef)
       : tool.action(props.editor, props.color, props.stroke, props.bgColor);
     setActive(tool);
+    
     
   };
 

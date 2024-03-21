@@ -120,7 +120,7 @@ const addLine = (editor, color, stroke) => {
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
-const onAddText = (editor, color, stroke) => {
+const onAddText = (editor, color, stroke,bgColor) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "text";
@@ -131,8 +131,9 @@ const onAddText = (editor, color, stroke) => {
       top: pointer.y,
       width: 100,
       height: 50,
-      fontSize: stroke * 10,
-      fill: color,
+      strokeWidth: stroke,      
+      stroke: color,
+      fill:bgColor
     });
     canvas.add(text);
     canvas.setActiveObject(text);

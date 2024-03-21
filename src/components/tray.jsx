@@ -28,7 +28,7 @@ const Tray = (props) => {
   };
 
   return (
-    <div className="flex flex-col  absolute top-10 left-0 z-10 bg-white border-2 py-2  shadow-[0_10px_25px_rgba(8,_132,_184,_0.3)]  mx-3 rounded-2xl  ">
+    <div className="flex flex-col  absolute top-10 left-0 z-10 bg-white border-2  border-gray-200 py-2  shadow-[0_10px_25px_rgba(8,_132,_184,_0.3)]  mx-4 rounded-2xl  ">
       {Tools.map((tool, index) => {
         return (
           <TooltipProvider key={index} delayDuration={100}>

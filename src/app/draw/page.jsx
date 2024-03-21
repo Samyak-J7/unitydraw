@@ -3,8 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { FabricJSCanvas } from "fabricjs-react";
 import Tray from "@/components/tray";
 import Settings from "@/components/settings";
-import { Image, ZoomIn, ZoomOut } from "lucide-react";
-
+import { ZoomIn, ZoomOut } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 const Draw = () => {
   const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
@@ -12,7 +12,7 @@ const Draw = () => {
   const [bgColor, setBgColor] = useState("transparent" /* white */);
   const [selectedObjects, setSelectedObjects] = useState([]);
   const [zoom, setZoom] = useState(1);
-  
+  const [opacity, setOpacity] = useState(1);
   useEffect(() => {
     if (editor) {
       // Add event listener for object selection
@@ -22,7 +22,10 @@ const Draw = () => {
 
       // Add keyboard event listener for backspace key
       const handleKeyPress = (event) => {
-        if ((event.code === "Backspace" || event.code === "Delete") && selectedObjects.length > 0) {
+        if (
+          (event.code === "Backspace" || event.code === "Delete") &&
+          selectedObjects.length > 0
+        ) {
           selectedObjects.forEach((obj) => editor.canvas.remove(obj));
           setSelectedObjects([]);
           editor.canvas.renderAll();
@@ -84,27 +87,41 @@ const Draw = () => {
     editor.canvas.setZoom(editor.canvas.getZoom() - 0.1);
   };
 
-  
+  const onOpacityChange = (newOpacity) => {
+    setOpacity(newOpacity);
+    selectedObjects.forEach((obj) => {
+      obj.set("opacity", newOpacity);
+    });
+    editor.canvas.renderAll();
+  }
 
   return (
     <div>
-      <Tray editor={editor} color={color} stroke={stroke} bgColor={bgColor} />
-      <div className="flex gap-2 absolute bottom-0 left-50 z-10 m-4">
-        <button onClick={zoomIn} className="hover:bg-gray-200 p-4 rounded-md">
-        <ZoomIn />
-      </button>
-      <button onClick={zoomOut} className="hover:bg-gray-200 p-4 rounded-md">
-        <ZoomOut />
-      </button>
-     
+      <Tray editor={editor} color={color} stroke={stroke} bgColor={bgColor} opacity={opacity} />
+      <div className="flex  bg-slate-100 gap-2 absolute bottom-0 z-10 m-4 items-center border-gray-300 rounded-lg border-2 shadow-2xl ">
+        <button onClick={zoomIn} className="hover:bg-gray-300 p-4 rounded-md">
+          <ZoomIn />
+        </button>
+        <p className=" font-semibold text-md">
+          {!isNaN((editor?.canvas.getZoom() * 100) / 1)
+            ? Math.trunc((editor?.canvas.getZoom() * 100) / 1)+'%'
+            : '100%'}
+        </p>
+        <button onClick={zoomOut} className="hover:bg-gray-300 p-4 rounded-md">
+          <ZoomOut />
+        </button>
       </div>
-      <Settings
+      {selectedObjects.length>0 && (
+        <Settings
         oncolor={onColorChange}
         onstroke={onStrokeChange}
         onbgColor={onBgColorChange}
+        onOpacity={onOpacityChange}
       />
+      )}
+      
       <FabricJSCanvas
-        className="h-[100vh] bg-gray-50"
+        className="h-[100vh] bg-gray-100"
         onReady={(canvas) => setEditor({ canvas })}
       />
     </div>

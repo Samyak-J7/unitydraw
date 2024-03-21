@@ -16,7 +16,7 @@ const selector = (editor) => {
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color, stroke, bgColor) => {
+const onAddCircle = (editor, color, stroke, bgColor,opacity) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -29,7 +29,14 @@ const onAddCircle = (editor, color, stroke, bgColor) => {
       fill: bgColor,
       stroke: color,
       strokeWidth: stroke,
+      opacity: opacity,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
+      // shadow:{
+      //   color: 'red', // Shadow color
+      //   blur: 0,                 // Shadow blur
+      //   offsetX: 10,               // Horizontal offset
+      //   offsetY: 5                // Vertical offset
+      // },
     });
     canvas.add(circle);
     canvas.setActiveObject(circle);

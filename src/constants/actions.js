@@ -16,7 +16,7 @@ const selector = (editor) => {
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color, stroke, bgColor,opacity) => {
+const onAddCircle = (editor, color, stroke, bgColor) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -29,7 +29,6 @@ const onAddCircle = (editor, color, stroke, bgColor,opacity) => {
       fill: bgColor,
       stroke: color,
       strokeWidth: stroke,
-      opacity: opacity,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
       // shadow:{
       //   color: 'red', // Shadow color
@@ -92,7 +91,7 @@ const onAddRectangle = (editor, color, stroke, bgColor) => {
 };
 
 // addLine function is used to add a line to the canvas and call the repeat function.
-const addLine = (editor, color, stroke) => {
+const addLine = (editor, color, stroke , bgColor) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
@@ -102,7 +101,7 @@ const addLine = (editor, color, stroke) => {
     const line = new fabric.Line(points, {
       strokeWidth: stroke,
       stroke: color,
-      fill:'transparent',
+      fill:bgColor,
     });
     canvas.add(line);
     canvas.setActiveObject(line);

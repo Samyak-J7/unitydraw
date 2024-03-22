@@ -4,6 +4,7 @@ import { ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import Tray from "./tray";
 import Settings from "./settings";
+
 const Canvas = () => {
     const [editor, setEditor] = useState(null);
     const [color, setColor] = useState("#000000" /* black */);
@@ -13,6 +14,27 @@ const Canvas = () => {
     const [zoom, setZoom] = useState(1);
     const [opacity, setOpacity] = useState(1);
     const [isPainting, setIsPainting] = useState(false);
+    
+
+    useEffect(() => {
+      const savedCanvasState = localStorage.getItem('canvasState');
+      if (editor && savedCanvasState) {
+        const json = JSON.parse(savedCanvasState);
+        editor.canvas.loadFromJSON(json, () => {
+          editor.canvas.renderAll();
+        });
+      }
+    }, [editor]);
+  
+  
+    useEffect(() => {
+      if (editor) {
+        const json = JSON.stringify(editor.canvas.toJSON());
+        localStorage.setItem('canvasState', json);
+      }
+    },[selectedObjects , isPainting, color, stroke, bgColor,opacity]);
+  
+  
     useEffect(() => {
         if (editor) {
           // Add event listener for object selection
@@ -150,7 +172,9 @@ const Canvas = () => {
           <FabricJSCanvas
             className="h-[100vh] bg-gray-100"
             onReady={(canvas) => setEditor({ canvas })}
+
           />
+          
         </div>
       );
     };

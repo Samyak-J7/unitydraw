@@ -12,7 +12,9 @@ import { handleFileChange } from "@/constants/actions";
 const Tray = (props) => {
   const fileInputRef = useRef(null);
   const [active, setActive] = React.useState(Tools[1]);
-
+  const completed = () => {
+    setActive(Tools[1]);    
+  }
   useEffect(() => {
     if (active.name === "Paintbrush" ) {
       active.action(props.editor, props.color, props.stroke, props.bgColor );
@@ -23,11 +25,11 @@ const Tray = (props) => {
     tool.action.name === "paintBrush" ? props.handleDrawing(true) : props.handleDrawing(false);
     tool.action.name === "openFilePicker"
       ? tool.action(fileInputRef)
-      : tool.action(props.editor, props.color, props.stroke, props.bgColor);
-    setActive(tool);
-    
-    
+      : tool.action(props.editor, props.color, props.stroke, props.bgColor,completed );
+    setActive(tool);    
   };
+
+ 
 
   return (
     <div className="flex flex-col  absolute top-10 left-0 z-10 bg-white border-2  border-gray-200 py-2  shadow-[0_10px_25px_rgba(8,_132,_184,_0.3)]  mx-4 rounded-2xl  ">
@@ -52,7 +54,7 @@ const Tray = (props) => {
         accept="image/*"
         ref={fileInputRef}
         style={{ display: "none" }}
-        onChange={(e) => handleFileChange(e, props.editor)}
+        onChange={(e) => handleFileChange(e, props.editor,completed)}
       />
     </div>
   );

@@ -16,7 +16,7 @@ const selector = (editor) => {
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color, stroke, bgColor) => {
+const onAddCircle = (editor, color, stroke, bgColor , completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -50,12 +50,13 @@ const onAddCircle = (editor, color, stroke, bgColor) => {
 
     canvas.on("mouse:up", () => {
       selector(editor);
+      completed();
     });
   });
 };
 
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
-const onAddRectangle = (editor, color, stroke, bgColor) => {
+const onAddRectangle = (editor, color, stroke, bgColor,completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -86,12 +87,13 @@ const onAddRectangle = (editor, color, stroke, bgColor) => {
 
     canvas.on("mouse:up", () => {
       selector(editor);
+      completed();
     });
   });
 };
 
 // addLine function is used to add a line to the canvas and call the repeat function.
-const addLine = (editor, color, stroke , bgColor) => {
+const addLine = (editor, color, stroke , bgColor,completed) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
@@ -115,12 +117,13 @@ const addLine = (editor, color, stroke , bgColor) => {
 
     canvas.on("mouse:up", () => {
       selector(editor);
+      completed();
     });
   });
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
-const onAddText = (editor, color, stroke,bgColor) => {
+const onAddText = (editor, color, stroke,bgColor,completed) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "text";
@@ -141,7 +144,10 @@ const onAddText = (editor, color, stroke,bgColor) => {
     canvas.renderAll();
     canvas.off("mouse:down");
     selector(editor);
+    completed();
+
   });
+  
 };
 
 // paintBrush function is used to set the isDrawingMode to true and set the brush width and color.
@@ -175,6 +181,8 @@ const eraser = (editor) => {
 const clearAll = (editor) => {
   editor.canvas.off("mouse:down");
   editor?.canvas.clear();
+  selector(editor);
+ 
 };
 
 // pan function is used to enable panning on the canvas.
@@ -208,7 +216,7 @@ const pan = (editor) => {
 };
 
 // arrow function is used to add an arrow to the canvas and call the repeat function.
-const arrow = (editor, color, stroke) => {
+const arrow = (editor, color, stroke, bgColor,completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -247,12 +255,13 @@ const arrow = (editor, color, stroke) => {
 
     canvas.on("mouse:up", () => {
       selector(editor);
+      completed();
     });
   });
 };
 
 // handleFileChange function is used to handle the file change event and add the image to the canvas.
-const handleFileChange = (e, editor) => {
+const handleFileChange = (e, editor , completed) => {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = "";
@@ -264,6 +273,8 @@ const handleFileChange = (e, editor) => {
     });
   };
   reader.readAsDataURL(file);
+  completed();
+  selector(editor);
 };
 
 const openFilePicker = (fileInputRef) => {

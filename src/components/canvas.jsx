@@ -14,7 +14,49 @@ const Canvas = () => {
     const [zoom, setZoom] = useState(1);
     const [opacity, setOpacity] = useState(1);
     const [isPainting, setIsPainting] = useState(false);
-    
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+    const [realtimeObject, setRealtimeObject] = useState(null);
+    const [update, setUpdate] = useState(false);
+
+  
+
+    useEffect(() => {
+      const handleMouseMove = (e) => {
+        setCursorPosition({ x: e.clientX, y: e.clientY });
+        const activeObjects = editor?.canvas?.getActiveObjects() || [];
+        if (activeObjects.length > 0 ) {
+          setRealtimeObject(activeObjects);
+        }
+       
+      }
+      
+      document.addEventListener('mousemove', handleMouseMove);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+      }
+    })
+
+    useEffect(() => {
+      if (update){
+        let newObject;
+        switch (obj.type) {
+          case 'circle':
+            newObject = new fabric.Circle(obj);
+            break;
+          case 'rect':
+            newObject = new fabric.Rect(obj);
+            break;
+          case 'path':
+            newObject = new fabric.Path(obj);
+            break;
+          case 'line':
+              newObject = new fabric.Line(obj);
+          default:
+            return;
+        }
+        editor.canvas.add(newObject);
+      }
+    }, [update])
 
     useEffect(() => {
       const savedCanvasState = localStorage.getItem('canvasState');
@@ -37,7 +79,7 @@ const Canvas = () => {
   
     useEffect(() => {
         if (editor) {
-          // Add event listener for object selection
+       
           editor.canvas.on("selection:created", handleObjectSelection);
           editor.canvas.on("selection:updated", handleObjectSelection);
           editor.canvas.on("selection:cleared", clearSelection);
@@ -69,6 +111,7 @@ const Canvas = () => {
       const handleObjectSelection = () => {
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         setSelectedObjects(activeObjects);
+       
     
         // Get color of the first selected object, assuming all selected objects have the same color
         if (activeObjects.length > 0) {

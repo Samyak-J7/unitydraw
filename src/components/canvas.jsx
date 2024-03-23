@@ -19,6 +19,7 @@ const Canvas = () => {
   const [realtimeObject, setRealtimeObject] = useState(null);
   const [update, setUpdate] = useState(false);
 
+  //set socket connection and emit cursor and realtime object
   useEffect(() => {
     const socket = io("http://localhost:4001");
 
@@ -26,6 +27,7 @@ const Canvas = () => {
       const { clientX: x, clientY: y } = event;
       setCursorPosition({ x, y });
       socket.emit("cursor", { x, y });
+
       const activeObjects = editor?.canvas?.getActiveObjects() || [];
       if (activeObjects.length > 0) {
         const activeObjectsData = activeObjects.map((obj) => {
@@ -47,6 +49,7 @@ const Canvas = () => {
     // to receive realtime object from other clients
     socket.on("realtimeObject", (data) => {
       const receivedObjectsData = JSON.parse(data);
+
       const receivedObjects = receivedObjectsData.map((objData) => {
         let obj;
         switch (objData.type) {
@@ -57,12 +60,13 @@ const Canvas = () => {
             obj = new fabric.Rect(objData);
             break;
           case "path":
-            obj = new fabric.Path(objData);
+            obj = new fabric.Path(`${objData.path}`, {...objData,});
+
             break;
           case "line":
-            obj = new fabric.Line([objData.x1, objData.y1, objData.x2, objData.y2],{...objData});
-            break;         
-          default:            
+            obj = new fabric.Line([objData.x1, objData.y1, objData.x2, objData.y2],{ ...objData });
+            break;
+          default:
             throw new Error(`Invalid object type: ${objData.type}`);
         }
         obj.id = objData.id; // Ensure id property is set
@@ -77,6 +81,7 @@ const Canvas = () => {
     };
   }, [editor]);
 
+  //update the object in the canvas
   useEffect(() => {
     let isIdMatched = false;
     if (update && editor && realtimeObject) {
@@ -92,15 +97,23 @@ const Canvas = () => {
                 y2: realtimeObject.y2,
                 ...realtimeObject,
               });
+            } else if (realtimeObject.type === "path") {
+              obj.set({
+                path: realtimeObject.path,
+                ...realtimeObject,
+              });
+              console.log("path", obj);
             } else
-            obj.set({
-              ...realtimeObject,
-            });
+              obj.set({
+                ...realtimeObject,
+              });
             obj.setCoords(); // Update object coordinates
             editor.canvas.renderAll();
           }
         });
       });
+
+      // Add new object to the canvas if id is not matched
       if (!isIdMatched) {
         let newObject = realtimeObject[0];
         newObject.id = realtimeObject[0].id;
@@ -109,6 +122,7 @@ const Canvas = () => {
     }
   }, [update, editor, realtimeObject]);
 
+  //load the canvas state from local storage
   useEffect(() => {
     const savedCanvasState = localStorage.getItem("canvasState");
     if (editor && savedCanvasState) {
@@ -119,6 +133,7 @@ const Canvas = () => {
     }
   }, [editor]);
 
+  //save the canvas state to local storage
   useEffect(() => {
     if (editor) {
       const json = JSON.stringify(editor.canvas.toJSON());
@@ -126,6 +141,7 @@ const Canvas = () => {
     }
   }, [selectedObjects, isPainting, color, stroke, bgColor, opacity]);
 
+  //add event listener for keyboard events
   useEffect(() => {
     if (editor) {
       editor.canvas.on("selection:created", handleObjectSelection);
@@ -156,6 +172,7 @@ const Canvas = () => {
     }
   }, [editor, selectedObjects]);
 
+  //handle object selection
   const handleObjectSelection = () => {
     const activeObjects = editor?.canvas?.getActiveObjects() || [];
     setSelectedObjects(activeObjects);

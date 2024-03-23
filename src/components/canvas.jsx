@@ -60,18 +60,9 @@ const Canvas = () => {
             obj = new fabric.Path(objData);
             break;
           case "line":
-            // console.log("line obj", [objData.x1, objData.y1, objData.x2, objData.y2])
-            obj = new fabric.Line(
-              [objData.x1, objData.y1, objData.x2, objData.y2],
-              {
-                ...objData,
-              }
-            );
-            // console.log(obj)
-            break;
-          // Add more cases for other types if needed
-          default:
-            // Handle unknown types or throw an error
+            obj = new fabric.Line([objData.x1, objData.y1, objData.x2, objData.y2],{...objData});
+            break;         
+          default:            
             throw new Error(`Invalid object type: ${objData.type}`);
         }
         obj.id = objData.id; // Ensure id property is set
@@ -93,55 +84,31 @@ const Canvas = () => {
         realtimeObject.forEach((realtimeObject) => {
           if (realtimeObject.id === obj.id) {
             isIdMatched = true;
+            if (realtimeObject.type === "line") {
+              obj.set({
+                x1: realtimeObject.x1,
+                y1: realtimeObject.y1,
+                x2: realtimeObject.x2,
+                y2: realtimeObject.y2,
+                ...realtimeObject,
+              });
+            } else
             obj.set({
               ...realtimeObject,
             });
-
             obj.setCoords(); // Update object coordinates
-
             editor.canvas.renderAll();
           }
         });
       });
-
       if (!isIdMatched) {
-        const obj = realtimeObject[0];
-        // console.log("rt obj",realtimeObject[0])
-        let newObject = obj;
-        newObject.id = obj.id;
-        console.log("old obj ", obj);
-        console.log("new obj ", newObject);
-        /* switch (obj.type) {
-          case "circle":
-            newObject = new fabric.Circle(obj);
-            newObject.id = obj.id;
-            break;
-          case "rect":
-            newObject = new fabric.Rect(obj);
-            newObject.id = obj.id;
-            break;
-          case "path":
-            newObject = new fabric.Path(obj);
-            newObject.id = obj.id;
-            break;
-          case "line":
-            console.log("old object ",obj)
-            console.log("obj coordinate ", [obj.x1, obj.y1, obj.x2, obj.y2]);
-            const { x1, y1, x2, y2, ...otherProps } = obj;
-            newObject = new fabric.Line([x1, y1, x2, y2], {
-              ...otherProps,
-            });
-            newObject.id = obj.id;
-            
-            console.log("new ", newObject);
-            break;
-          default:
-            return;
-        } */
+        let newObject = realtimeObject[0];
+        newObject.id = realtimeObject[0].id;
         editor.canvas.add(newObject);
       }
     }
   }, [update, editor, realtimeObject]);
+
   useEffect(() => {
     const savedCanvasState = localStorage.getItem("canvasState");
     if (editor && savedCanvasState) {
@@ -267,7 +234,8 @@ const Canvas = () => {
           height: 20,
           backgroundColor: "red",
           borderRadius: "50%",
-        }}></div>
+        }}
+      ></div>
       <Tray
         editor={editor}
         color={color}

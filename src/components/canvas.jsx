@@ -4,6 +4,7 @@ import { ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import Tray from "./tray";
 import Settings from "./settings";
+import io from 'socket.io-client';
 
 const Canvas = () => {
     const [editor, setEditor] = useState(null);
@@ -17,27 +18,51 @@ const Canvas = () => {
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
     const [realtimeObject, setRealtimeObject] = useState(null);
     const [update, setUpdate] = useState(false);
-
-  
+   
 
     useEffect(() => {
-      const handleMouseMove = (e) => {
-        setCursorPosition({ x: e.clientX, y: e.clientY });
-        const activeObjects = editor?.canvas?.getActiveObjects() || [];
-        if (activeObjects.length > 0 ) {
-          setRealtimeObject(activeObjects);
-        }
-       
-      }
-      
+      const socket = io('http://localhost:4001');
+      const handleMouseMove = (event) => {
+        const { clientX: x, clientY: y } = event;
+        setCursorPosition({ x, y });
+        socket.emit('cursor', { x, y });
+        
+        
+      };
+  
       document.addEventListener('mousemove', handleMouseMove);
+  
+      socket.on('cursor', (data) => {
+        setCursorPosition(data);
+      });
+
+      socket.on('realtimeObject', (data) => {
+        setRealtimeObject(data);
+        setUpdate(true);
+      });
+  
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
-      }
-    })
+        socket.disconnect();
+      };
+    }, []);
 
+    useEffect(() => {    
+      const socket = io('http://localhost:4001');     
+        const activeObjects = editor?.canvas?.getActiveObjects() || [];        
+        if (activeObjects.length > 0 ) {
+          console.log(activeObjects)
+          setRealtimeObject(activeObjects);
+          socket.emit('realtimeObject', activeObjects);
+        }    
+
+        
+    },[cursorPosition])
+  
     useEffect(() => {
       if (update){
+        console.log("here", realtimeObject[0])
+        const obj = realtimeObject[0];
         let newObject;
         switch (obj.type) {
           case 'circle':
@@ -178,6 +203,17 @@ const Canvas = () => {
     
       return (
         <div>
+        <div
+        style={{
+          position: 'absolute',
+          left: cursorPosition.x,
+          top: cursorPosition.y,
+          width: 20,
+          height: 20,
+          backgroundColor: 'red',
+          borderRadius: '50%',
+        }}
+      ></div>
           <Tray
             editor={editor}
             color={color}

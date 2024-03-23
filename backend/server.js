@@ -14,10 +14,21 @@ const PORT = process.env.PORT || 4001;
 
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
-  
 
-  socket.on('disconnect', () => {
+
+  socket.on('cursor', (data) => {
+    console.log('Cursor position:', data);
+    // Broadcast cursor position to all connected clients except the sender
+    socket.broadcast.emit('cursor', data);
+  });
+
+    socket.on('realtimeObject', (data) => {
+        console.log('Realtime object:', data);
+        // Broadcast realtime object to all connected clients except the sender
+        socket.broadcast.emit('realtimeObject', data);
+    });
+
+  socket.on('disconnect', () => {   
     console.log('A user disconnected');
   });
 });

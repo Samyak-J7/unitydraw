@@ -44,6 +44,7 @@ const Canvas = () => {
       setCursorPosition(data);
     });
 
+    // to receive realtime object from other clients
     socket.on("realtimeObject", (data) => {
       const receivedObjectsData = JSON.parse(data);
       const receivedObjects = receivedObjectsData.map((objData) => {
@@ -59,7 +60,14 @@ const Canvas = () => {
             obj = new fabric.Path(objData);
             break;
           case "line":
-            obj = new fabric.Line(objData);
+            // console.log("line obj", [objData.x1, objData.y1, objData.x2, objData.y2])
+            obj = new fabric.Line(
+              [objData.x1, objData.y1, objData.x2, objData.y2],
+              {
+                ...objData,
+              }
+            );
+            // console.log(obj)
             break;
           // Add more cases for other types if needed
           default:
@@ -82,43 +90,31 @@ const Canvas = () => {
     let isIdMatched = false;
     if (update && editor && realtimeObject) {
       editor.canvas.getObjects().forEach((obj) => {
-        if (realtimeObject[0].id === obj.id) {
-          isIdMatched = true;
-          // console.log(realtimeObject[0], "realtimeObject[0]")
-          // console.log(obj , "obj")
-          obj.set({
-            left: realtimeObject[0].left,
-            top: realtimeObject[0].top,
-            angle: realtimeObject[0].angle,
-            width: realtimeObject[0].width,
-            height: realtimeObject[0].height,
-            scaleX: realtimeObject[0].scaleX,
-            scaleY: realtimeObject[0].scaleY,
-            fill: realtimeObject[0].fill,
-            backgroundColor: realtimeObject[0].backgroundColor,
-            radius: realtimeObject[0].radius,
-            strokeWidth: realtimeObject[0].strokeWidth,
-            stroke: realtimeObject[0].stroke,
-            opacity: realtimeObject[0].opacity,
-            
+        realtimeObject.forEach((realtimeObject) => {
+          if (realtimeObject.id === obj.id) {
+            isIdMatched = true;
+            obj.set({
+              ...realtimeObject,
+            });
+
+            obj.setCoords(); // Update object coordinates
+
+            editor.canvas.renderAll();
+          }
         });
-
-        obj.setCoords(); // Update object coordinates
-
-          editor.canvas.renderAll();
-        }
       });
 
       if (!isIdMatched) {
         const obj = realtimeObject[0];
-        //console.log(obj)
-        let newObject;
-        switch (obj.type) {
+        // console.log("rt obj",realtimeObject[0])
+        let newObject = obj;
+        newObject.id = obj.id;
+        console.log("old obj ", obj);
+        console.log("new obj ", newObject);
+        /* switch (obj.type) {
           case "circle":
             newObject = new fabric.Circle(obj);
             newObject.id = obj.id;
-            console.log("obj", obj);
-            console.log("new ", newObject);
             break;
           case "rect":
             newObject = new fabric.Rect(obj);
@@ -129,12 +125,19 @@ const Canvas = () => {
             newObject.id = obj.id;
             break;
           case "line":
-            newObject = new fabric.Line(obj);
+            console.log("old object ",obj)
+            console.log("obj coordinate ", [obj.x1, obj.y1, obj.x2, obj.y2]);
+            const { x1, y1, x2, y2, ...otherProps } = obj;
+            newObject = new fabric.Line([x1, y1, x2, y2], {
+              ...otherProps,
+            });
             newObject.id = obj.id;
+            
+            console.log("new ", newObject);
             break;
           default:
             return;
-        }
+        } */
         editor.canvas.add(newObject);
       }
     }
@@ -264,8 +267,7 @@ const Canvas = () => {
           height: 20,
           backgroundColor: "red",
           borderRadius: "50%",
-        }}
-      ></div>
+        }}></div>
       <Tray
         editor={editor}
         color={color}

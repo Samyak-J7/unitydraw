@@ -1,4 +1,5 @@
 // repeat function is used to remove the event listener from the canvas and set the isDrawingMode to false.
+import { v4 as uuidv4 } from 'uuid';
 const repeat = (canvas) => {
   canvas.off("mouse:down");
   canvas.off("mouse:move");
@@ -30,6 +31,7 @@ const onAddCircle = (editor, color, stroke, bgColor , completed) => {
       stroke: color,
       strokeWidth: stroke,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
+      id: uuidv4(),
       // shadow:{
       //   color: 'red', // Shadow color
       //   blur: 0,                 // Shadow blur
@@ -71,6 +73,7 @@ const onAddRectangle = (editor, color, stroke, bgColor,completed) => {
       width: 50,
       height: 50,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
+      id: uuidv4(),
     });
     canvas.add(rect);
     canvas.setActiveObject(rect);
@@ -104,6 +107,7 @@ const addLine = (editor, color, stroke , bgColor,completed) => {
       strokeWidth: stroke,
       stroke: color,
       fill:bgColor,
+      id: uuidv4(),
     });
     canvas.add(line);
     canvas.setActiveObject(line);
@@ -138,6 +142,7 @@ const onAddText = (editor, color, stroke,bgColor,completed) => {
       stroke: color,
       fill:bgColor,
       textAlign: "center",
+      id: uuidv4(),
     });
     canvas.add(text);
     canvas.setActiveObject(text);
@@ -232,6 +237,7 @@ const arrow = (editor, color, stroke, bgColor,completed) => {
       strokeWidth: stroke,
       stroke: color,
       selectable: false,
+      id: uuidv4(),
     });
 
     const arrow = new fabric.Triangle({

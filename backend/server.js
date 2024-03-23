@@ -17,7 +17,7 @@ io.on('connection', (socket) => {
 
 
   socket.on('cursor', (data) => {
-    console.log('Cursor position:', data);
+    
     // Broadcast cursor position to all connected clients except the sender
     socket.broadcast.emit('cursor', data);
   });

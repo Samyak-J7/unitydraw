@@ -154,19 +154,22 @@ const onAddText = (editor, color, stroke,bgColor,completed) => {
   });
   
 };
-
-// paintBrush function is used to set the isDrawingMode to true and set the brush width and color.
-const paintBrush = (editor, color, stroke , bgColor ,completed) => {
+const paintBrush = (editor, color, stroke , bgColor ,completed,isDrawing) => {
   const canvas = editor.canvas;
+  repeat(canvas);
   canvas.defaultCursor = "crosshair";
-  canvas.off("mouse:down");
   canvas.isDrawingMode = true;
   canvas.freeDrawingBrush.width = stroke;
   canvas.freeDrawingBrush.color = color;
+  
+  canvas.on("mouse:down", () => {
+    isDrawing(true);
+  });
   canvas.on("mouse:up", () => {
+    isDrawing(false);
     const json = JSON.stringify(editor.canvas.toJSON());
     localStorage.setItem('canvasState', json);
-  });
+  }); 
 };
 
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.

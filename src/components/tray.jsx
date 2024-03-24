@@ -17,7 +17,7 @@ const Tray = (props) => {
   }
   useEffect(() => {
     if (active.name === "Paintbrush" ) {
-      active.action(props.editor, props.color, props.stroke, props.bgColor );
+      active.action(props.editor, props.color, props.stroke, props.bgColor ,completed , props.isDrawing );
     }
   }, [props.color,props.stroke, props.bgColor]);
 
@@ -25,7 +25,7 @@ const Tray = (props) => {
     tool.action.name === "paintBrush" ? props.handleDrawing(true) : props.handleDrawing(false);
     tool.action.name === "openFilePicker"
       ? tool.action(fileInputRef)
-      : tool.action(props.editor, props.color, props.stroke, props.bgColor,completed );
+      : tool.action(props.editor, props.color, props.stroke, props.bgColor,completed, props.isDrawing );
     setActive(tool);    
   };
 

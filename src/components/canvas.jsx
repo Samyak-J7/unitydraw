@@ -61,10 +61,12 @@ const Canvas = () => {
             break;
           case "path":
             obj = new fabric.Path(`${objData.path}`, {...objData,});
-
             break;
           case "line":
             obj = new fabric.Line([objData.x1, objData.y1, objData.x2, objData.y2],{ ...objData });
+            break;
+          case "textbox":
+            obj = new fabric.Textbox(objData.text, { ...objData });
             break;
           default:
             throw new Error(`Invalid object type: ${objData.type}`);
@@ -89,24 +91,20 @@ const Canvas = () => {
         realtimeObject.forEach((realtimeObject) => {
           if (realtimeObject.id === obj.id) {
             isIdMatched = true;
-            if (realtimeObject.type === "line") {
-              obj.set({
-                x1: realtimeObject.x1,
-                y1: realtimeObject.y1,
-                x2: realtimeObject.x2,
-                y2: realtimeObject.y2,
-                ...realtimeObject,
-              });
-            } else if (realtimeObject.type === "path") {
-              obj.set({
-                path: realtimeObject.path,
-                ...realtimeObject,
-              });
-              console.log("path", obj);
-            } else
-              obj.set({
-                ...realtimeObject,
-              });
+            switch (realtimeObject.type) {
+              case "line":
+                obj.set({ x1: realtimeObject.x1,y1: realtimeObject.y1,x2: realtimeObject.x2,y2: realtimeObject.y2, ...realtimeObject, });
+                break;
+              case "path":
+                obj.set({ path: realtimeObject.path, ...realtimeObject,});
+                break;
+              case "textbox":
+                obj.set({text: realtimeObject.text,...realtimeObject,});
+                break;
+              default:
+                obj.set({...realtimeObject,});
+                break;
+            }
             obj.setCoords(); // Update object coordinates
             editor.canvas.renderAll();
           }

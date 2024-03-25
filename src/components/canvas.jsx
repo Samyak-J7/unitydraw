@@ -8,7 +8,6 @@ import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth, useUser } from "@clerk/nextjs";
 
-
 const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
@@ -25,7 +24,7 @@ const Canvas = (props) => {
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
- const {userId} = useAuth();
+  const { userId } = useAuth();
   //set socket connection and emit cursor and realtime object
 
   useEffect(() => {

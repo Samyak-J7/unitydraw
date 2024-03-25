@@ -14,7 +14,6 @@ const PORT = process.env.PORT || 4001;
 let rooms = {};
 
 io.on("connection", (socket) => {
-
   //create room
   socket.on("createRoom", (userid) => {
     const roomName = uuidv4(); // Generate a unique room ID
@@ -30,7 +29,6 @@ io.on("connection", (socket) => {
     // Broadcast room creation to all connected clients
     socket.emit("roomCreated", { roomName, role: "editor" });
   });
-
 
   //join room
   socket.on("joinRoom", (roomId, userid) => {
@@ -62,7 +60,6 @@ io.on("connection", (socket) => {
     if (!roomId || !rooms[roomId]) {
       return;
     }
-    
 
     // Broadcast cursor position to all connected clients except the sender
     socket.to(roomId).emit("cursor", data);
@@ -78,10 +75,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    
     console.log("A user disconnected");
   });
-
 });
 
 server.listen(PORT, () => {

@@ -6,7 +6,10 @@ import Tray from "./tray";
 import Settings from "./settings";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
-const Canvas = () => {
+import { useAuth, useUser } from "@clerk/nextjs";
+
+
+const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
   const [stroke, setStroke] = useState(1);
@@ -19,18 +22,24 @@ const Canvas = () => {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [realtimeObject, setRealtimeObject] = useState(null);
   const [update, setUpdate] = useState(false);
-  const [enableConnection, setEnableConnection] = useState(true);
-
+  const [enableConnection, setEnableConnection] = useState(
+    props.roomId ? true : false
+  );
+ const {userId} = useAuth();
   //set socket connection and emit cursor and realtime object
+
   useEffect(() => {
     if (!enableConnection) return;
     try {
       const socket = io("http://localhost:4001");
-
+      socket.emit("joinRoom", props.roomId, userId);
+      socket.on("userJoined", (data) => {
+        console.log("User joined:", data);
+      });
       const handleMouseMove = (event) => {
         const { clientX: x, clientY: y } = event;
         setCursorPosition({ x, y });
-        socket.emit("cursor", { x, y });
+        socket.emit("cursor", { x, y }, props.roomId);
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
@@ -40,7 +49,12 @@ const Canvas = () => {
               id: obj.id, // Include the id property
             };
           });
-          socket.emit("realtimeObject", JSON.stringify(activeObjectsData));
+
+          socket.emit(
+            "realtimeObject",
+            JSON.stringify(activeObjectsData),
+            props.roomId
+          );
         }
       };
 
@@ -53,7 +67,6 @@ const Canvas = () => {
       // to receive realtime object from other clients
       socket.on("realtimeObject", (data) => {
         const receivedObjectsData = JSON.parse(data);
-        console.log(data);
         const receivedObjects = receivedObjectsData.map((objData) => {
           let obj;
           switch (objData.type) {
@@ -98,6 +111,7 @@ const Canvas = () => {
   };
 
   useEffect(() => {
+    if (!enableConnection) return;
     const socket = io("http://localhost:4001");
     if (isPainting && !Drawing) {
       const objects = editor?.canvas?.getObjects() || [];
@@ -120,7 +134,7 @@ const Canvas = () => {
           });
         console.log(pathdata);
         if (pathdata.length > 0) {
-          socket.emit("realtimeObject", JSON.stringify(pathdata));
+          socket.emit("realtimeObject", JSON.stringify(pathdata), props.roomId);
         }
       }
     }
@@ -130,8 +144,6 @@ const Canvas = () => {
   useEffect(() => {
     let isIdMatched = false;
     if (update && editor && realtimeObject) {
-      console.log(realtimeObject);
-      console.log(editor.canvas.getObjects());
       editor.canvas.getObjects().forEach((obj) => {
         realtimeObject.forEach((realtimeObject) => {
           if (realtimeObject.id === obj.id) {
@@ -185,23 +197,23 @@ const Canvas = () => {
   }, [update, editor, realtimeObject]);
 
   //load the canvas state from local storage
-  useEffect(() => {
-    const savedCanvasState = localStorage.getItem("canvasState");
-    if (editor && savedCanvasState) {
-      const json = JSON.parse(savedCanvasState);
-      editor.canvas.loadFromJSON(json, () => {
-        editor.canvas.renderAll();
-      });
-    }
-  }, [editor]);
+  // useEffect(() => {
+  //   const savedCanvasState = localStorage.getItem("canvasState");
+  //   if (editor && savedCanvasState) {
+  //     const json = JSON.parse(savedCanvasState);
+  //     editor.canvas.loadFromJSON(json, () => {
+  //       editor.canvas.renderAll();
+  //     });
+  //   }
+  // }, [editor]);
 
-  //save the canvas state to local storage
-  useEffect(() => {
-    if (editor) {
-      const json = JSON.stringify(editor.canvas.toJSON());
-      localStorage.setItem("canvasState", json);
-    }
-  }, [selectedObjects, isPainting, color, stroke, bgColor, opacity]);
+  // //save the canvas state to local storage
+  // useEffect(() => {
+  //   if (editor) {
+  //     const json = JSON.stringify(editor.canvas.toJSON());
+  //     localStorage.setItem("canvasState", json);
+  //   }
+  // }, [selectedObjects, isPainting, color, stroke, bgColor, opacity]);
 
   //add event listener for keyboard events
   useEffect(() => {

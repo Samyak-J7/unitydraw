@@ -167,8 +167,8 @@ const paintBrush = (editor, color, stroke , bgColor ,completed,isDrawing) => {
   });
   canvas.on("mouse:up", () => {
     isDrawing(false);
-    const json = JSON.stringify(editor.canvas.toJSON());
-    localStorage.setItem('canvasState', json);
+    // const json = JSON.stringify(editor.canvas.toJSON());
+    // localStorage.setItem('canvasState', json);
   }); 
 };
 

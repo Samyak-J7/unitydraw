@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { UserButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
 import Canvas from "@/components/canvas";
+import { Share } from "@/components/share";
 
 export default function Page({ params }) {
   const { toast } = useToast();
@@ -38,12 +37,9 @@ export default function Page({ params }) {
 
   return (
     <div>
-      <div className="px-8 py-2 z-10 flex justify-between w-full absolute top-0 h-20">
-        <UserButton />
-        <Button className="shadow-2xl bg-white text-black border-2 hover:bg-slate-300 hover:border-gray-600">
-          <Users className="m-1" size={20} />
-          Invite members
-        </Button>
+      <div className="px-8 py-2 flex justify-between w-full absolute top-0 my-1">
+        <span className="z-10"><UserButton /></span>
+        <span className="z-10"><Share link={`http://localhost:3000/draw/${params.id}`} /></span>
       </div>
       <Canvas roomId={params.id} />
     </div>

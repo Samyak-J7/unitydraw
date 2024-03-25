@@ -39,15 +39,15 @@ const Draw = () => {
 
   return (
     <div>
-      <div className=" px-8 py-2 z-10 flex  justify-between w-full absolute top-0 h-20">
-        <UserButton />
-        <Button
+      <div className="px-8 py-2 flex justify-between w-full absolute top-0 my-1">
+      <span className="z-10"><UserButton /></span>
+      <span className="z-10"><Button
           className=" shadow-2xl bg-white text-black border-2 hover:bg-slate-300 hover:border-gray-600"
           onClick={sharecanvas}
         >
           <Users className="m-1" size={20} />
           Make a Team
-        </Button>
+        </Button></span>
       </div>
 
       <Canvas username={userId} />

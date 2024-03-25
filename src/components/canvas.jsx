@@ -335,7 +335,7 @@ const Canvas = (props) => {
         handleDrawing={handleDrawing}
         isDrawing={isDrawing}
       />
-      <div className="flex  bg-slate-100 gap-2 absolute bottom-0 z-10 m-4 items-center border-gray-300 rounded-lg border-2 shadow-2xl ">
+      <div className="flex  bg-slate-100 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center border-gray-300 rounded-lg border-2 shadow-2xl ">
         <button onClick={zoomIn} className="hover:bg-gray-300 p-4 rounded-md">
           <ZoomIn />
         </button>

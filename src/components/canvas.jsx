@@ -23,15 +23,15 @@ const Canvas = (props) => {
   const [update, setUpdate] = useState(false);
   const { userId } = useAuth();
 
-
   // IF ROOM ID RECEIVED SET CONNECTION TRUE TO ESTABLISH WEBSOCKETS otherwise false and just load canvas skip websockets as single user
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
-  ); 
+  );
 
   useEffect(() => {
-    if (!enableConnection) return;  // no room id that means single user so load normal canvas
-    try {                             // try to establish websockets
+    if (!enableConnection) return; // no room id that means single user so load normal canvas
+    try {
+      // try to establish websockets
       const socket = io("http://localhost:4001");
 
       // attach listener event for joining
@@ -44,12 +44,12 @@ const Canvas = (props) => {
       // attach listener event for joining
       socket.on("roomJoined", (data) => {
         console.log("User joined:", data);
-        // toast to notify everyone that a user joined   
+        // toast to notify everyone that a user joined
       });
 
       // join room is the fist task
       socket.emit("joinRoom", props.roomId, userId);
-      
+
       const handleMouseMove = (event) => {
         const { clientX: x, clientY: y } = event;
         setCursorPosition({ x, y });
@@ -59,8 +59,8 @@ const Canvas = (props) => {
         if (activeObjects.length > 0) {
           const activeObjectsData = activeObjects.map((obj) => {
             return {
-              ...obj.toObject(), 
-              id: obj.id, 
+              ...obj.toObject(),
+              id: obj.id,
             };
           });
 
@@ -125,8 +125,7 @@ const Canvas = (props) => {
     setDrawing(val);
   };
 
-
-  //send paintbrush realtime data 
+  //send paintbrush realtime data
   useEffect(() => {
     if (!enableConnection) return;
     const socket = io("http://localhost:4001");
@@ -223,13 +222,13 @@ const Canvas = (props) => {
   //   }
   // }, [editor]);
 
-  // //save the canvas state to local storage
-  // useEffect(() => {
-  //   if (editor) {
-  //     const json = JSON.stringify(editor.canvas.toJSON());
-  //     localStorage.setItem("canvasState", json);
-  //   }
-  // }, [selectedObjects, isPainting, color, stroke, bgColor, opacity]);
+  //save the canvas state to local storage
+  useEffect(() => {
+    if (editor) {
+      const json = JSON.stringify(editor.canvas.toJSON());
+      localStorage.setItem("canvasState", json);
+    }
+  }, [selectedObjects, Drawing, color, stroke, bgColor, opacity]);
 
   //add event listener for keyboard events
   useEffect(() => {
@@ -341,8 +340,7 @@ const Canvas = (props) => {
           height: 20,
           backgroundColor: "red",
           borderRadius: "50%",
-        }}
-      ></div>
+        }}></div>
       <Tray
         editor={editor}
         color={color}

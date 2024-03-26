@@ -2,16 +2,28 @@
 import Canvas from "@/components/canvas";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
+import { saveCanvas } from "@/lib/actions/canvas.action";
+import { getUserById } from "@/lib/actions/user.action";
 
 const Draw = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [roomId, setRoomId] = useState(null);
+  const { userId } = useAuth();
+  const [ user, setUser ] = useState({});
+
+  useEffect(() => {
+    if (!userId) return;
+    getUserById({ clerkId: userId })
+      .then((founduser) => setUser(JSON.parse(founduser)))
+      .catch((error) => console.error(error));
+    
+  }, [userId]);
 
   //create team on button click
   const createTeam = () => {
@@ -34,6 +46,8 @@ const Draw = () => {
 
   //save button click
   const save = () => {
+    const savedCanvasState = localStorage.getItem("canvasState");
+    saveCanvas({ canvasName: "Untitled", canvasData: JSON.parse(savedCanvasState), createdBy: user, canvasId: uuidv4()});
     toast({
       duration: 1500,
       title: "Saved",
@@ -47,8 +61,6 @@ const Draw = () => {
           <UserButton />
         </span>
 
-        
-        
         <span className="z-10 flex gap-2">     
         <Button
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"

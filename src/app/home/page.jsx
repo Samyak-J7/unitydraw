@@ -1,20 +1,27 @@
 "use client";
+import { fetchAllCanvas } from "@/lib/actions/canvas.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { useAuth } from "@clerk/nextjs";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Home() {
   const { userId } = useAuth();
-  console.log(userId);
+  const [ user, setUser ] = useState({});
 
-  useEffect(async () => {
-    if (!userId) return;
+  useEffect(() => {
     if (!userId) return;
     getUserById({ clerkId: userId })
-        .then(foundUser => console.log(foundUser))
-        .catch(error => console.error(error));
-    // console.log(foundUser);
-  }, [userId]);
+      .then((founduser) => setUser(JSON.parse(founduser)))
+      .catch((error) => console.error(error));
+  }, []);
 
-  return <div>Home</div>;
+  useEffect(() => {
+    if (!user) return;
+    console.log(user)
+    fetchAllCanvas(user)
+      .then((canvas) => console.log(canvas))
+      .catch((error) => console.error(error));
+  }, [user])
+
+  return <div>Home of {user.username}</div>;
 }

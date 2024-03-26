@@ -379,7 +379,7 @@ const Canvas = (props) => {
       ) : null}
 
       <FabricJSCanvas
-        className="h-[100vh] bg-gray-100"
+        className="h-[100vh] bg-white"
         onReady={(canvas) => setEditor({ canvas })}
       />
     </div>

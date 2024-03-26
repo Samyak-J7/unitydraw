@@ -3,7 +3,7 @@ import Canvas from "@/components/canvas";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { Users } from "lucide-react";
+import { Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -38,12 +38,22 @@ const Draw = () => {
         <span className="z-10">
           <UserButton />
         </span>
-        <span className="z-10">
+
+        
+        
+        <span className="z-10 flex gap-2">     
+        <Button
+            className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
+           
+          >
+            <Save className="m-1" size={20} /> 
+            Save
+          </Button> 
           <Button
-            className=" shadow-2xl bg-white text-black border-2 hover:bg-slate-300 hover:border-gray-600"
+            className=" shadow-2xl bg-blue-200 text-black border-2 border-blue-500 hover:bg-blue-400 hover:border-gray-600"
             onClick={createTeam}
           >
-            <Users className="m-1" size={20} />
+            <Users className="m-1" size={20} /> 
             Make a Team
           </Button>
         </span>

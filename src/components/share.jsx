@@ -26,7 +26,7 @@ export function Share(props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="shadow-2xl bg-white text-black border-2 hover:bg-slate-300 hover:border-gray-600 p-2">
+        <Button className="shadow-2xl bg-blue-200 text-black border-2 border-blue-500 hover:bg-blue-400 hover:border-gray-600">
           <Users className="m-2" size={20} />
           Invite Members
         </Button>

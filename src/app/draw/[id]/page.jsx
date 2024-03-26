@@ -5,6 +5,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { UserButton } from "@clerk/nextjs";
 import Canvas from "@/components/canvas";
 import { Share } from "@/components/share";
+import { Button } from "@/components/ui/button";
+import { Save } from "lucide-react";
 
 export default function Page({ params }) {
   const { toast } = useToast();
@@ -52,7 +54,14 @@ export default function Page({ params }) {
         <span className="z-10">
           <UserButton />
         </span>
-        <span className="z-10">
+        <span className="z-10 flex gap-2">
+        <Button
+            className="bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
+           
+          >
+            <Save className=" m-1" size={20} /> 
+            Save
+          </Button> 
           <Share link={`http://localhost:3000/draw/${params.id}`} />
         </span>
       </div>

@@ -21,20 +21,35 @@ const Canvas = (props) => {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [realtimeObject, setRealtimeObject] = useState(null);
   const [update, setUpdate] = useState(false);
+  const { userId } = useAuth();
+
+
+  // IF ROOM ID RECEIVED SET CONNECTION TRUE TO ESTABLISH WEBSOCKETS otherwise false and just load canvas skip websockets as single user
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
-  );
-  const { userId } = useAuth();
-  //set socket connection and emit cursor and realtime object
+  ); 
 
   useEffect(() => {
-    if (!enableConnection) return;
-    try {
+    if (!enableConnection) return;  // no room id that means single user so load normal canvas
+    try {                             // try to establish websockets
       const socket = io("http://localhost:4001");
-      socket.emit("joinRoom", props.roomId, userId);
+
+      // attach listener event for joining
       socket.on("userJoined", (data) => {
-        console.log("User joined:", data);
+        console.log("You joined:", data);
+        //confirmation to the user that he joined succcessfully
+        //add user to room users if not exist
       });
+
+      // attach listener event for joining
+      socket.on("roomJoined", (data) => {
+        console.log("User joined:", data);
+        // toast to notify everyone that a user joined   
+      });
+
+      // join room is the fist task
+      socket.emit("joinRoom", props.roomId, userId);
+      
       const handleMouseMove = (event) => {
         const { clientX: x, clientY: y } = event;
         setCursorPosition({ x, y });
@@ -44,8 +59,8 @@ const Canvas = (props) => {
         if (activeObjects.length > 0) {
           const activeObjectsData = activeObjects.map((obj) => {
             return {
-              ...obj.toObject(), // Convert Fabric.js object to plain JavaScript object
-              id: obj.id, // Include the id property
+              ...obj.toObject(), 
+              id: obj.id, 
             };
           });
 
@@ -102,6 +117,7 @@ const Canvas = (props) => {
       };
     } catch (error) {
       console.log(" Error in setting up socket connection");
+      // connection with server failed redirect to draw toast try again later server error
     }
   }, [editor]);
 
@@ -109,6 +125,8 @@ const Canvas = (props) => {
     setDrawing(val);
   };
 
+
+  //send paintbrush realtime data 
   useEffect(() => {
     if (!enableConnection) return;
     const socket = io("http://localhost:4001");
@@ -131,7 +149,7 @@ const Canvas = (props) => {
               ...obj.toObject(),
             };
           });
-        console.log(pathdata);
+
         if (pathdata.length > 0) {
           socket.emit("realtimeObject", JSON.stringify(pathdata), props.roomId);
         }
@@ -139,7 +157,7 @@ const Canvas = (props) => {
     }
   }, [Drawing]);
 
-  //update the object in the canvas
+  //update the object in the canvas if realtime objects changes
   useEffect(() => {
     let isIdMatched = false;
     if (update && editor && realtimeObject) {
@@ -178,7 +196,6 @@ const Canvas = (props) => {
       // Add new object to the canvas if id is not matched
       if (!isIdMatched) {
         if (realtimeObject[0].type === "path" && realtimeObject.length > 0) {
-          console.log(realtimeObject);
           let newObject = realtimeObject[realtimeObject.length - 1];
           newObject.id = realtimeObject[realtimeObject.length - 1].id;
           editor.canvas.add(newObject);

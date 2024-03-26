@@ -8,18 +8,25 @@ import { Share } from "@/components/share";
 
 export default function Page({ params }) {
   const { toast } = useToast();
-  const roomId = ["edf66848-5da4-40ff-bf68-922d18a3c24c", "ll"];
+
+  //VERIFY ROOM ID (params.id exists in database)
+
   const isValidRoomId = true;
+
   const [showToast, setShowToast] = useState(false); // State to control when to show toast
   const router = useRouter();
 
+  // ******************* RUN WHEN ROOM ID IS NOT VALID ***************  start
+
+  // call toast and reroute
   useEffect(() => {
     if (!isValidRoomId) {
-      setShowToast(true); // Set state to true to show the toast
+      setShowToast(true);
       router.push("/draw");
     }
-  }, []); // Empty dependency array ensures this effect runs only once, like componentDidMount
+  }, []);
 
+  //show toast
   useEffect(() => {
     if (showToast) {
       toast({
@@ -29,17 +36,25 @@ export default function Page({ params }) {
         description: "Invalid Url or Server Error. Please try again.",
       });
     }
-  }, [showToast]); // Effect to display toast when showToast state changes
+  }, [showToast]);
 
+  // Prevent rendering if room is invalid
   if (!isValidRoomId) {
-    return null; // Prevent rendering if room is invalid
+    return null;
   }
 
+  // *******************************************************************  stop
+
+  // IF ROOM ID VERIFIED LOAD THE CANVAS AND SEND ROOM ID TO CONNECT
   return (
     <div>
       <div className="px-8 py-2 flex justify-between w-full absolute top-0 my-1">
-        <span className="z-10"><UserButton /></span>
-        <span className="z-10"><Share link={`http://localhost:3000/draw/${params.id}`} /></span>
+        <span className="z-10">
+          <UserButton />
+        </span>
+        <span className="z-10">
+          <Share link={`http://localhost:3000/draw/${params.id}`} />
+        </span>
       </div>
       <Canvas roomId={params.id} />
     </div>

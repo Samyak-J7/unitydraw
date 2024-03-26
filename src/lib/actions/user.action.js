@@ -11,3 +11,13 @@ export async function createUser(user){
         console.log(error);
     }
 }
+
+export async function getUserById(clerkId){
+    try {
+        await connectDB();
+        const user = await User.findOne(clerkId);
+        return JSON.stringify(user);
+    } catch (error) {
+        console.log(error);
+    }
+}

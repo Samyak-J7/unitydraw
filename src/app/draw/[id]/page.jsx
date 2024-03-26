@@ -71,7 +71,7 @@ export default function Page({ params }) {
             <Save className=" m-1" size={20} /> 
             Save
           </Button> 
-          <Share link={`http://localhost:3000/draw/${params.id}`} />
+          <Share link={`${process.env.DOMAIN_NAME}/draw/${params.id}`} />
         </span>
       </div>
       <Canvas roomId={params.id} />

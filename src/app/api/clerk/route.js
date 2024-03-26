@@ -1,7 +1,7 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { createUser } from '@/app/actions/action'
- 
+import { NextResponse } from 'next/server'
 export async function POST(req) {
  
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
@@ -62,7 +62,8 @@ export async function POST(req) {
       lastName: last_name,
     };
 
-    await createUser(user);
+    const newuser = await createUser(user);
+    return NextResponse.json({ message: "OK", user: newuser });
 }
  
 }

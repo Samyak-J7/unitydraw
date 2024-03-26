@@ -66,7 +66,7 @@ export default function Page({ params }) {
         <span className="z-10 flex gap-2">
         <Button
             className="bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
-            onclick={save}
+            onClick={save}
           >
             <Save className=" m-1" size={20} /> 
             Save

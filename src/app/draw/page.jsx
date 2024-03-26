@@ -32,6 +32,14 @@ const Draw = () => {
     }
   }, [roomId]);
 
+  //save button click
+  const save = () => {
+    toast({
+      duration: 1500,
+      title: "Saved",
+      description: "Your Canvas has been saved.",
+    });
+  };
   return (
     <div>
       <div className="px-8 py-2 flex justify-between w-full absolute top-0 my-1">
@@ -44,7 +52,7 @@ const Draw = () => {
         <span className="z-10 flex gap-2">     
         <Button
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
-           
+            onClick={save}
           >
             <Save className="m-1" size={20} /> 
             Save

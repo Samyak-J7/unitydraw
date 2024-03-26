@@ -18,6 +18,15 @@ export default function Page({ params }) {
   const [showToast, setShowToast] = useState(false); // State to control when to show toast
   const router = useRouter();
 
+  //save button click
+  const save = () => {
+    toast({
+      duration: 1500,
+      title: "Saved",
+      description: "Your Canvas has been saved.",
+    });
+  };
+
   // ******************* RUN WHEN ROOM ID IS NOT VALID ***************  start
 
   // call toast and reroute
@@ -57,7 +66,7 @@ export default function Page({ params }) {
         <span className="z-10 flex gap-2">
         <Button
             className="bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
-           
+            onclick={save}
           >
             <Save className=" m-1" size={20} /> 
             Save

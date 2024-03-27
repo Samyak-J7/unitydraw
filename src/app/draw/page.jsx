@@ -1,7 +1,7 @@
 "use client";
 import Canvas from "@/components/canvas";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,14 +15,23 @@ const Draw = () => {
   const router = useRouter();
   const [roomId, setRoomId] = useState(null);
   const { userId } = useAuth();
-  const [ user, setUser ] = useState({});
+  const [user, setUser] = useState({});
+  const searchParams = useSearchParams();
+  const [canvasData, setCanvasData] = useState(null);
+  useEffect(() => {
+    const canvasId = `${searchParams}`.slice(0, -1);
+    if (canvasId && user._id) {
+
+      // retrieve canvas data from database also match userid
+    }
+  }, [user._id]);
+
 
   useEffect(() => {
     if (!userId) return;
     getUserById({ clerkId: userId })
       .then((founduser) => setUser(JSON.parse(founduser)))
       .catch((error) => console.error(error));
-    
   }, [userId]);
 
   //create team on button click
@@ -47,7 +56,12 @@ const Draw = () => {
   //save button click
   const save = () => {
     const savedCanvasState = localStorage.getItem("canvasState");
-    saveCanvas({ canvasName: "Untitled", canvasData: JSON.parse(savedCanvasState), createdBy: user, canvasId: uuidv4()});
+    saveCanvas({
+      canvasName: "Untitled",
+      canvasData: JSON.parse(savedCanvasState),
+      createdBy: user,
+      canvasId: uuidv4(),
+    });
     toast({
       duration: 1500,
       title: "Saved",
@@ -61,25 +75,31 @@ const Draw = () => {
           <UserButton />
         </span>
 
-        <span className="z-10 flex gap-2">     
-        <Button
+        <span className="z-10 flex gap-2">
+          <Button
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
             onClick={save}
           >
-            <Save className="m-1" size={20} /> 
+            <Save className="m-1" size={20} />
             Save
-          </Button> 
+          </Button>
           <Button
             className=" shadow-2xl bg-blue-200 text-black border-2 border-blue-500 hover:bg-blue-400 hover:border-gray-600"
             onClick={createTeam}
           >
-            <Users className="m-1" size={20} /> 
+            <Users className="m-1" size={20} />
             Make a Team
           </Button>
         </span>
       </div>
 
-      <Canvas />
+      {canvasData !== null ? (
+        <Canvas data={canvasData} />
+      ) : (
+        <>
+        <Canvas />
+        </>
+      )}
     </div>
   );
 };

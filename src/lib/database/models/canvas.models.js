@@ -18,7 +18,9 @@ const CanvasSchema = new Schema({
         type: Object,
         required: true,
     },
-});
+    
+}, { timestamps: true}
+);
 
 const Canvas = models?.Canvas || model("Canvas", CanvasSchema);
 

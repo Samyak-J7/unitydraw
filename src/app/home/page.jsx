@@ -1,4 +1,5 @@
 "use client";
+import { useToast } from "@/components/ui/use-toast";
 import { fetchAllCanvas } from "@/lib/actions/canvas.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { useAuth } from "@clerk/nextjs";
@@ -7,6 +8,7 @@ import React, { useEffect, useState } from "react";
 
 
 export default function Home() {
+  const { toast } = useToast();
   const { userId } = useAuth();
   const [user, setUser] = useState({});
   const [allCanvas, setAllCanvas] = useState([]);
@@ -15,16 +17,30 @@ export default function Home() {
     if (!userId) return;
     getUserById({ clerkId: userId })
       .then((founduser) => setUser(JSON.parse(founduser)))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        toast({
+          duration: 2000,
+          title: "Unauthorized User",
+          description: "Please Refresh the page.",
+        });
+      
+      });
   }, []);
 
   useEffect(() => {
     if (!user || !user._id) return;
     fetchAllCanvas(user._id)
       .then((canvas) => setAllCanvas(canvas))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        toast({
+          duration: 2000,
+          title: "Server Error",
+          description: "Please Refresh the page.",
+        });
+      });
   }, [user._id]);
 
+  //load canvas on click
   const open = (id) => {
     router.push(`/draw?${id}` );
   };

@@ -5,9 +5,17 @@ import Canvas from "@/lib/database/models/canvas.models";
 export async function saveCanvas(canvas) {
   try {
     await connectDB();
+
+    // const existingCanvas = await Canvas.findOne({ canvasId: canvas.canvasId });
+    // if (existingCanvas) {
+    //   await Canvas.updateOne({ canvasId: canvas.canvasId }, canvas);
+    // } else {
+    //   await Canvas.create(canvas);
+    // }
+
     await Canvas.create(canvas);
   } catch (error) {
-    console.log(error);
+    throw new Error(error);
   }
 }
 
@@ -32,6 +40,16 @@ export async function fetchAllCanvas(user) {
     }));
     return plainCanvas;
   } catch (error) {
-    console.log(error);
+   throw new Error(error);
+  }
+}
+
+export async function fetchCanvasById(canvasId, userId) {
+  try {
+    await connectDB();
+    const data = await Canvas.findOne({ canvasId , createdBy: userId });
+    return data.canvasData;
+  } catch (error) {
+    throw new Error(error);
   }
 }

@@ -31,9 +31,7 @@ const Canvas = (props) => {
 
   useEffect(() => {
     if (editor && props.data) {
-      console.log("props.data", props.data)
-          const json = JSON.parse(props.data);
-          editor.canvas.loadFromJSON(json, () => {
+          editor.canvas.loadFromJSON(props.data, () => {
             editor.canvas.renderAll();
           });
         }

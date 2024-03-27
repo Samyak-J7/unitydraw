@@ -8,7 +8,7 @@ export async function createUser(user){
         const newUser = await User.create(user);
 
     } catch (error) {
-        console.log(error);
+        throw new Error(error);
     }
 }
 
@@ -18,6 +18,6 @@ export async function getUserById(clerkId){
         const user = await User.findOne(clerkId);
         return JSON.stringify(user);
     } catch (error) {
-        console.log(error);
+        throw new Error(error);
     }
 }

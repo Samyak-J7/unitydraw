@@ -7,8 +7,9 @@ import { Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
-import { saveCanvas } from "@/lib/actions/canvas.action";
+import { fetchCanvasById, saveCanvas } from "@/lib/actions/canvas.action";
 import { getUserById } from "@/lib/actions/user.action";
+import { set } from "mongoose";
 
 const Draw = () => {
   const { toast } = useToast();
@@ -21,8 +22,16 @@ const Draw = () => {
   useEffect(() => {
     const canvasId = `${searchParams}`.slice(0, -1);
     if (canvasId && user._id) {
-
-      // retrieve canvas data from database also match userid
+        fetchCanvasById(canvasId, user._id)
+        .then((data) => setCanvasData(data))
+        .catch((error) =>{
+          toast({
+            duration: 2000,
+            title: "Error",
+            description: "Canvas not found.",
+          });
+          router.push("/draw");
+        });
     }
   }, [user._id]);
 
@@ -61,12 +70,21 @@ const Draw = () => {
       canvasData: JSON.parse(savedCanvasState),
       createdBy: user,
       canvasId: uuidv4(),
-    });
+    })
+    .then(() => {
     toast({
-      duration: 1500,
+      duration: 2000,
       title: "Saved",
       description: "Your Canvas has been saved.",
+    })})
+    .catch((error) => {
+      toast({
+        duration: 2000,
+        title: "Error",
+        description: "Canvas not saved.",
+      });
     });
+
   };
   return (
     <div>

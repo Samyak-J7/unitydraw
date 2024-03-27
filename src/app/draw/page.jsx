@@ -64,12 +64,13 @@ const Draw = () => {
 
   //save button click
   const save = () => {
+    const canvasId = `${searchParams}`.slice(0, -1);
     const savedCanvasState = localStorage.getItem("canvasState");
     saveCanvas({
       canvasName: "Untitled",
       canvasData: JSON.parse(savedCanvasState),
       createdBy: user,
-      canvasId: uuidv4(),
+      canvasId: canvasId? canvasId : uuidv4(),
     })
     .then(() => {
     toast({

@@ -6,14 +6,12 @@ export async function saveCanvas(canvas) {
   try {
     await connectDB();
 
-    // const existingCanvas = await Canvas.findOne({ canvasId: canvas.canvasId });
-    // if (existingCanvas) {
-    //   await Canvas.updateOne({ canvasId: canvas.canvasId }, canvas);
-    // } else {
-    //   await Canvas.create(canvas);
-    // }
-
-    await Canvas.create(canvas);
+    const existingCanvas = await Canvas.findOne({ canvasId: canvas.canvasId });
+    if (existingCanvas) {
+      await Canvas.updateOne({ canvasId: canvas.canvasId }, { $set: { canvasData: canvas.canvasData } });
+    } else {
+      await Canvas.create(canvas);
+    }
   } catch (error) {
     throw new Error(error);
   }

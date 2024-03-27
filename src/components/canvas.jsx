@@ -217,24 +217,13 @@ const Canvas = (props) => {
     }
   }, [update, editor, realtimeObject]);
 
-  //load the canvas state from local storage
-  // useEffect(() => {
-  //   const savedCanvasState = localStorage.getItem("canvasState");
-  //   if (editor && savedCanvasState) {
-  //     const json = JSON.parse(savedCanvasState);
-  //     editor.canvas.loadFromJSON(json, () => {
-  //       editor.canvas.renderAll();
-  //     });
-  //   }
-  // }, [editor]);
-
   //save the canvas state to local storage
   useEffect(() => {
     if (editor) {
       const json = JSON.stringify(editor.canvas.toJSON());
       localStorage.setItem("canvasState", json);
     }
-  }, [selectedObjects, Drawing, color, stroke, bgColor, opacity]);
+  }, [editor,selectedObjects, Drawing, color, stroke, bgColor, opacity]);
 
   //add event listener for keyboard events
   useEffect(() => {

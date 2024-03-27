@@ -20,8 +20,8 @@ export default function Home() {
       .catch((error) => {
         toast({
           duration: 2000,
-          title: "Unauthorized User",
-          description: "Please Refresh the page.",
+          title: "Cannot find User",
+          description: "Please Login or Refresh the page.",
         });
       
       });

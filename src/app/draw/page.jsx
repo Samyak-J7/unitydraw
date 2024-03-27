@@ -40,7 +40,14 @@ const Draw = () => {
     if (!userId) return;
     getUserById({ clerkId: userId })
       .then((founduser) => setUser(JSON.parse(founduser)))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        toast({
+          duration: 2000,
+          title: "Cannot find User",
+          description: "Please Login or Refresh the page.",
+        });
+      
+      });
   }, [userId]);
 
   //create team on button click

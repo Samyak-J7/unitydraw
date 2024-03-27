@@ -325,8 +325,7 @@ const Canvas = (props) => {
   };
 
   return (
-    <div>
-      <div
+    <div>{enableConnection ? <div
         style={{
           position: "absolute",
           left: cursorPosition.x,
@@ -335,7 +334,8 @@ const Canvas = (props) => {
           height: 20,
           backgroundColor: "red",
           borderRadius: "50%",
-        }}></div>
+        }}></div> : null}
+      
       <Tray
         editor={editor}
         color={color}

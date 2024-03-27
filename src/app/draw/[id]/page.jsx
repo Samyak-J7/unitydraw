@@ -6,7 +6,7 @@ import { UserButton } from "@clerk/nextjs";
 import Canvas from "@/components/canvas";
 import { Share } from "@/components/share";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Save, Home } from "lucide-react";
 
 export default function Page({ params }) {
   const { toast } = useToast();
@@ -59,9 +59,9 @@ export default function Page({ params }) {
   // IF ROOM ID VERIFIED LOAD THE CANVAS AND SEND ROOM ID TO CONNECT
   return (
     <div>
-      <div className="px-8 py-2 flex justify-between w-full absolute top-0 my-1">
-        <span className="z-10">
-          <UserButton />
+      <div className="px-4 py-2 flex justify-between w-full absolute top-0 my-1">
+      <span className="z-10">
+          <Button onClick={() => router.push("/home")} className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"><Home /></Button>
         </span>
         <span className="z-10 flex gap-2">
         <Button

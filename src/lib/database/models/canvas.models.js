@@ -3,7 +3,7 @@ import { Schema, model, models } from "mongoose";
 const CanvasSchema = new Schema({
     canvasName: {
         type: String,
-        required: true,
+        default: "Untitled",
     },
     createdBy: {
         type: Schema.Types.ObjectId,
@@ -13,6 +13,7 @@ const CanvasSchema = new Schema({
     canvasId:{
         type: String,
         required: true,
+        unique: true,
     },
     canvasData:{
         type: Object,

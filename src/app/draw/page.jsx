@@ -74,7 +74,6 @@ const Draw = () => {
     const canvasId = `${searchParams}`.slice(0, -1);
     const savedCanvasState = localStorage.getItem("canvasState");
     saveCanvas({
-      canvasName: "Untitled",
       canvasData: JSON.parse(savedCanvasState),
       createdBy: user,
       canvasId: canvasId? canvasId : uuidv4(),

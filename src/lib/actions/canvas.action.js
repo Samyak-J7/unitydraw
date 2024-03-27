@@ -39,7 +39,6 @@ export async function fetchAllCanvas(user) {
     const plainCanvas = canvasData.map((canvas) => ({
       canvasName: canvas.canvasName,
       canvasId: canvas.canvasId,
-      createdAt: canvas.createdAt.toLocaleString("en-US", options),
       updatedAt: canvas.updatedAt.toLocaleString("en-US", options),
     }));
     return plainCanvas;

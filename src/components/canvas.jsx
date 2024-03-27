@@ -345,8 +345,8 @@ const Canvas = (props) => {
         handleDrawing={handleDrawing}
         isDrawing={isDrawing}
       />
-      <div className="flex  bg-pink-300 gap-2 absolute right-4 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-400 border-pink-500 rounded-lg border-2 shadow-2xl ">
-        <button onClick={zoomIn} className="hover:bg-pink-500 p-4 rounded-md">
+      <div className="flex  bg-pink-200 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl ">
+        <button onClick={zoomIn} className="hover:bg-pink-400 p-4 rounded-md">
           <ZoomIn />
         </button>
         <p className=" font-semibold text-md">
@@ -354,7 +354,7 @@ const Canvas = (props) => {
             ? Math.trunc((editor?.canvas.getZoom() * 100) / 1) + "%"
             : "100%"}
         </p>
-        <button onClick={zoomOut} className="hover:bg-pink-500 p-4 rounded-md">
+        <button onClick={zoomOut} className="hover:bg-pink-400 p-4 rounded-md">
           <ZoomOut />
         </button>
       </div>

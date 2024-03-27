@@ -55,7 +55,7 @@ export default function Home() {
             return (
               <li key={canvas.canvasId}>
                 <p>
-                  {canvas.canvasName} {canvas.createdAt} {canvas.updatedAt}
+                  {canvas.canvasName} {canvas.updatedAt}
                   <button onClick={()=>open(canvas.canvasId)}>Open Canvas</button>
                 </p>
               </li>

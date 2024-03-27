@@ -2,8 +2,8 @@
 import Canvas from "@/components/canvas";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { UserButton, useAuth } from "@clerk/nextjs";
-import { Save, Users } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { Home, Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -101,9 +101,9 @@ const Draw = () => {
 
   return (
     <div>
-      <div className="px-8 py-2 flex justify-between w-full absolute top-0 my-1">
+      <div className="px-4 py-2 flex justify-between w-full absolute top-0 my-1">
         <span className="z-10">
-          <UserButton />
+          <Button onClick={() => router.push("/home")} className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"><Home /></Button>
         </span>
         <span className="z-10">
           <CanvasNameInput title={changeCanvasName}/>

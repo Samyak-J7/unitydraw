@@ -13,6 +13,7 @@ import {
   saveUsertoRoom,
   validateRoom,
 } from "@/lib/actions/room.action";
+import { CanvasNameInput } from "@/components/CanvasNameInput";
 
 export default function Page({ params }) {
   const { toast } = useToast();
@@ -20,6 +21,7 @@ export default function Page({ params }) {
   const [showToast, setShowToast] = useState(false); // State to control when to show toast
   const router = useRouter();
   const [canvasData, setCanvasData] = useState(null);
+  const [canvasName, setCanvasName] = useState(null);
   const { userId } = useAuth();
 
   //save button click
@@ -61,6 +63,10 @@ export default function Page({ params }) {
       });
   }, []);
 
+  const changeCanvasName = (name) => {
+    setCanvasName(name);
+  };
+
   //show toast
   useEffect(() => {
     if (showToast) {
@@ -88,6 +94,9 @@ export default function Page({ params }) {
           >
             <Home />
           </Button>
+        </span>
+        <span className="z-10">
+          <CanvasNameInput title={changeCanvasName} />
         </span>
         <span className="z-10 flex gap-2">
           <Button

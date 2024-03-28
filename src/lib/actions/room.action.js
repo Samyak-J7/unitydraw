@@ -36,7 +36,6 @@ export async function fetchCanvasByroomId(roomId) {
 }
 
 export async function saveCanvasbyroomID(roomId, canvasData) {
-  console.log(canvasData);
   try {
     await connectDB();
     await Canvas.updateOne({ roomId }, { canvasData });

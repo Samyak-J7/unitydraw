@@ -7,15 +7,7 @@ export async function saveCanvas(canvas) {
     await connectDB();
     const existingCanvas = await Canvas.findOne({ canvasId: canvas.canvasId });
     if (existingCanvas) {
-      await Canvas.updateOne(
-        { canvasId: canvas.canvasId },
-        {
-          $set: {
-            canvasData: canvas.canvasData,
-            canvasName: canvas.canvasName,
-          },
-        }
-      );
+      await Canvas.updateOne({ canvasId: canvas.canvasId }, canvas);
     } else {
       await Canvas.create(canvas);
     }

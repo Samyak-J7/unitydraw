@@ -6,7 +6,6 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-
 export default function Home() {
   const { toast } = useToast();
   const { userId } = useAuth();
@@ -23,7 +22,6 @@ export default function Home() {
           title: "Cannot find User",
           description: "Please Login or Refresh the page.",
         });
-      
       });
   }, []);
 
@@ -42,7 +40,7 @@ export default function Home() {
 
   //load canvas on click
   const open = (id) => {
-    router.push(`/draw?${id}` );
+    router.push(`/draw?${id}`);
   };
 
   return (
@@ -56,7 +54,9 @@ export default function Home() {
               <li key={canvas.canvasId}>
                 <p>
                   {canvas.canvasName} {canvas.updatedAt}
-                  <button onClick={()=>open(canvas.canvasId)}>Open Canvas</button>
+                  <button onClick={() => open(canvas.canvasId)}>
+                    Open Canvas
+                  </button>
                 </p>
               </li>
             );

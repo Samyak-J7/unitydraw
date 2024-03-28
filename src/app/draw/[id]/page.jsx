@@ -49,7 +49,7 @@ export default function Page({ params }) {
           setIsValidRoomId(true);
           saveUsertoRoom(params.id, userId);
           fetchCanvasByroomId(params.id)
-            .then((data) => setCanvasData(data))
+            .then((data) => setCanvasData(data.canvasData))
             .catch((err) => {
               setShowToast(true);
             });
@@ -96,7 +96,7 @@ export default function Page({ params }) {
           </Button>
         </span>
         <span className="z-10">
-          <CanvasNameInput title={changeCanvasName} />
+          <CanvasNameInput title={changeCanvasName} roomId={params.id} />
         </span>
         <span className="z-10 flex gap-2">
           <Button

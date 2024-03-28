@@ -28,7 +28,7 @@ export async function fetchCanvasByroomId(roomId) {
     await connectDB();
     const data = await Canvas.findOne({ roomId });
     if (data) {
-      return data.canvasData;
+      return {canvasData: data.canvasData, canvasName: data.canvasName};
     }
   } catch (error) {
     throw new Error(error);

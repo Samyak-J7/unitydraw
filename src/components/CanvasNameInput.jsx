@@ -1,13 +1,23 @@
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fetchCanvasName } from "@/lib/actions/canvas.action";
+import { fetchCanvasById, fetchCanvasName } from "@/lib/actions/canvas.action";
+import { fetchCanvasByroomId } from "@/lib/actions/room.action";
 
 export function CanvasNameInput(props) {
   const searchParams = useSearchParams();
   const [canvasName, setCanvasName] = useState(null);
 
   useEffect(() => {
+    if (props.roomId){
+      fetchCanvasByroomId(props.roomId).then((data) => {
+        setCanvasName(data.canvasName);
+        props.title(data.canvasName);
+        console.log(data.canvasName)
+      }).catch((error) => {
+        setCanvasName("Untitled");
+      });
+    }
     const canvasID = `${searchParams}`.slice(0, -1);
     if (!canvasID) return;
     fetchCanvasName(canvasID)

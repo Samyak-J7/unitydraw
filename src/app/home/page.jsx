@@ -46,6 +46,7 @@ export default function Home() {
   return (
     <div>
       <p>Home of {user.username}</p>
+      <button onClick={()=>router.push("/draw")} >Draw New</button>
       <div>
         Personal Canvas List :
         <ul>

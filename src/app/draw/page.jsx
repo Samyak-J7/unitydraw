@@ -124,7 +124,7 @@ const Draw = () => {
 
   return (
     <div>
-      <div className="px-4 py-2 flex justify-between w-full absolute top-0 my-1">
+      <div className="px-4 py-2 flex justify-between items-center w-full absolute top-0 my-1">
         <span className="z-10">
           <Button
             onClick={() => router.push("/home")}

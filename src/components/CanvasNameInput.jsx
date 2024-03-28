@@ -21,14 +21,14 @@ export function CanvasNameInput(props) {
   }, []);
 
   return (
-    <div className="flex w-full max-w-sm items-center space-x-2">
-      <Input
+
+      <input className=" text-end text-gray-400 underline outline-none bg-transparent "
         type="text"
         onChange={(e) => {
           props.title(e.target.value);
         }}
         placeholder={canvasName || "Untitled"}
       />
-    </div>
+
   );
 }

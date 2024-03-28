@@ -1,6 +1,6 @@
 "use client";
 import { useToast } from "@/components/ui/use-toast";
-import { fetchAllCanvas } from "@/lib/actions/canvas.action";
+import { fetchAllCanvas, fetchJoinedCanvas } from "@/lib/actions/canvas.action";
 import { getUserById } from "@/lib/actions/user.action";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ export default function Home() {
   const { userId } = useAuth();
   const [user, setUser] = useState({});
   const [allCanvas, setAllCanvas] = useState([]);
+  const [joinedCanvas, setJoinedCanvas] = useState([]);
   const router = useRouter();
   useEffect(() => {
     if (!userId) return;
@@ -38,24 +39,58 @@ export default function Home() {
       });
   }, [user._id]);
 
+  useEffect(()=>{
+    if (!user || !user._id) return;
+    fetchJoinedCanvas(user._id)
+      .then((canvas) => setJoinedCanvas(canvas))
+      .catch((error) => {
+        toast({
+          duration: 2000,
+          title: "Server Error",
+          description: "Please Refresh the page.",
+        });
+      });
+  },[user._id])
+
   //load canvas on click
   const open = (id) => {
     router.push(`/draw?${id}`);
   };
 
+  const openRoom = (id) => {
+    router.push(`/draw/${id}`);
+  };
+
   return (
     <div>
       <p>Home of {user.username}</p>
-      <button onClick={()=>router.push("/draw")} >Draw New</button>
+      <button onClick={() => router.push("/draw")}>Draw New</button>
       <div>
         Personal Canvas List :
         <ul>
-          {allCanvas.map((canvas) => {
+          {allCanvas && allCanvas.map((canvas) => {
             return (
               <li key={canvas.canvasId}>
                 <p>
                   {canvas.canvasName} {canvas.updatedAt}
                   <button onClick={() => open(canvas.canvasId)}>
+                    Open Canvas
+                  </button>
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div>
+        Shared Canvas List :
+        <ul>
+          {joinedCanvas && joinedCanvas.map((canvas) => {
+            return (
+              <li key={canvas.canvasId}>
+                <p>
+                  {canvas.canvasName} {canvas.updatedAt}
+                  <button onClick={() => openRoom(canvas.roomId)}>
                     Open Canvas
                   </button>
                 </p>

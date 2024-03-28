@@ -1,6 +1,7 @@
 "use server";
 import { connectDB } from "@/lib/database";
 import Canvas from "@/lib/database/models/canvas.models";
+import User from "../database/models/user.models";
 
 export async function saveCanvas(canvas) {
   try {
@@ -32,6 +33,33 @@ export async function fetchAllCanvas(user) {
       canvasName: canvas.canvasName,
       canvasId: canvas.canvasId,
       updatedAt: canvas.updatedAt.toLocaleString("en-US", options),
+    }));
+    return plainCanvas;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function fetchJoinedCanvas(userId) {
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  };
+  try {
+    await connectDB();
+    const user = await User.findById(userId);
+    const joinedRooms = await user.joinedRooms;
+    if (!joinedRooms) return ["No joined rooms found"];
+    const canvasData = await Canvas.find({ roomId: { $in: joinedRooms } });
+    const plainCanvas = canvasData.map((canvas) => ({
+      canvasName: canvas.canvasName,
+      canvasId: canvas.canvasId,
+      updatedAt: canvas.updatedAt.toLocaleString("en-US", options),
+      roomId: canvas.roomId,
     }));
     return plainCanvas;
   } catch (error) {

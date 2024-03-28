@@ -52,12 +52,13 @@ const Draw = () => {
   }, [userId]);
 
   //create team on button click
-  const createTeam = () => {
+  const createTeam = async () => {
     const roomName = uuidv4();
     createRoom({ roomId: roomName, createdBy: user._id, editors: [user._id] })
       .then(() => {
-        save(roomName);
-        setRoomId(roomName);
+        save(roomName).then(() => {
+          setRoomId(roomName);
+        });
       })
       .catch((error) => {
         toast({
@@ -86,40 +87,44 @@ const Draw = () => {
 
   //save button click
   const save = (roomid) => {
-    const canvasId = `${searchParams}`.slice(0, -1);
-    const SaveCanvasId = uuidv4();
-    const dataToSave = {
-      canvasName: canvasName || "Untitled",
-      canvasData: JSON.parse(localStorage.getItem("canvasState")),
-      createdBy: user,
-      canvasId: canvasId || SaveCanvasId,
-    };
+    return new Promise((resolve, reject) => {
+      const canvasId = `${searchParams}`.slice(0, -1);
+      const SaveCanvasId = uuidv4();
+      const dataToSave = {
+        canvasName: canvasName || "Untitled",
+        canvasData: JSON.parse(localStorage.getItem("canvasState")),
+        createdBy: user,
+        canvasId: canvasId || SaveCanvasId,
+      };
 
-    if (roomid) {
-      dataToSave.roomId = roomid;
-    }
+      if (roomid) {
+        dataToSave.roomId = roomid;
+      }
 
-    saveCanvas(dataToSave)
-      .then(() => {
-        if (!roomid) {
+      saveCanvas(dataToSave)
+        .then(() => {
+          if (!roomid) {
+            toast({
+              duration: 2000,
+              title: "Saved",
+              description: "Your Canvas has been saved.",
+            });
+          }
+
+          if (!canvasId) {
+            router.push(`/draw?${SaveCanvasId}`);
+          }
+          resolve();
+        })
+        .catch((error) => {
           toast({
             duration: 2000,
-            title: "Saved",
-            description: "Your Canvas has been saved.",
+            title: "Error",
+            description: "Canvas not saved.",
           });
-        }
-
-        if (!canvasId) {
-          router.push(`/draw?${SaveCanvasId}`);
-        }
-      })
-      .catch((error) => {
-        toast({
-          duration: 2000,
-          title: "Error",
-          description: "Canvas not saved.",
+          reject(error);
         });
-      });
+    });
   };
 
   return (
@@ -128,8 +133,7 @@ const Draw = () => {
         <span className="z-10">
           <Button
             onClick={() => router.push("/home")}
-            className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
-          >
+            className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black">
             <Home />
           </Button>
         </span>
@@ -139,15 +143,13 @@ const Draw = () => {
         <span className="z-10 flex gap-2">
           <Button
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
-            onClick={() => save(null)}
-          >
+            onClick={() => save(null)}>
             <Save className="m-1" size={20} />
             Save
           </Button>
           <Button
             className=" shadow-2xl bg-blue-200 text-black border-2 border-blue-500 hover:bg-blue-400 hover:border-gray-600"
-            onClick={createTeam}
-          >
+            onClick={createTeam}>
             <Users className="m-1" size={20} />
             Make a Team
           </Button>

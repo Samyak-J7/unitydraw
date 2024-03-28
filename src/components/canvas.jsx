@@ -37,7 +37,7 @@ const Canvas = (props) => {
     if (!enableConnection) return; // no room id that means single user so load normal canvas
     try {
       // try to establish websockets
-      const socket = io("http://localhost:4001");
+      const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
 
       // attach listener event for joining
       socket.on("userJoined", (data) => {
@@ -131,7 +131,7 @@ const Canvas = (props) => {
   //send paintbrush realtime data
   useEffect(() => {
     if (!enableConnection) return;
-    const socket = io("http://localhost:4001");
+    const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
     if (isPainting && !Drawing) {
       const objects = editor?.canvas?.getObjects() || [];
       if (objects.length > 0) {

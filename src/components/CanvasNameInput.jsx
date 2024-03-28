@@ -13,7 +13,6 @@ export function CanvasNameInput(props) {
       fetchCanvasByroomId(props.roomId).then((data) => {
         setCanvasName(data.canvasName);
         props.title(data.canvasName);
-        console.log(data.canvasName)
       }).catch((error) => {
         setCanvasName("Untitled");
       });

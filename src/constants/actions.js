@@ -1,5 +1,5 @@
 // repeat function is used to remove the event listener from the canvas and set the isDrawingMode to false.
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 const repeat = (canvas) => {
   canvas.off("mouse:down");
   canvas.off("mouse:move");
@@ -17,7 +17,7 @@ const selector = (editor) => {
 };
 
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color, stroke, bgColor , completed) => {
+const onAddCircle = (editor, color, stroke, bgColor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -58,7 +58,7 @@ const onAddCircle = (editor, color, stroke, bgColor , completed) => {
 };
 
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
-const onAddRectangle = (editor, color, stroke, bgColor,completed) => {
+const onAddRectangle = (editor, color, stroke, bgColor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -96,7 +96,7 @@ const onAddRectangle = (editor, color, stroke, bgColor,completed) => {
 };
 
 // addLine function is used to add a line to the canvas and call the repeat function.
-const addLine = (editor, color, stroke , bgColor,completed) => {
+const addLine = (editor, color, stroke, bgColor, completed) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
@@ -106,7 +106,7 @@ const addLine = (editor, color, stroke , bgColor,completed) => {
     const line = new fabric.Line(points, {
       strokeWidth: stroke,
       stroke: color,
-      fill:bgColor,
+      fill: bgColor,
       id: uuidv4(),
     });
     canvas.add(line);
@@ -127,7 +127,7 @@ const addLine = (editor, color, stroke , bgColor,completed) => {
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
-const onAddText = (editor, color, stroke,bgColor,completed) => {
+const onAddText = (editor, color, stroke, bgColor, completed) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "text";
@@ -138,9 +138,9 @@ const onAddText = (editor, color, stroke,bgColor,completed) => {
       top: pointer.y,
       width: 100,
       height: 50,
-      strokeWidth: stroke,      
+      strokeWidth: stroke,
       stroke: color,
-      fill:bgColor,
+      fill: bgColor,
       textAlign: "center",
       id: uuidv4(),
     });
@@ -150,18 +150,16 @@ const onAddText = (editor, color, stroke,bgColor,completed) => {
     canvas.off("mouse:down");
     selector(editor);
     completed();
-
   });
-  
 };
-const paintBrush = (editor, color, stroke , bgColor ,completed,isDrawing) => {
+const paintBrush = (editor, color, stroke, bgColor, completed, isDrawing) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "crosshair";
   canvas.isDrawingMode = true;
   canvas.freeDrawingBrush.width = stroke;
   canvas.freeDrawingBrush.color = color;
-  
+
   canvas.on("mouse:down", () => {
     isDrawing(true);
   });
@@ -169,7 +167,7 @@ const paintBrush = (editor, color, stroke , bgColor ,completed,isDrawing) => {
     isDrawing(false);
     // const json = JSON.stringify(editor.canvas.toJSON());
     // localStorage.setItem('canvasState', json);
-  }); 
+  });
 };
 
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.
@@ -193,9 +191,8 @@ const eraser = (editor) => {
 const clearAll = (editor) => {
   editor.canvas.off("mouse:down");
   editor?.canvas.clear();
-  localStorage.removeItem('canvasState');
+  localStorage.removeItem("canvasState");
   selector(editor);
- 
 };
 
 // pan function is used to enable panning on the canvas.
@@ -229,7 +226,7 @@ const pan = (editor) => {
 };
 
 // arrow function is used to add an arrow to the canvas and call the repeat function.
-const arrow = (editor, color, stroke, bgColor,completed) => {
+const arrow = (editor, color, stroke, bgColor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -275,7 +272,7 @@ const arrow = (editor, color, stroke, bgColor,completed) => {
 };
 
 // handleFileChange function is used to handle the file change event and add the image to the canvas.
-const handleFileChange = (e, editor , completed) => {
+const handleFileChange = (e, editor, completed) => {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = "";

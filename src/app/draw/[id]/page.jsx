@@ -2,14 +2,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { UserButton } from "@clerk/nextjs";
 import Canvas from "@/components/canvas";
 import { Share } from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Save, Home } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 import {
   fetchCanvasByroomId,
   saveCanvasbyroomID,
+  saveUsertoRoom,
   validateRoom,
 } from "@/lib/actions/room.action";
 
@@ -19,6 +20,7 @@ export default function Page({ params }) {
   const [showToast, setShowToast] = useState(false); // State to control when to show toast
   const router = useRouter();
   const [canvasData, setCanvasData] = useState(null);
+  const { userId } = useAuth();
 
   //save button click
   const save = () => {
@@ -43,6 +45,7 @@ export default function Page({ params }) {
       .then((res) => {
         if (res) {
           setIsValidRoomId(true);
+          saveUsertoRoom(params.id, userId);
           fetchCanvasByroomId(params.id)
             .then((data) => setCanvasData(data))
             .catch((err) => {

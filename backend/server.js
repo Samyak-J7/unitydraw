@@ -13,12 +13,10 @@ const io = new SocketIOServer(server, {
 const PORT = process.env.PORT || 4001;
 
 io.on("connection", (socket) => {
-  
   //join room
   socket.on("joinRoom", (roomId, userid) => {
-    if (!roomId) return;    
+    if (!roomId) return;
     socket.join(roomId);
-    console.log(`${userid} joined ${roomId}`);
     socket.emit("userJoined", { roomId, userid }); // send confirmation to user that he successfully joined
     socket.to(roomId).emit("roomJoined", { roomId, userid }); // send to everyone in room that a user joined
   });

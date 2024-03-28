@@ -8,7 +8,6 @@ import {
   Eraser,
   Trash2,
   Minus,
-  MoveRight,
   RectangleHorizontal,
   Image,
 } from "lucide-react";
@@ -22,7 +21,6 @@ import {
   clearAll,
   pan,
   addLine,
-  arrow,
   openFilePicker,
 } from "./actions";
 
@@ -52,11 +50,6 @@ const Tools = [
     icon: <Minus />,
     action: addLine,
   },
-  // {
-  //   name: "Add Arrow",
-  //   icon: <MoveRight />,
-  //   action: arrow,
-  // },
   {
     name: "Add Text",
     icon: <Type />,
@@ -82,7 +75,6 @@ const Tools = [
     icon: <Trash2 />,
     action: clearAll,
   },
- 
 ];
 
 export { Tools };

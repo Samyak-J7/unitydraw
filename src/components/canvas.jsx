@@ -27,14 +27,13 @@ const Canvas = (props) => {
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
- 
 
   useEffect(() => {
     if (editor && props.data) {
-          editor.canvas.loadFromJSON(props.data, () => {
-            editor.canvas.renderAll();
-          });
-        }
+      editor.canvas.loadFromJSON(props.data, () => {
+        editor.canvas.renderAll();
+      });
+    }
     if (!enableConnection) return; // no room id that means single user so load normal canvas
     try {
       // try to establish websockets
@@ -43,8 +42,6 @@ const Canvas = (props) => {
       // attach listener event for joining
       socket.on("userJoined", (data) => {
         console.log("You joined:", data);
-        //confirmation to the user that he joined succcessfully
-        //add user to room users if not exist
       });
 
       // attach listener event for joining
@@ -223,7 +220,7 @@ const Canvas = (props) => {
       const json = JSON.stringify(editor.canvas.toJSON());
       localStorage.setItem("canvasState", json);
     }
-  }, [editor,selectedObjects, Drawing, color, stroke, bgColor, opacity]);
+  }, [editor, selectedObjects, Drawing, color, stroke, bgColor, opacity]);
 
   //add event listener for keyboard events
   useEffect(() => {
@@ -325,17 +322,21 @@ const Canvas = (props) => {
   };
 
   return (
-    <div>{enableConnection ? <div
-        style={{
-          position: "absolute",
-          left: cursorPosition.x,
-          top: cursorPosition.y,
-          width: 20,
-          height: 20,
-          backgroundColor: "red",
-          borderRadius: "50%",
-        }}></div> : null}
-      
+    <div>
+      {enableConnection ? (
+        <div
+          style={{
+            position: "absolute",
+            left: cursorPosition.x,
+            top: cursorPosition.y,
+            width: 20,
+            height: 20,
+            backgroundColor: "red",
+            borderRadius: "50%",
+          }}
+        ></div>
+      ) : null}
+
       <Tray
         editor={editor}
         color={color}

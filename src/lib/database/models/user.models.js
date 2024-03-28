@@ -25,7 +25,7 @@ const UserSchema = new Schema({
   joinedRooms: {
     type: [String],
     default: [],
-  }
+  },
 });
 
 const User = models?.User || model("User", UserSchema);

@@ -28,7 +28,8 @@ export default function Page({ params }) {
   const save = () => {
     saveCanvasbyroomID(
       params.id,
-      JSON.parse(localStorage.getItem("canvasState"))
+      JSON.parse(localStorage.getItem("canvasState")),
+      canvasName
     )
       .then(() => {
         toast({

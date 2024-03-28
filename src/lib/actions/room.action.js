@@ -35,10 +35,10 @@ export async function fetchCanvasByroomId(roomId) {
   }
 }
 
-export async function saveCanvasbyroomID(roomId, canvasData) {
+export async function saveCanvasbyroomID(roomId, canvasData, canvasName) {
   try {
     await connectDB();
-    await Canvas.updateOne({ roomId }, { canvasData });
+    await Canvas.updateOne({ roomId }, { canvasData , canvasName });
   } catch (error) {
     throw new Error(error);
   }

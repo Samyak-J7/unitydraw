@@ -44,24 +44,24 @@ export default function Page({ params }) {
   };
 
   useEffect(() => {
-     validateRoom(params.id)
-      .then((res) => {
-        if (res) {
+    const fetchData = async () => {
+      try {
+        const isValid = await validateRoom(params.id);
+        if (isValid) {
           setIsValidRoomId(true);
-          saveUsertoRoom(params.id, userId);
-          fetchCanvasByroomId(params.id)
-            .then((data) => setCanvasData(data.canvasData))
-            .catch((err) => {
-              setShowToast(true);
-            });
+          await saveUsertoRoom(params.id, userId);
+          const data = await fetchCanvasByroomId(params.id);
+          setCanvasData(data.canvasData);
         } else {
-          setShowToast(true);
+          setShowToast(true)
           router.push("/draw");
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         setShowToast(true);
-      });
+      }
+    };
+  
+    fetchData();
   }, []);
 
   const changeCanvasName = (name) => {

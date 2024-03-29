@@ -7,9 +7,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React from "react";
+import { fetchAllCanvas } from "@/lib/actions/canvas.action";
+import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
 
-const HomeTable = () => {
+const HomeTable = (props) => {
+  const [allCanvas, setAllCanvas] = useState([]);
+  const userId = props.userId;
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!userId) return;
+    fetchAllCanvas(userId).then((data) => {
+      setAllCanvas(data);
+    }).catch((error) => {
+      console.log(error);
+    })
+  },[userId])
+
+  const open = (id, roomId) => {
+    roomId ? router.push(`/draw/${roomId}`) : router.push(`/draw?${id}`);
+  };
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-1/2">
@@ -24,12 +43,20 @@ const HomeTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="text-center text-gray-300">
-              <TableCell className="font-medium text-white">Canvas</TableCell>
-              <TableCell>You</TableCell>
-              <TableCell>2hours ago</TableCell>
-              <TableCell>Thala and 7 others</TableCell>
-            </TableRow>
+            {allCanvas &&
+              allCanvas.map((canvas) => (
+                <TableRow
+                  key={canvas.canvasId}
+                  className="text-center text-gray-300 hover:cursor-pointer"
+                  onClick={() => open(canvas.canvasId, canvas.roomId)}>
+                    <TableCell className="font-medium text-white">
+                      {canvas.canvasName}
+                    </TableCell>
+                    <TableCell>{canvas.createdBy}</TableCell>
+                    <TableCell>{canvas.updatedAt}</TableCell>
+                    <TableCell>{canvas.members}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </div>

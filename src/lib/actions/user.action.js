@@ -20,3 +20,13 @@ export async function getUserById(clerkId) {
     throw new Error(error);
   }
 }
+
+export async function getUsernameById(userId){
+  try {
+    // await connectDB();
+    const user = await User.findOne(userId);
+    return user.firstName + " " + user.lastName;
+  } catch (error) {
+    throw new Error(error);
+  }
+}

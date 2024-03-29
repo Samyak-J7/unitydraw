@@ -7,9 +7,9 @@ import {useRouter} from 'next/navigation'
 const HomeHeader = (props) => {
     const router = useRouter();
   return (
-    <nav className='flex justify-between items-center p-4 px-8 bg-black border-gray-500 border-b-2 mb-2' >
+    <nav className='flex justify-between items-center p-4 px-8 bg-black border-gray-500 border-b-2 mb-2  relative z-10' >
         <div className='flex justify-between items-center gap-4' >
-            <UserButton />
+            <UserButton afterSignOutUrl='/' />
             <p><span className='text-slate-200'>Hi ,</span> <span className='font-semibold font-sans text-white text-xl'> {props.username} </span></p>
         </div>
         <a href="/" > Unity Draw </a>

@@ -1,6 +1,7 @@
 "use client";
 import HomeTable from "@/components/HomeTable";
 import HomeHeader from "@/components/homeHeader";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 import { useToast } from "@/components/ui/use-toast";
 import { getUserById } from "@/lib/actions/user.action";
 import { useAuth } from "@clerk/nextjs";
@@ -28,6 +29,7 @@ export default function Home() {
     <div className="bg-zinc-950 h-screen text-white">
       <HomeHeader username={user.firstName + " " + user.lastName} /> 
       <HomeTable userId={user._id}/>
+      <BackgroundBeams/>
     </div>
   );
 }

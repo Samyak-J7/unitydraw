@@ -1,4 +1,6 @@
 "use client";
+import HomeTable from "@/components/HomeTable";
+import HomeHeader from "@/components/homeHeader";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchAllCanvas, fetchJoinedCanvas } from "@/lib/actions/canvas.action";
 import { getUserById } from "@/lib/actions/user.action";
@@ -62,10 +64,11 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <p>Home of {user.username}</p>
-      <button onClick={() => router.push("/draw")}>Draw New</button>
-      <div>
+    <div className="bg-zinc-950 h-screen text-white">
+      <HomeHeader username={user.username} /> 
+      <HomeTable />
+      
+      {/* <div>
         Personal Canvas List :
         <ul>
           {allCanvas && allCanvas.map((canvas) => {
@@ -98,7 +101,7 @@ export default function Home() {
             );
           })}
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 }

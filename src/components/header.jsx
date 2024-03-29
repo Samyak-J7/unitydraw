@@ -1,10 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SignIn } from "@clerk/clerk-react";
 import { SignedIn, UserButton, SignInButton } from "@clerk/nextjs";
 import { SignedOut } from "@clerk/nextjs";
-import Image from "next/image";
 import Link from "next/link";
 const Header = () => {
   return (

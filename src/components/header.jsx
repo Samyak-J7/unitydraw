@@ -6,7 +6,7 @@ import { SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 const Header = () => {
   return (
-    <div>
+    <nav >
       <SignedIn>
         <UserButton afterSignOutUrl="/" />
         <Button>
@@ -18,7 +18,7 @@ const Header = () => {
           <Button>Get Started</Button>
         </SignInButton>
       </SignedOut>
-    </div>
+    </nav>
   );
 };
 

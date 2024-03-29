@@ -6,7 +6,7 @@ import Tray from "./tray";
 import Settings from "./settings";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 
 const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
@@ -22,11 +22,22 @@ const Canvas = (props) => {
   const [realtimeObject, setRealtimeObject] = useState(null);
   const [update, setUpdate] = useState(false);
   const { userId } = useAuth();
-
+  const [socket, setSocket] = useState(null);
   // IF ROOM ID RECEIVED SET CONNECTION TRUE TO ESTABLISH WEBSOCKETS otherwise false and just load canvas skip websockets as single user
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
+
+  useEffect(() => {
+    const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
+      reconnectionAttempts: 3,
+      reconnectionDelay: 3000,
+    });
+    setSocket(socket);
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (editor && props.data) {
@@ -36,9 +47,7 @@ const Canvas = (props) => {
     }
     if (!enableConnection) return; // no room id that means single user so load normal canvas
     try {
-      // try to establish websockets
-      const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
-
+      if (!socket) return;
       // attach listener event for joining
       socket.on("userJoined", (data) => {
         console.log("You joined:", data);
@@ -119,7 +128,7 @@ const Canvas = (props) => {
         socket.disconnect();
       };
     } catch (error) {
-      console.log(" Error in setting up socket connection");
+      console.log("Error , Something went wrong");
       // connection with server failed redirect to draw toast try again later server error
     }
   }, [editor]);
@@ -131,7 +140,6 @@ const Canvas = (props) => {
   //send paintbrush realtime data
   useEffect(() => {
     if (!enableConnection) return;
-    const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
     if (isPainting && !Drawing) {
       const objects = editor?.canvas?.getObjects() || [];
       if (objects.length > 0) {

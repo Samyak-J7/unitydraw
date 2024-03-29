@@ -44,7 +44,7 @@ export default function Page({ params }) {
   };
 
   useEffect(() => {
-    validateRoom(params.id)
+     validateRoom(params.id)
       .then((res) => {
         if (res) {
           setIsValidRoomId(true);

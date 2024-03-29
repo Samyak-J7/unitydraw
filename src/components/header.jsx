@@ -10,7 +10,7 @@ const Header = () => {
       <SignedIn>
         <UserButton afterSignOutUrl="/" />
         <Button>
-          <Link href="/draw">Get Started</Link>
+          <Link href="/home">Get Started</Link>
         </Button>
       </SignedIn>
       <SignedOut>

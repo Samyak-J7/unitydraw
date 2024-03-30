@@ -23,7 +23,7 @@ io.on("connection", (socket) => {
   //cursor data
   socket.on("cursor", (data, roomId) => {
     if (!roomId) return;
-    socket.to(roomId).emit("cursor", data);
+    socket.to(roomId).emit('cursor', { ...data, userId: socket.id });
   });
 
   //object data

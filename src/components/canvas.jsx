@@ -18,7 +18,7 @@ const Canvas = (props) => {
   const [opacity, setOpacity] = useState(1);
   const [isPainting, setIsPainting] = useState(false);
   const [Drawing, setDrawing] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [cursorPositions, setCursorPositions] = useState({});
   const [realtimeObject, setRealtimeObject] = useState(null);
   const [update, setUpdate] = useState(false);
   const { userId } = useAuth();
@@ -27,6 +27,9 @@ const Canvas = (props) => {
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00']; // Sample colors
+
+
 
   useEffect(() => {
     if (!enableConnection) return;
@@ -65,8 +68,7 @@ const Canvas = (props) => {
 
       const handleMouseMove = (event) => {
         const { clientX: x, clientY: y } = event;
-        setCursorPosition({ x, y });
-        socket.emit("cursor", { x, y }, props.roomId);
+  socket.emit("cursor", { x, y, userId: socket.id }, props.roomId);
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
@@ -88,7 +90,10 @@ const Canvas = (props) => {
       document.addEventListener("mousemove", handleMouseMove);
 
       socket.on("cursor", (data) => {
-        setCursorPosition(data);
+        setCursorPositions(prevPositions => ({
+          ...prevPositions,
+          [data.userId]: { x: data.x, y: data.y }
+        }));
       });
 
       // to receive realtime object from other clients
@@ -333,19 +338,20 @@ const Canvas = (props) => {
 
   return (
     <div>
-      {enableConnection ? (
-        <div
-          style={{
-            position: "absolute",
-            left: cursorPosition.x,
-            top: cursorPosition.y,
-            width: 20,
-            height: 20,
-            backgroundColor: "red",
-            borderRadius: "50%",
-          }}
-        ></div>
-      ) : null}
+      {Object.values(cursorPositions).map(({ x, y, userId }) => (
+      <div
+        key={userId}
+        style={{
+          position: "absolute",
+          left: x,
+          top: y,
+          width: 20,
+          height: 20,
+          backgroundColor: "red",
+          borderRadius: "50%"
+        }}
+      ></div>
+    ))}
 
       <Tray
         editor={editor}

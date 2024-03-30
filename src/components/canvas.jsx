@@ -74,7 +74,7 @@ const Canvas = (props) => {
 
       const handleMouseMove = (event) => {
         const { clientX: x, clientY: y } = event;
-  socket.emit("cursor", { x, y, userId: userId }, props.roomId , userId);
+        socket.emit("cursor", { x, y, userId: userId }, props.roomId, userId);
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
@@ -96,7 +96,7 @@ const Canvas = (props) => {
       document.addEventListener("mousemove", handleMouseMove);
 
       socket.on("cursor", (data) => {
-        setCursorPositions(prevPositions => ({
+        setCursorPositions((prevPositions) => ({
           ...prevPositions,
           [data.userId]: { x: data.x, y: data.y , userId: data.userId}
         }));
@@ -256,7 +256,9 @@ const Canvas = (props) => {
 
       const deleteObject = (event) => {
         if (event.code === "Backspace" || event.code === "Delete") {
-          selectedObjects.filter((obj) => obj.type !== "textbox").forEach((obj) => editor.canvas.remove(obj));
+          selectedObjects
+            .filter((obj) => obj.type !== "textbox")
+            .forEach((obj) => editor.canvas.remove(obj));
           setSelectedObjects([]);
           editor.canvas.renderAll();
         }

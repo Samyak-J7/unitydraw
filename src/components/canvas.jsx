@@ -22,14 +22,15 @@ const Canvas = (props) => {
   const [realtimeObject, setRealtimeObject] = useState(null);
   const [update, setUpdate] = useState(false);
   const { userId } = useAuth();
+  const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00"]; // Sample colors
+  const [cursorColor, setCursorColor] = useState(
+    colors[Math.floor(Math.random() * colors.length)]
+  );
   const [socket, setSocket] = useState(null);
   // IF ROOM ID RECEIVED SET CONNECTION TRUE TO ESTABLISH WEBSOCKETS otherwise false and just load canvas skip websockets as single user
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
-  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00']; // Sample colors
-
-
 
   useEffect(() => {
     if (!enableConnection) return;
@@ -68,7 +69,7 @@ const Canvas = (props) => {
 
       const handleMouseMove = (event) => {
         const { clientX: x, clientY: y } = event;
-  socket.emit("cursor", { x, y, userId: userId }, props.roomId , userId);
+        socket.emit("cursor", { x, y, userId: userId }, props.roomId, userId);
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
@@ -90,9 +91,9 @@ const Canvas = (props) => {
       document.addEventListener("mousemove", handleMouseMove);
 
       socket.on("cursor", (data) => {
-        setCursorPositions(prevPositions => ({
+        setCursorPositions((prevPositions) => ({
           ...prevPositions,
-          [data.userId]: { x: data.x, y: data.y }
+          [data.userId]: { x: data.x, y: data.y },
         }));
       });
 
@@ -250,7 +251,9 @@ const Canvas = (props) => {
 
       const deleteObject = (event) => {
         if (event.code === "Backspace" || event.code === "Delete") {
-          selectedObjects.filter((obj) => obj.type !== "textbox").forEach((obj) => editor.canvas.remove(obj));
+          selectedObjects
+            .filter((obj) => obj.type !== "textbox")
+            .forEach((obj) => editor.canvas.remove(obj));
           setSelectedObjects([]);
           editor.canvas.renderAll();
         }
@@ -339,19 +342,18 @@ const Canvas = (props) => {
   return (
     <div>
       {Object.values(cursorPositions).map(({ x, y, userId }) => (
-      <div
-        key={userId}
-        style={{
-          position: "absolute",
-          left: x,
-          top: y,
-          width: 20,
-          height: 20,
-          backgroundColor: "red",
-          borderRadius: "50%"
-        }}
-      ></div>
-    ))}
+        <div
+          key={userId}
+          style={{
+            position: "absolute",
+            left: x,
+            top: y,
+            width: 20,
+            height: 20,
+            backgroundColor: cursorColor,
+            borderRadius: "50%",
+          }}></div>
+      ))}
 
       <Tray
         editor={editor}

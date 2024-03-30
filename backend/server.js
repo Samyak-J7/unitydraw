@@ -21,9 +21,9 @@ io.on("connection", (socket) => {
   });
 
   //cursor data
-  socket.on("cursor", (data, roomId) => {
+  socket.on("cursor", (data, roomId , userid) => {
     if (!roomId) return;
-    socket.to(roomId).emit('cursor', { ...data, userId: socket.id });
+    socket.to(roomId).emit('cursor', { ...data, userId: userid });
   });
 
   //object data

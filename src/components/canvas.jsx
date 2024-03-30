@@ -68,7 +68,7 @@ const Canvas = (props) => {
 
       const handleMouseMove = (event) => {
         const { clientX: x, clientY: y } = event;
-  socket.emit("cursor", { x, y, userId: socket.id }, props.roomId);
+  socket.emit("cursor", { x, y, userId: userId }, props.roomId , userId);
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {

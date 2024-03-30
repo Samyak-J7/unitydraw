@@ -27,7 +27,13 @@ const Canvas = (props) => {
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
+
   const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00']; // Sample colors
+
+  function getColorForUser(userId) {
+  const index = parseInt(userId.slice(-1), 16) % colors.length; // Use last character of ID for color index
+  return colors[index];
+  }
 
 
 
@@ -92,7 +98,7 @@ const Canvas = (props) => {
       socket.on("cursor", (data) => {
         setCursorPositions(prevPositions => ({
           ...prevPositions,
-          [data.userId]: { x: data.x, y: data.y }
+          [data.userId]: { x: data.x, y: data.y , userId: data.userId}
         }));
       });
 
@@ -347,7 +353,7 @@ const Canvas = (props) => {
           top: y,
           width: 20,
           height: 20,
-          backgroundColor: "red",
+          backgroundColor: getColorForUser(userId),
           borderRadius: "50%"
         }}
       ></div>

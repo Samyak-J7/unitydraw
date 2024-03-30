@@ -46,12 +46,12 @@ const Tools = [
     action: onAddRectangle,
   },
   {
-    name: "Add Line",
+    name: "Line",
     icon: <Minus />,
     action: addLine,
   },
   {
-    name: "Add Text",
+    name: "Text",
     icon: <Type />,
     action: onAddText,
   },
@@ -71,7 +71,7 @@ const Tools = [
     action: eraser,
   },
   {
-    name: "Clear All",
+    name: "ClearAll",
     icon: <Trash2 />,
     action: clearAll,
   },

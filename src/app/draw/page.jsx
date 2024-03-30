@@ -3,7 +3,7 @@ import Canvas from "@/components/canvas";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { UserButton, useAuth } from "@clerk/nextjs";
-import { Home, Save, Users } from "lucide-react";
+import { Home, Loader2, Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -21,7 +21,7 @@ const Draw = () => {
   const searchParams = useSearchParams();
   const [canvasData, setCanvasData] = useState(null);
   const [canvasName, setCanvasName] = useState(null);
-
+  const [saving, setSaving] = useState(false);
   useEffect(() => {
     const canvasId = `${searchParams}`.slice(0, -1);
     if (canvasId && user._id) {
@@ -88,6 +88,7 @@ const Draw = () => {
   //save button click
   const save = (roomid) => {
     return new Promise((resolve, reject) => {
+      setSaving(true);
       const canvasId = `${searchParams}`.slice(0, -1);
       const SaveCanvasId = uuidv4();
       const dataToSave = {
@@ -104,6 +105,7 @@ const Draw = () => {
       saveCanvas(dataToSave)
         .then(() => {
           if (!roomid) {
+            setSaving(false);
             toast({
               duration: 2000,
               title: "Saved",
@@ -117,6 +119,7 @@ const Draw = () => {
           resolve();
         })
         .catch((error) => {
+          setSaving(false);
           toast({
             duration: 2000,
             title: "Error",
@@ -145,7 +148,7 @@ const Draw = () => {
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
             onClick={() => save(null)}>
             <Save className="m-1" size={20} />
-            Save
+           {saving?  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :"Save"}
           </Button>
           <Button
             className=" shadow-2xl bg-blue-200 text-black border-2 border-blue-500 hover:bg-blue-400 hover:border-gray-600"

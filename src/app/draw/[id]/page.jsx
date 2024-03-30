@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import Canvas from "@/components/canvas";
 import { Share } from "@/components/share";
 import { Button } from "@/components/ui/button";
-import { Save, Home } from "lucide-react";
+import { Save, Home, Loader2 } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import {
   fetchCanvasByroomId,
@@ -23,15 +23,17 @@ export default function Page({ params }) {
   const [canvasData, setCanvasData] = useState(null);
   const [canvasName, setCanvasName] = useState(null);
   const { userId } = useAuth();
-
+  const [saving, setSaving] = useState(false);
   //save button click
   const save = () => {
+    setSaving(true);
     saveCanvasbyroomID(
       params.id,
       JSON.parse(localStorage.getItem("canvasState")),
       canvasName
     )
       .then(() => {
+        setSaving(false);
         toast({
           duration: 1500,
           title: "Saved",
@@ -39,6 +41,7 @@ export default function Page({ params }) {
         });
       })
       .catch((err) => {
+        setSaving(false);
         setShowToast(true);
       });
   };
@@ -106,7 +109,7 @@ export default function Page({ params }) {
             onClick={save}
           >
             <Save className=" m-1" size={20} />
-            Save
+            {saving?  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :"Save"}
           </Button>
           <Share link={`${process.env.NEXT_PUBLIC_DOMAIN}/draw/${params.id}`} />
         </span>

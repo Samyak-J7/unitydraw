@@ -7,7 +7,7 @@ import Settings from "./settings";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@clerk/nextjs";
-
+import { handleKeyPress } from "@/helper";
 const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
@@ -141,35 +141,37 @@ const Canvas = (props) => {
   //send paintbrush realtime data
   useEffect(() => {
     if (!enableConnection || !isPainting || Drawing) return;
-      const objects = editor?.canvas?.getObjects() || [];
-      if (objects.length > 0) {
-        const pathdata = objects
-          .filter((obj) => obj.type === "path") // Filter only objects of type "path"
-          .map((obj) => {
-            obj.set({
-              type: obj.type,
-              path: obj.path,
-              id: obj.id ? obj.id : uuidv4(), //setting necessary things for object
-              ...obj,
-            });
-            return {
-              type: obj.type,
-              path: obj.path,
-              id: obj.id ? obj.id : uuidv4(), //returning object
-              ...obj.toObject(),
-            };
+    const objects = editor?.canvas?.getObjects() || [];
+    if (objects.length > 0) {
+      const pathdata = objects
+        .filter((obj) => obj.type === "path") // Filter only objects of type "path"
+        .map((obj) => {
+          obj.set({
+            type: obj.type,
+            path: obj.path,
+            id: obj.id ? obj.id : uuidv4(), //setting necessary things for object
+            ...obj,
           });
-        if (pathdata.length > 0) {
-          socket.emit("realtimeObject", JSON.stringify(pathdata), props.roomId);
-        }
+          return {
+            type: obj.type,
+            path: obj.path,
+            id: obj.id ? obj.id : uuidv4(), //returning object
+            ...obj.toObject(),
+          };
+        });
+      if (pathdata.length > 0) {
+        socket.emit("realtimeObject", JSON.stringify(pathdata), props.roomId);
       }
+    }
   }, [Drawing]);
 
   //update the object in the canvas if realtime objects changes
   useEffect(() => {
     if (update && editor && realtimeObject) {
-      editor.canvas.getObjects().forEach((obj) => {      //check over every object in canvas
-        realtimeObject.forEach((realtimeObject) => {   //check over every object in realtime object mostlly one object but can be multiple
+      editor.canvas.getObjects().forEach((obj) => {
+        //check over every object in canvas
+        realtimeObject.forEach((realtimeObject) => {
+          //check over every object in realtime object mostlly one object but can be multiple
           if (realtimeObject.id === obj.id) {
             switch (realtimeObject.type) {
               case "line":
@@ -204,7 +206,9 @@ const Canvas = (props) => {
           newObject = realtimeObject[realtimeObject.length - 1];
         }
         // Check if the object with the same ID exists in the canvas
-        const isExistingObject = editor.canvas.getObjects().some((obj) => obj.id === newObject.id);
+        const isExistingObject = editor.canvas
+          .getObjects()
+          .some((obj) => obj.id === newObject.id);
         // If the object doesn't exist in the canvas, add it
         if (!isExistingObject) {
           editor.canvas.add(newObject);
@@ -238,25 +242,23 @@ const Canvas = (props) => {
       editor.canvas.on("selection:cleared", clearSelection);
 
       // Add keyboard event listener for backspace key
-      const handleKeyPress = (event) => {
-        if (
-          (event.code === "Backspace" || event.code === "Delete") &&
-          selectedObjects.length > 0
-        ) {
-          selectedObjects.forEach((obj) => editor.canvas.remove(obj));
+
+      const deleteObject = (event) => {
+        if (event.code === "Backspace" || event.code === "Delete") {
+          selectedObjects.filter((obj) => obj.type !== "textbox").forEach((obj) => editor.canvas.remove(obj));
           setSelectedObjects([]);
           editor.canvas.renderAll();
         }
       };
-
       window.addEventListener("keydown", handleKeyPress);
-
+      window.addEventListener("keydown", deleteObject);
       return () => {
         // Cleanup: remove event listeners
         editor.canvas.off("selection:created", handleObjectSelection);
         editor.canvas.off("selection:updated", handleObjectSelection);
         editor.canvas.off("selection:cleared", clearSelection);
         window.removeEventListener("keydown", handleKeyPress);
+        window.removeEventListener("keydown", deleteObject);
       };
     }
   }, [editor, selectedObjects]);

@@ -171,10 +171,8 @@ const paintBrush = (editor, color, stroke, bgColor, completed, isDrawing) => {
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.
 const eraser = (editor) => {
   const canvas = editor.canvas;
-  canvas.defaultCursor =
-    "url('https://img.icons8.com/ios-filled/50/000000/eraser.png'), auto";
-  canvas.hoverCursor =
-    "url('https://img.icons8.com/ios-filled/50/000000/eraser.png'), auto";
+  canvas.defaultCursor = "url('https://img.icons8.com/skeuomorphism/32/experimental-eraser-skeuomorphism.png'), auto"
+  canvas.hoverCursor =   "url('https://img.icons8.com/skeuomorphism/32/experimental-eraser-skeuomorphism.png'), auto";
   canvas.isDrawingMode = false;
   canvas.on("mouse:down", (event) => {
     const target = event.target;
@@ -201,8 +199,8 @@ const pan = (editor) => {
   let isPanning = false;
   let lastPosX = 0;
   let lastPosY = 0;
-
   canvas.on("mouse:down", (event) => {
+    canvas.defaultCursor = "grabbing";
     isPanning = true;
     lastPosX = event.e.clientX;
     lastPosY = event.e.clientY;
@@ -219,6 +217,7 @@ const pan = (editor) => {
   });
 
   canvas.on("mouse:up", () => {
+    canvas.defaultCursor = "grab";
     isPanning = false;
   });
 };

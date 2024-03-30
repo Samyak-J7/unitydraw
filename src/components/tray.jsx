@@ -52,9 +52,8 @@ const Tray = (props) => {
           <TooltipProvider key={index} delayDuration={100}>
             <Tooltip>
               <TooltipTrigger asChild>
-              <button className={`hover:bg-gray-200 p-3 m-1 rounded-xl  ${ active.name === tool.name  ? "bg-gray-300":"bg-transparent"} `} key={index} onClick={() => handleclick(tool)}>
-                
-                  {tool.icon}
+              <button name={tool.name}  className={`hover:bg-gray-200 py-3 px-2 m-1 rounded-xl flex justify-center items-end gap-1 ${ active.name === tool.name  ? "bg-gray-300":"bg-transparent"} `} key={index} onClick={() => handleclick(tool)}>
+                 {tool.icon} <span className="text-xs text-slate-500 ">{index<9? index+1 : 0 }</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">

@@ -8,6 +8,7 @@ import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@clerk/nextjs";
 import { handleKeyPress } from "@/helper";
+import { getUserById } from "@/lib/actions/user.action";
 const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
@@ -23,13 +24,26 @@ const Canvas = (props) => {
   const [update, setUpdate] = useState(false);
   const { userId } = useAuth();
   const [socket, setSocket] = useState(null);
+  const [user, setUser] = useState(null);
+
   // IF ROOM ID RECEIVED SET CONNECTION TRUE TO ESTABLISH WEBSOCKETS otherwise false and just load canvas skip websockets as single user
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
 
  
-
+  useEffect(() => {
+    if (!userId) return;
+    getUserById({ clerkId: userId })
+      .then((founduser) => setUser(JSON.parse(founduser)))
+      .catch((error) => {
+        toast({
+          duration: 2000,
+          title: "Cannot find User",
+          description: "Please Login or Refresh the page.",
+        });
+      });
+  }, []);
 
 
   useEffect(() => {
@@ -354,7 +368,7 @@ const Canvas = (props) => {
           borderRadius: "50%"
         }}
       >
-      {userId === userId ? "You" : "Other"}
+      {user.firstName}
 
       </div>
     ))}

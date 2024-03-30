@@ -41,7 +41,6 @@ const Canvas = (props) => {
 
   useEffect(() => {
     if (editor && props.data) {
-      
       editor.canvas.loadFromJSON(props.data, () => {
         editor.canvas.renderAll();
       });
@@ -73,10 +72,9 @@ const Canvas = (props) => {
           const activeObjectsData = activeObjects.map((obj) => {
             return {
               ...obj.toObject(),
-              id: obj.id ,
+              id: obj.id,
             };
           });
-
 
           socket.emit(
             "realtimeObject",
@@ -141,8 +139,7 @@ const Canvas = (props) => {
 
   //send paintbrush realtime data
   useEffect(() => {
-    if (!enableConnection) return;
-    if (isPainting && !Drawing) {
+    if (!enableConnection || !isPainting || Drawing) return;
       const objects = editor?.canvas?.getObjects() || [];
       if (objects.length > 0) {
         const pathdata = objects
@@ -151,32 +148,28 @@ const Canvas = (props) => {
             obj.set({
               type: obj.type,
               path: obj.path,
-              id: obj.id ? obj.id : uuidv4(),
+              id: obj.id ? obj.id : uuidv4(), //setting necessary things for object
               ...obj,
             });
             return {
               type: obj.type,
               path: obj.path,
-              id: obj.id ? obj.id : uuidv4(),
+              id: obj.id ? obj.id : uuidv4(), //returning object
               ...obj.toObject(),
             };
           });
-
         if (pathdata.length > 0) {
           socket.emit("realtimeObject", JSON.stringify(pathdata), props.roomId);
         }
       }
-    }
   }, [Drawing]);
 
   //update the object in the canvas if realtime objects changes
   useEffect(() => {
-    let isIdMatched = false;
     if (update && editor && realtimeObject) {
-      editor.canvas.getObjects().forEach((obj) => {
-        realtimeObject.forEach((realtimeObject) => {
+      editor.canvas.getObjects().forEach((obj) => {      //check over every object in canvas
+        realtimeObject.forEach((realtimeObject) => {   //check over every object in realtime object mostlly one object but can be multiple
           if (realtimeObject.id === obj.id) {
-            isIdMatched = true;
             switch (realtimeObject.type) {
               case "line":
                 obj.set({
@@ -199,26 +192,21 @@ const Canvas = (props) => {
             }
             obj.setCoords(); // Update object coordinates
             editor.canvas.renderAll();
-          } else {
-            isIdMatched = false;
           }
         });
       });
-
       // Add new object to the canvas if id is not matched
-      if (!isIdMatched) {
-        if (realtimeObject[0].type === "path" && realtimeObject.length > 0) {
-          let newObject = realtimeObject[realtimeObject.length - 1];
-          newObject.id = realtimeObject[realtimeObject.length - 1].id;
+      if (realtimeObject.length > 0) {
+        let newObject = realtimeObject[0];
+        if (newObject.type === "path") {
+          // If it's a path, take the last path object from the real-time data becasue we are receiving all the path objects when drawn
+          newObject = realtimeObject[realtimeObject.length - 1];
+        }
+        // Check if the object with the same ID exists in the canvas
+        const isExistingObject = editor.canvas.getObjects().some((obj) => obj.id === newObject.id);
+        // If the object doesn't exist in the canvas, add it
+        if (!isExistingObject) {
           editor.canvas.add(newObject);
-        } else {
-          let newObject = realtimeObject[0];
-          newObject.id = realtimeObject[0].id;
-          if (
-            !editor.canvas.getObjects().some((obj) => obj.id === newObject.id)
-          ) {
-            editor.canvas.add(newObject);
-          }
         }
       }
     }
@@ -227,17 +215,16 @@ const Canvas = (props) => {
   //save the canvas state to local storage
   useEffect(() => {
     if (editor) {
-       editor.canvas.getObjects().map((obj) => {
+      editor.canvas.getObjects().map((obj) => {
         if (!obj.id) {
           obj.id = uuidv4();
         }
       });
-      //console.log(editor.canvas)
       const customToJSON = (canvas) => {
-        return JSON.stringify(canvas.toJSON(['id']));
+        return JSON.stringify(canvas.toJSON(["id"]));
       };
-    
-      const json = customToJSON(editor.canvas) ;
+
+      const json = customToJSON(editor.canvas);
       localStorage.setItem("canvasState", json);
     }
   }, [editor, selectedObjects, Drawing, color, stroke, bgColor, opacity]);

@@ -29,7 +29,6 @@ io.on("connection", (socket) => {
   //object data
   socket.on("realtimeObject", (data, roomId) => {
     if (!roomId) return;
-    console.log(data)
     socket.to(roomId).emit("realtimeObject", data);
   });
 

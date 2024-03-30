@@ -29,6 +29,7 @@ const Canvas = (props) => {
   );
 
   useEffect(() => {
+    if (!enableConnection) return;
     const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
       reconnectionAttempts: 3,
       reconnectionDelay: 3000,

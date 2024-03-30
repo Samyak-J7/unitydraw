@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 export default function Home() {
   const { toast } = useToast();
   const { userId } = useAuth();
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -27,8 +27,7 @@ export default function Home() {
 
   return (
     <div className="bg-zinc-950 h-screen text-white">
-      <HomeHeader username={user.firstName + " " + user.lastName} /> 
-      <HomeTable userId={user._id}/>
+      {user &&<><HomeHeader username={user.firstName + " " + user.lastName} /><HomeTable userId={user._id} /></> }
       <BackgroundBeams/>
     </div>
   );

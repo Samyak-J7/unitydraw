@@ -23,18 +23,15 @@ const Header = () => {
         </HoverBorderGradient>
       </SignedIn>
       <SignedOut>
-        <SignInButton mode="modal" afterSignInUrl="/draw">
+      
           <HoverBorderGradient
             containerClassName="rounded-xl"
             as="button"
             className=" bg-slate-950 text-white flex items-center space-x-2"
-            onClick={() => {
-              router.push("/draw");
-            }}
           >
-            Get Started
+      <SignInButton mode="modal" afterSignInUrl="/draw">        Get Started       </SignInButton>
           </HoverBorderGradient>
-        </SignInButton>
+  
       </SignedOut>
     </nav>
   );

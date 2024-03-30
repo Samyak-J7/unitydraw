@@ -1,7 +1,6 @@
 import express from "express";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
-import { v4 as uuidv4 } from "uuid";
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {

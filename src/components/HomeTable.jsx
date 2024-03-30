@@ -30,12 +30,12 @@ const HomeTable = (props) => {
   };
 
   return (
-    <div className="w-full flex justify-center relative z-10">
+    <div className="w-full mt-20 flex justify-center items-center relative z-10">
       <div className="w-1/2">
         <Table className="bg-black border border-gray-800 ">
           <TableCaption>Your Canvas List </TableCaption>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead className="text-center">Canvas Name</TableHead>
               <TableHead className="text-center">Created By</TableHead>
               <TableHead className="text-center">Last Update At</TableHead>

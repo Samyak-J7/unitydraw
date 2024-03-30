@@ -12,7 +12,7 @@ const HomeHeader = (props) => {
             <UserButton afterSignOutUrl='/' />
             <p><span className='text-slate-200'>Hi ,</span> <span className='font-semibold font-sans text-white text-xl'> {props.username} </span></p>
         </div>
-        <a href="/" > Unity Draw </a>
+        <a href="/" > UnityDraw </a>
         <Button className="bg-black hover:bg-zinc-900 hover:border-white  border-2 border-gray-400" onClick={()=>router.push("/draw")} >
             <Plus size={24} />
             New Canvas

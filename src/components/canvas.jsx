@@ -41,6 +41,7 @@ const Canvas = (props) => {
 
   useEffect(() => {
     if (editor && props.data) {
+      
       editor.canvas.loadFromJSON(props.data, () => {
         editor.canvas.renderAll();
       });
@@ -72,9 +73,10 @@ const Canvas = (props) => {
           const activeObjectsData = activeObjects.map((obj) => {
             return {
               ...obj.toObject(),
-              id: obj.id,
+              id: obj.id ,
             };
           });
+
 
           socket.emit(
             "realtimeObject",
@@ -225,7 +227,17 @@ const Canvas = (props) => {
   //save the canvas state to local storage
   useEffect(() => {
     if (editor) {
-      const json = JSON.stringify(editor.canvas.toJSON());
+       editor.canvas.getObjects().map((obj) => {
+        if (!obj.id) {
+          obj.id = uuidv4();
+        }
+      });
+      //console.log(editor.canvas)
+      const customToJSON = (canvas) => {
+        return JSON.stringify(canvas.toJSON(['id']));
+      };
+    
+      const json = customToJSON(editor.canvas) ;
       localStorage.setItem("canvasState", json);
     }
   }, [editor, selectedObjects, Drawing, color, stroke, bgColor, opacity]);

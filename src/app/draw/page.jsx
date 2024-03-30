@@ -2,7 +2,7 @@
 import Canvas from "@/components/canvas";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { Home, Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -155,7 +155,8 @@ const Draw = () => {
           </Button>
         </span>
       </div>
-
+      <span className="absolute m-3 mx-7 z-10 bottom-0"><UserButton afterSignOutUrl="/" /></span>
+      
       {canvasData !== null ? (
         <Canvas data={canvasData} />
       ) : (

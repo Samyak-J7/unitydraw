@@ -28,12 +28,7 @@ const Canvas = (props) => {
     props.roomId ? true : false
   );
 
-  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00']; // Sample colors
-
-  function getColorForUser(userId) {
-  const index = parseInt(userId.slice(-1), 16) % colors.length; // Use last character of ID for color index
-  return colors[index];
-  }
+ 
 
 
 
@@ -355,10 +350,13 @@ const Canvas = (props) => {
           top: y,
           width: 20,
           height: 20,
-          backgroundColor: getColorForUser(userId),
+          backgroundColor: "red",
           borderRadius: "50%"
         }}
-      ></div>
+      >
+      {userId === userId ? "You" : "Other"}
+
+      </div>
     ))}
 
       <Tray

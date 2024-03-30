@@ -81,6 +81,7 @@ export default function Page({ params }) {
   }, [showToast]);
 
   // Prevent rendering if room is invalid
+  //todo set loader
   if (!isValidRoomId) {
     return <div> Loading Team Canvas </div>;
   }
@@ -107,7 +108,7 @@ export default function Page({ params }) {
             <Save className=" m-1" size={20} />
             Save
           </Button>
-          <Share link={`http://localhost:3000/draw/${params.id}`} />
+          <Share link={`${process.env.NEXT_PUBLIC_DOMAIN}/draw/${params.id}`} />
         </span>
       </div>
       {canvasData && <Canvas data={canvasData} roomId={params.id} />}

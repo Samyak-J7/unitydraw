@@ -21,7 +21,7 @@ import {
   clearAll,
   pan,
   addLine,
-  openFilePicker,
+  //openFilePicker,
 } from "./actions";
 
 const Tools = [
@@ -63,7 +63,7 @@ const Tools = [
   {
     name: "Image",
     icon: <Image />,
-    action: openFilePicker,
+    action: "openFilePicker",
   },
   {
     name: "Eraser",

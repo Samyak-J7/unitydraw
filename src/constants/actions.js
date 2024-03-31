@@ -204,10 +204,11 @@ const eraser = (editor, color, stroke, bgColor, completed, isDrawing,handleErase
 };
 
 // clearAll function is used to remove all the objects from the canvas.
-const clearAll = (editor) => {
+const clearAll = (editor, color, stroke, bgColor, completed, isDrawing,handleEraseObject) => {
   editor.canvas.off("mouse:down");
   editor?.canvas.clear();
   localStorage.removeItem("canvasState");
+  handleEraseObject("all")
   selector(editor);
 };
 
@@ -305,9 +306,9 @@ const handleFileChange = (e, editor, completed) => {
   selector(editor);
 };
 
-const openFilePicker = (fileInputRef) => {
-  fileInputRef.current.click();
-};
+// const openFilePicker = (fileInputRef) => {
+//   fileInputRef.current.click();
+// };
 
 // export all the functions.
 export {
@@ -322,5 +323,5 @@ export {
   addLine,
   arrow,
   handleFileChange,
-  openFilePicker,
+  //openFilePicker,
 };

@@ -27,14 +27,16 @@ const Tray = (props) => {
       );
     }
   }, [props.color, props.stroke, props.bgColor]);
-
+  const openFilePicker = () => {
+    fileInputRef.current.click();
+  };
   const handleclick = (tool) => {
     tool.action.name === "paintBrush"
       ? props.handleDrawing(true)
       : props.handleDrawing(false);
-    tool.action.name === "openFilePicker"
-      ? tool.action(fileInputRef)
-      : tool.action(
+    tool.action === "openFilePicker"
+      ? openFilePicker()
+      :   tool.action(
           props.editor,
           props.color,
           props.stroke,
@@ -45,6 +47,7 @@ const Tray = (props) => {
         );
     setActive(tool);
   };
+ 
 
   return (
     <div className="flex flex-col  absolute top-[15%] left-0 z-10 bg-white border-2  border-zinc-200 py-2  shadow-[0_10px_25px_rgba(8,_132,_184,_0.3)]  mx-4 rounded-2xl  ">

@@ -112,6 +112,7 @@ const Canvas = (props) => {
       document.addEventListener("mousemove", handleMouseMove);
       socket.on("deleteObject", (data) => {
         const objects = editor?.canvas?.getObjects() || [];
+        if (data === "all") { editor.canvas.clear(); return; }
         const objectToDelete = objects.find((obj) => obj.id === data);
         if (objectToDelete) {
           editor.canvas.remove(objectToDelete);

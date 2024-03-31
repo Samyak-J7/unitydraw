@@ -1,6 +1,6 @@
 "use client";
 import { FabricJSCanvas } from "fabricjs-react";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { MousePointer2, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import Tray from "./tray";
 import Settings from "./settings";
@@ -8,6 +8,8 @@ import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@clerk/nextjs";
 import { handleKeyPress } from "@/helper";
+import { getUserById } from "@/lib/actions/user.action";
+import { useToast } from "@/components/ui/use-toast";
 const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
   const [color, setColor] = useState("#000000" /* black */);
@@ -23,14 +25,25 @@ const Canvas = (props) => {
   const [update, setUpdate] = useState(false);
   const { userId } = useAuth();
   const [socket, setSocket] = useState(null);
-  // IF ROOM ID RECEIVED SET CONNECTION TRUE TO ESTABLISH WEBSOCKETS otherwise false and just load canvas skip websockets as single user
+  const [user, setUser] = useState(null);
+  const { toast } = useToast();
+  const randomcolor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   const [enableConnection, setEnableConnection] = useState(
     props.roomId ? true : false
   );
 
- 
-
-
+  useEffect(() => {
+    if (!userId) return;
+    getUserById({ clerkId: userId })
+      .then((founduser) => setUser(JSON.parse(founduser)))
+      .catch((error) => {
+        toast({
+          duration: 2000,
+          title: "Cannot find User",
+          description: "Please Login or Refresh the page.",
+        });
+      });
+  }, []);
 
   useEffect(() => {
     if (!enableConnection) return;
@@ -68,8 +81,14 @@ const Canvas = (props) => {
       socket.emit("joinRoom", props.roomId, userId);
 
       const handleMouseMove = (event) => {
+        if (!user) return console.log("User not found");
         const { clientX: x, clientY: y } = event;
-        socket.emit("cursor", { x, y, userId: userId }, props.roomId, userId);
+        socket.emit(
+          "cursor",
+          { x, y, userId: user.username, randomcolor },
+          props.roomId,
+          user.username
+        );
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
@@ -93,7 +112,12 @@ const Canvas = (props) => {
       socket.on("cursor", (data) => {
         setCursorPositions((prevPositions) => ({
           ...prevPositions,
-          [data.userId]: { x: data.x, y: data.y , userId: data.userId}
+          [data.userId]: {
+            x: data.x,
+            y: data.y,
+            randomcolor: data.randomcolor,
+            userId: data.userId,
+          },
         }));
       });
 
@@ -341,22 +365,23 @@ const Canvas = (props) => {
 
   return (
     <div>
-      {Object.values(cursorPositions).map(({ x, y, userId }) => (
-      <div
-        key={userId}
-        style={{
-          position: "absolute",
-          left: x,
-          top: y,
-          width: 20,
-          height: 20,
-          backgroundColor: "red",
-          borderRadius: "50%"
-        }}
-      >
-      {userId}
-      </div>
-    ))}
+      {Object.values(cursorPositions).map(({ x, y, userId, randomcolor }) => (
+        <div
+          key={userId}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "start",
+            position: "absolute",
+            left: x,
+            top: y,
+            color: randomcolor || red,
+          }}
+        >
+          <MousePointer2 style={{ fill: randomcolor || red }} />
+          <span className="text-xs ml-3">{userId}</span>
+        </div>
+      ))}
 
       <Tray
         editor={editor}
@@ -393,10 +418,12 @@ const Canvas = (props) => {
         />
       ) : null}
 
-      <FabricJSCanvas
-        className="h-[100vh] bg-white"
-        onReady={(canvas) => setEditor({ canvas })}
-      />
+      {user && (
+        <FabricJSCanvas
+          className="h-[100vh] bg-white"
+          onReady={(canvas) => setEditor({ canvas })}
+        />
+      )}
     </div>
   );
 };

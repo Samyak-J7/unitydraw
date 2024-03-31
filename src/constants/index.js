@@ -21,7 +21,6 @@ import {
   clearAll,
   pan,
   addLine,
-  //openFilePicker,
 } from "./actions";
 
 const Tools = [

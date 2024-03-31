@@ -306,9 +306,7 @@ const handleFileChange = (e, editor, completed) => {
   selector(editor);
 };
 
-// const openFilePicker = (fileInputRef) => {
-//   fileInputRef.current.click();
-// };
+
 
 // export all the functions.
 export {
@@ -323,5 +321,4 @@ export {
   addLine,
   arrow,
   handleFileChange,
-  //openFilePicker,
 };

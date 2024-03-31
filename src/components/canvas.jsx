@@ -133,7 +133,6 @@ const Canvas = (props) => {
 
       // to receive realtime object from other clients
       socket.on("realtimeObject", (data) => {
-        console.log("Received objects:")
         const receivedObjectsData = JSON.parse(data);
         const receivedObjects = receivedObjectsData.map((objData) => {
           let obj;
@@ -156,6 +155,9 @@ const Canvas = (props) => {
             case "textbox":
               obj = new fabric.Textbox(objData.text, { ...objData });
               break;
+            case "image":
+              console.log("Image object not implemented yet")
+              break
             default:
               throw new Error(`Invalid object type: ${objData.type}`);
           }

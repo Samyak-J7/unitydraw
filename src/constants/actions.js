@@ -16,12 +16,19 @@ const selector = (editor) => {
   editor.canvas.selection = true;
 };
 
+const objectdraw = (canvas) => {
+  canvas.isDrawingMode = true;
+  canvas.freeDrawingBrush.width = 0;
+  canvas.freeDrawingBrush.color = "rgba(0,0,0,0)";
+}
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
 const onAddCircle = (editor, color, stroke, bgColor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
+  objectdraw(canvas);
   canvas.on("mouse:down", (event) => {
+    canvas.isDrawingMode = false;
     const pointer = canvas.getPointer(event.e);
     const circle = new fabric.Circle({
       left: pointer.x,
@@ -44,6 +51,7 @@ const onAddCircle = (editor, color, stroke, bgColor, completed) => {
     canvas.renderAll();
 
     canvas.on("mouse:move", (event) => {
+      canvas.isDrawingMode = false;
       const pointer = canvas.getPointer(event.e);
       const radius = Math.abs(pointer.x - circle.left); // distance formula for radius
       circle.set({ radius });
@@ -51,6 +59,7 @@ const onAddCircle = (editor, color, stroke, bgColor, completed) => {
     });
 
     canvas.on("mouse:up", () => {
+      canvas.isDrawingMode = false;
       selector(editor);
       completed();
     });
@@ -62,7 +71,9 @@ const onAddRectangle = (editor, color, stroke, bgColor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
+  objectdraw(canvas);
   canvas.on("mouse:down", (event) => {
+    canvas.isDrawingMode = false;
     const pointer = canvas.getPointer(event.e);
     const rect = new fabric.Rect({
       left: pointer.x,
@@ -80,6 +91,7 @@ const onAddRectangle = (editor, color, stroke, bgColor, completed) => {
     canvas.renderAll();
 
     canvas.on("mouse:move", (event) => {
+      canvas.isDrawingMode = false;
       const pointer = canvas.getPointer(event.e);
       rect.set({
         width: Math.abs(pointer.x - rect.left),
@@ -89,6 +101,7 @@ const onAddRectangle = (editor, color, stroke, bgColor, completed) => {
     });
 
     canvas.on("mouse:up", () => {
+      canvas.isDrawingMode = false;
       selector(editor);
       completed();
     });
@@ -100,7 +113,9 @@ const addLine = (editor, color, stroke, bgColor, completed) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
+  objectdraw(canvas);
   canvas.on("mouse:down", (event) => {
+    canvas.isDrawingMode = false;
     const pointer = canvas.getPointer(event.e);
     const points = [pointer.x, pointer.y, pointer.x, pointer.y];
     const line = new fabric.Line(points, {
@@ -114,12 +129,14 @@ const addLine = (editor, color, stroke, bgColor, completed) => {
     canvas.renderAll();
 
     canvas.on("mouse:move", (event) => {
+      canvas.isDrawingMode = false;
       const pointer = canvas.getPointer(event.e);
       line.set({ x2: pointer.x, y2: pointer.y });
       canvas.renderAll();
     });
 
     canvas.on("mouse:up", () => {
+      canvas.isDrawingMode = false;
       selector(editor);
       completed();
     });
@@ -131,6 +148,7 @@ const onAddText = (editor, color, stroke, bgColor, completed) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "text";
+  canvas.hoverCursor = "text";
   canvas.on("mouse:down", (event) => {
     const pointer = canvas.getPointer(event.e);
     const text = new fabric.Textbox("", {
@@ -146,6 +164,7 @@ const onAddText = (editor, color, stroke, bgColor, completed) => {
     });
     canvas.add(text);
     canvas.setActiveObject(text);
+    text.enterEditing();
     canvas.renderAll();
     canvas.off("mouse:down");
     selector(editor);

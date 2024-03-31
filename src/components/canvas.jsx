@@ -383,7 +383,7 @@ const Canvas = (props) => {
         </div>
       ))}
 
-      <Tray
+      {user && ( <Tray
         editor={editor}
         color={color}
         stroke={stroke}
@@ -391,7 +391,7 @@ const Canvas = (props) => {
         opacity={opacity}
         handleDrawing={handleDrawing}
         isDrawing={isDrawing}
-      />
+      /> )}
       <div className="flex  bg-pink-200 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl ">
         <button onClick={zoomIn} className="hover:bg-pink-400 p-4 rounded-md">
           <ZoomIn />

@@ -40,7 +40,8 @@ const Tray = (props) => {
           props.stroke,
           props.bgColor,
           completed,
-          props.isDrawing
+          props.isDrawing,
+          props.handleEraseObject
         );
     setActive(tool);
   };

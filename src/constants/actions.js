@@ -188,7 +188,7 @@ const paintBrush = (editor, color, stroke, bgColor, completed, isDrawing) => {
 };
 
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.
-const eraser = (editor) => {
+const eraser = (editor, color, stroke, bgColor, completed, isDrawing,handleEraseObject) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "url('https://img.icons8.com/skeuomorphism/32/experimental-eraser-skeuomorphism.png'), auto"
   canvas.hoverCursor =   "url('https://img.icons8.com/skeuomorphism/32/experimental-eraser-skeuomorphism.png'), auto";
@@ -196,6 +196,7 @@ const eraser = (editor) => {
   canvas.on("mouse:down", (event) => {
     const target = event.target;
     if (target) {
+      handleEraseObject(target.id);
       canvas.remove(target);
       canvas.renderAll();
     }

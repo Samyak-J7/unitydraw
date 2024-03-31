@@ -32,6 +32,12 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("realtimeObject", data);
   });
 
+  socket.on("deleteObject", (data, roomId) => {
+    if (!roomId) return;
+    console.log(data)
+    socket.to(roomId).emit("deleteObject", data);
+  });
+
   //disconnect
   socket.on("disconnect", () => {
     console.log("A user disconnected");

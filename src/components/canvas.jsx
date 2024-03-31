@@ -26,6 +26,7 @@ const Canvas = (props) => {
   const { userId } = useAuth();
   const [socket, setSocket] = useState(null);
   const [user, setUser] = useState(null);
+  const [eraseObject , setEraseObject] = useState(null)
   const { toast } = useToast();
   const randomcolor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   const [enableConnection, setEnableConnection] = useState(
@@ -99,6 +100,7 @@ const Canvas = (props) => {
             };
           });
 
+
           socket.emit(
             "realtimeObject",
             JSON.stringify(activeObjectsData),
@@ -108,7 +110,14 @@ const Canvas = (props) => {
       };
 
       document.addEventListener("mousemove", handleMouseMove);
-
+      socket.on("deleteObject", (data) => {
+        const objects = editor?.canvas?.getObjects() || [];
+        const objectToDelete = objects.find((obj) => obj.id === data);
+        if (objectToDelete) {
+          editor.canvas.remove(objectToDelete);
+          editor.canvas.renderAll();
+        }
+      });
       socket.on("cursor", (data) => {
         setCursorPositions((prevPositions) => ({
           ...prevPositions,
@@ -123,6 +132,7 @@ const Canvas = (props) => {
 
       // to receive realtime object from other clients
       socket.on("realtimeObject", (data) => {
+        console.log("Received objects:")
         const receivedObjectsData = JSON.parse(data);
         const receivedObjects = receivedObjectsData.map((objData) => {
           let obj;
@@ -262,7 +272,7 @@ const Canvas = (props) => {
       const json = customToJSON(editor.canvas);
       localStorage.setItem("canvasState", json);
     }
-  }, [editor, selectedObjects, Drawing, color, stroke, bgColor, opacity]);
+  }, [editor, selectedObjects, Drawing, color, stroke, bgColor, opacity,realtimeObject]);
 
   //add event listener for keyboard events
   useEffect(() => {
@@ -277,7 +287,9 @@ const Canvas = (props) => {
         if (event.code === "Backspace" || event.code === "Delete") {
           selectedObjects
             .filter((obj) => obj.type !== "textbox")
-            .forEach((obj) => editor.canvas.remove(obj));
+            .forEach((obj) =>{               
+              socket.emit("deleteObject", obj.id, props.roomId);
+              editor.canvas.remove(obj)});
           setSelectedObjects([]);
           editor.canvas.renderAll();
         }
@@ -295,6 +307,15 @@ const Canvas = (props) => {
     }
   }, [editor, selectedObjects]);
 
+
+  useEffect(() => {
+    if (!enableConnection || !socket || !eraseObject) return;
+    socket.emit("deleteObject", eraseObject, props.roomId);
+  },[eraseObject])
+
+  const handleEraseObject = (id) => {
+    setEraseObject(id)
+  }
   //handle object selection
   const handleObjectSelection = () => {
     const activeObjects = editor?.canvas?.getActiveObjects() || [];
@@ -391,6 +412,7 @@ const Canvas = (props) => {
         opacity={opacity}
         handleDrawing={handleDrawing}
         isDrawing={isDrawing}
+        handleEraseObject={handleEraseObject}
       /> )}
       <div className="flex  bg-pink-200 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl ">
         <button onClick={zoomIn} className="hover:bg-pink-400 p-4 rounded-md">

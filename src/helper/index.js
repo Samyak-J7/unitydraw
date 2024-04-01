@@ -39,6 +39,7 @@ export const handleKeyPress = (event) => {
         case "Digit0":
           const button9 = document.querySelector('button[name="ClearAll"]');
           button9.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-          break;
+          break;        
         }
+        
   };

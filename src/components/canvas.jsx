@@ -26,7 +26,8 @@ const Canvas = (props) => {
   const { userId } = useAuth();
   const [socket, setSocket] = useState(null);
   const [user, setUser] = useState(null);
-  const [eraseObject , setEraseObject] = useState(null)
+  const [eraseObject, setEraseObject] = useState(null);
+  const [clipboard, setClipboard] = useState(null);
   const { toast } = useToast();
   const randomcolor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   const [enableConnection, setEnableConnection] = useState(
@@ -100,7 +101,6 @@ const Canvas = (props) => {
             };
           });
 
-
           socket.emit(
             "realtimeObject",
             JSON.stringify(activeObjectsData),
@@ -112,7 +112,10 @@ const Canvas = (props) => {
       document.addEventListener("mousemove", handleMouseMove);
       socket.on("deleteObject", (data) => {
         const objects = editor?.canvas?.getObjects() || [];
-        if (data === "all") { editor.canvas.clear(); return; }
+        if (data === "all") {
+          editor.canvas.clear();
+          return;
+        }
         const objectToDelete = objects.find((obj) => obj.id === data);
         if (objectToDelete) {
           editor.canvas.remove(objectToDelete);
@@ -156,8 +159,8 @@ const Canvas = (props) => {
               obj = new fabric.Textbox(objData.text, { ...objData });
               break;
             case "image":
-              console.log("Image object not implemented yet")
-              break
+              console.log("Image object not implemented yet");
+              break;
             default:
               throw new Error(`Invalid object type: ${objData.type}`);
           }
@@ -275,7 +278,16 @@ const Canvas = (props) => {
       const json = customToJSON(editor.canvas);
       localStorage.setItem("canvasState", json);
     }
-  }, [editor, selectedObjects, Drawing, color, stroke, bgColor, opacity,realtimeObject]);
+  }, [
+    editor,
+    selectedObjects,
+    Drawing,
+    color,
+    stroke,
+    bgColor,
+    opacity,
+    realtimeObject,
+  ]);
 
   //add event listener for keyboard events
   useEffect(() => {
@@ -285,18 +297,28 @@ const Canvas = (props) => {
       editor.canvas.on("selection:cleared", clearSelection);
 
       // Add keyboard event listener for backspace key
+      const handleCopy = (event) => {
+        if (event.ctrlKey && event.key === "c") {
+          copyObjects();
+        } else if (event.ctrlKey && event.key === "v") {
+          pasteObjects();
+        }
+      };
 
       const deleteObject = (event) => {
         if (event.code === "Backspace" || event.code === "Delete") {
           selectedObjects
             .filter((obj) => obj.type !== "textbox")
-            .forEach((obj) =>{               
-              socket.emit("deleteObject", obj.id, props.roomId);
-              editor.canvas.remove(obj)});
+            .forEach((obj) => {
+              enableConnection && socket.emit("deleteObject", obj.id, props.roomId)
+              editor.canvas.remove(obj);
+              editor.canvas.discardActiveObject()
+            });
           setSelectedObjects([]);
           editor.canvas.renderAll();
         }
       };
+      window.addEventListener("keydown", handleCopy);
       window.addEventListener("keydown", handleKeyPress);
       window.addEventListener("keydown", deleteObject);
       return () => {
@@ -306,19 +328,19 @@ const Canvas = (props) => {
         editor.canvas.off("selection:cleared", clearSelection);
         window.removeEventListener("keydown", handleKeyPress);
         window.removeEventListener("keydown", deleteObject);
+        window.removeEventListener("keydown", handleCopy);
       };
     }
   }, [editor, selectedObjects]);
 
-
   useEffect(() => {
     if (!enableConnection || !socket || !eraseObject) return;
     socket.emit("deleteObject", eraseObject, props.roomId);
-  },[eraseObject])
+  }, [eraseObject]);
 
   const handleEraseObject = (id) => {
-    setEraseObject(id)
-  }
+    setEraseObject(id);
+  };
   //handle object selection
   const handleObjectSelection = () => {
     const activeObjects = editor?.canvas?.getActiveObjects() || [];
@@ -387,6 +409,37 @@ const Canvas = (props) => {
     editor.canvas.renderAll();
   };
 
+  const copyObjects = () => {
+    if (editor.canvas.getActiveObject()) {
+      setClipboard(fabric.util.object.clone(editor.canvas.getActiveObject()));
+      editor.canvas.discardActiveObject().renderAll();
+    }
+  };
+
+  const pasteObjects = () => {
+    if (clipboard) {
+      clipboard.clone((cloned) => {
+        editor.canvas.discardActiveObject();
+        cloned.set({
+          left: cloned.left + 10,
+          top: cloned.top + 10,
+          evented: true,
+        });
+        if (cloned.type === "activeSelection") {
+          // If multiple objects are selected, add them all
+          cloned.canvas = editor.canvas;
+          cloned.forEachObject((obj) => editor.canvas.add(obj));
+          cloned.setCoords();
+        } else {
+          editor.canvas.add(cloned);
+        }
+        setClipboard(cloned);
+        editor.canvas.setActiveObject(cloned);
+        editor.canvas.renderAll();
+      });
+    }
+  };
+
   return (
     <div>
       {Object.values(cursorPositions).map(({ x, y, userId, randomcolor }) => (
@@ -407,16 +460,18 @@ const Canvas = (props) => {
         </div>
       ))}
 
-      {user && ( <Tray
-        editor={editor}
-        color={color}
-        stroke={stroke}
-        bgColor={bgColor}
-        opacity={opacity}
-        handleDrawing={handleDrawing}
-        isDrawing={isDrawing}
-        handleEraseObject={handleEraseObject}
-      /> )}
+      {user && (
+        <Tray
+          editor={editor}
+          color={color}
+          stroke={stroke}
+          bgColor={bgColor}
+          opacity={opacity}
+          handleDrawing={handleDrawing}
+          isDrawing={isDrawing}
+          handleEraseObject={handleEraseObject}
+        />
+      )}
       <div className="flex  bg-pink-200 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl ">
         <button onClick={zoomIn} className="hover:bg-pink-400 p-4 rounded-md">
           <ZoomIn />

@@ -34,7 +34,6 @@ io.on("connection", (socket) => {
 
   socket.on("deleteObject", (data, roomId) => {
     if (!roomId) return;
-    console.log(data)
     socket.to(roomId).emit("deleteObject", data);
   });
 

@@ -180,9 +180,11 @@ const paintBrush = (editor, color, stroke, bgColor, completed, isDrawing) => {
   canvas.freeDrawingBrush.color = color;
 
   canvas.on("mouse:down", () => {
+    console.log("mouse down")
     isDrawing(true);
   });
   canvas.on("mouse:up", () => {
+    console.log("mouse up")
     isDrawing(false);
   });
 };

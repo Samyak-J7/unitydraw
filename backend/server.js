@@ -21,9 +21,9 @@ io.on("connection", (socket) => {
   });
 
   //cursor data
-  socket.on("cursor", (data, roomId , userid) => {
+  socket.on("cursor", (data, roomId) => {
     if (!roomId) return;
-    socket.to(roomId).emit('cursor', { ...data, userId: userid });
+    socket.to(roomId).emit('cursor', { ...data});
   });
 
   //object data
@@ -37,10 +37,10 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("deleteObject", data);
   });
 
-  //disconnect
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    console.log("user disconnected");
   });
+ 
 });
 
 server.listen(PORT, () => {

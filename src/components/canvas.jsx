@@ -72,7 +72,6 @@ const Canvas = (props) => {
       socket.on("userJoined", (data) => {
         console.log("You joined:", data);
       });
-
       // attach listener event for joining
       socket.on("roomJoined", (data) => {
         console.log("User joined:", data);
@@ -83,13 +82,12 @@ const Canvas = (props) => {
       socket.emit("joinRoom", props.roomId, userId);
 
       const handleMouseMove = (event) => {
-        if (!user) return console.log("User not found");
+        if (!user) return;
         const { clientX: x, clientY: y } = event;
         socket.emit(
           "cursor",
           { x, y, userId: user.username, randomcolor },
           props.roomId,
-          user.username
         );
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
@@ -172,7 +170,6 @@ const Canvas = (props) => {
       });
       return () => {
         document.removeEventListener("mousemove", handleMouseMove);
-        socket.disconnect();
       };
     } catch (error) {
       console.log("Error , Something went wrong");
@@ -181,12 +178,14 @@ const Canvas = (props) => {
   }, [editor]);
 
   const isDrawing = (val) => {
+    console.log("isDrawing", val)
     setDrawing(val);
   };
 
   //send paintbrush realtime data
   useEffect(() => {
     if (!enableConnection || !isPainting || Drawing) return;
+    console.log("Sending paintbrush data")
     const objects = editor?.canvas?.getObjects() || [];
     if (objects.length > 0) {
       const pathdata = objects
@@ -206,6 +205,7 @@ const Canvas = (props) => {
           };
         });
       if (pathdata.length > 0) {
+        console.log("pathdata", pathdata)
         socket.emit("realtimeObject", JSON.stringify(pathdata), props.roomId);
       }
     }
@@ -343,7 +343,7 @@ const Canvas = (props) => {
   };
   //handle object selection
   const handleObjectSelection = () => {
-    const activeObjects = editor?.canvas?.getActiveObjects() || [];
+    const activeObjects = editor?.canvas?.getActiveObjects() || [];   
     setSelectedObjects(activeObjects);
 
     // Get color of the first selected object, assuming all selected objects have the same color
@@ -364,6 +364,7 @@ const Canvas = (props) => {
   };
 
   const handleDrawing = (val) => {
+    console.log("handleDrawing", val)
     setIsPainting(val);
   };
 

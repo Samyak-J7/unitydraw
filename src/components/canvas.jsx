@@ -28,6 +28,7 @@ const Canvas = (props) => {
   const [user, setUser] = useState(null);
   const [eraseObject, setEraseObject] = useState(null);
   const [clipboard, setClipboard] = useState(null);
+  const [canvasState, setCanvasState] = useState([]); // State to store the history of the canvas
   const { toast } = useToast();
   const randomcolor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   const [enableConnection, setEnableConnection] = useState(
@@ -181,6 +182,12 @@ const Canvas = (props) => {
     setDrawing(val);
   };
 
+  useEffect(() => {
+    if (editor) {
+      saveCanvasState();
+    }
+  }, [ editor, selectedObjects, realtimeObject]);
+
   //send paintbrush realtime data
   useEffect(() => {
     if (!enableConnection || !isPainting || Drawing) return;
@@ -293,15 +300,18 @@ const Canvas = (props) => {
       editor.canvas.on("selection:updated", handleObjectSelection);
       editor.canvas.on("selection:cleared", clearSelection);
 
-      // Add keyboard event listener for backspace key
-      const handleCopy = (event) => {
+      
+      const handleKeys = (event) => {
         if (event.ctrlKey && event.key === "c") {
           copyObjects();
         } else if (event.ctrlKey && event.key === "v") {
           pasteObjects();
+        } else if (event.ctrlKey && event.key === "z") {
+          undo();
         }
       };
 
+      // Add keyboard event listener for backspace key
       const deleteObject = (event) => {
         if (event.code === "Backspace" || event.code === "Delete") {
           selectedObjects
@@ -315,7 +325,7 @@ const Canvas = (props) => {
           editor.canvas.renderAll();
         }
       };
-      window.addEventListener("keydown", handleCopy);
+      window.addEventListener("keydown", handleKeys);
       window.addEventListener("keydown", handleKeyPress);
       window.addEventListener("keydown", deleteObject);
       return () => {
@@ -325,7 +335,7 @@ const Canvas = (props) => {
         editor.canvas.off("selection:cleared", clearSelection);
         window.removeEventListener("keydown", handleKeyPress);
         window.removeEventListener("keydown", deleteObject);
-        window.removeEventListener("keydown", handleCopy);
+        window.removeEventListener("keydown", handleKeys);
       };
     }
   }, [editor, selectedObjects]);
@@ -436,6 +446,36 @@ const Canvas = (props) => {
       });
     }
   };
+
+  // Function to save the current state of the canvas to history
+  const saveCanvasState = () => {
+    if (editor) {
+      editor.canvas.getObjects().map((obj) => {
+        if (!obj.id) {
+          obj.id = uuidv4();
+        }
+      });
+      const customToJSON = (canvas) => {
+        return JSON.stringify(canvas.toJSON(["id"]));
+      };
+
+      const json = customToJSON(editor.canvas);
+      if (json === canvasState[canvasState.length - 1]) return // Check if the current state is the same as the last state
+      setCanvasState((prevState) => [...prevState, json]);
+    }
+  };
+  
+  // Function to undo the last action
+  const undo = () => {
+    if (canvasState.length > 0) {
+      // ToDO: in realtime undo, we need to send the last state to the server and update the canvas
+      const newCanvasState = canvasState;
+      const lastCanvasState = newCanvasState.pop() // Remove the last state from the history
+      const parsedLastCanvasState = JSON.parse(lastCanvasState)
+      editor.canvas.loadFromJSON(parsedLastCanvasState, editor.canvas.renderAll.bind(editor.canvas)); // Load the last state to the canvas
+      setCanvasState(newCanvasState);
+      };
+    };
 
   return (
     <div>

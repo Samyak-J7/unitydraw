@@ -298,6 +298,12 @@ const handleFileChange = (e, editor, completed) => {
   reader.onload = (event) => {
     const imageUrl = event.target.result;
     fabric.Image.fromURL(imageUrl, (img) => {
+      img.set({
+        top: editor.canvas.height / 4,
+        left: editor.canvas.width / 4,
+        scaleX: 0.3,
+        scaleY: 0.3,
+      });
       editor.canvas.add(img);
     });
   };

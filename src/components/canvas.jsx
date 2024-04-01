@@ -322,6 +322,20 @@ const Canvas = (props) => {
           pasteObjects();
         } else if (event.ctrlKey && event.key === "z") {
           undo();
+        } else if (event.ctrlKey && event.key === "]") {
+          const activeObjects = editor?.canvas?.getActiveObject();
+          if (activeObjects) {
+            activeObjects.bringForward();
+            editor.canvas.discardActiveObject();
+            editor.canvas.requestRenderAll();
+          }
+        } else if (event.ctrlKey && event.key === "[") {
+          const activeObjects = editor?.canvas?.getActiveObject();
+          if (activeObjects) {
+            activeObjects.sendBackwards();
+            editor.canvas.discardActiveObject();
+            editor.canvas.requestRenderAll();
+          }
         }
       };
 
@@ -508,8 +522,7 @@ const Canvas = (props) => {
             left: x,
             top: y,
             color: randomcolor || red,
-          }}
-        >
+          }}>
           <MousePointer2 style={{ fill: randomcolor || red }} />
           <span className="text-xs ml-3">{userId}</span>
         </div>

@@ -33,6 +33,9 @@ const Tray = (props) => {
   };
 
   const handleclick = (tool) => {
+    console.log(tool.action.name)
+    console.log(props)
+    console.log(props.handleDrawing)
     tool.action.name === "paintBrush" ? props.handleDrawing(true) : props.handleDrawing(false);
     tool.action === "openFilePicker"  ? openFilePicker() : tool.action(props.editor,props.color,props.stroke,props.bgColor,completed, props.isDrawing,props.handleEraseObject);
     setActive(tool);

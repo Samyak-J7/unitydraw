@@ -290,7 +290,7 @@ const arrow = (editor, color, stroke, bgColor, completed) => {
 };
 
 // handleFileChange function is used to handle the file change event and add the image to the canvas.
-const handleFileChange = (e, editor, completed) => {
+const handleFileChange = (e, editor, completed,sendImage) => {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = "";
@@ -299,12 +299,14 @@ const handleFileChange = (e, editor, completed) => {
     const imageUrl = event.target.result;
     fabric.Image.fromURL(imageUrl, (img) => {
       img.set({
+        id: uuidv4(),
         top: editor.canvas.height / 4,
         left: editor.canvas.width / 4,
         scaleX: 0.3,
         scaleY: 0.3,
       });
       editor.canvas.add(img);
+      sendImage(img);
     });
   };
   reader.readAsDataURL(file);

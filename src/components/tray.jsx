@@ -10,11 +10,20 @@ import {
 import { handleFileChange } from "@/constants/actions";
 
 const Tray = (props) => {
+  const socket = props.socket; 
   const fileInputRef = useRef(null);
   const [active, setActive] = React.useState(Tools[1]);
   const completed = () => {
     setActive(Tools[1]);
   };
+
+  const sendImage = (obj) => {
+    socket.emit("realtimeObject",JSON.stringify([{
+      ...obj.toObject(),
+      id: obj.id,
+    }]), props.roomId);
+  }
+
   useEffect(() => {
     if (active.name === "Paintbrush") {
       active.action(
@@ -60,7 +69,7 @@ const Tray = (props) => {
         accept="image/*"
         ref={fileInputRef}
         style={{ display: "none" }}
-        onChange={(e) => handleFileChange(e, props.editor, completed)}
+        onChange={(e) => handleFileChange(e, props.editor, completed,sendImage)}
       />
     </div>
   );

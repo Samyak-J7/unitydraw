@@ -88,16 +88,17 @@ const Canvas = (props) => {
         socket.emit(
           "cursor",
           { x, y, userId: user.username, randomcolor },
-          props.roomId,
+          props.roomId
         );
 
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
           const activeObjectsData = activeObjects.map((obj) => {
-            return {
-              ...obj.toObject(),
-              id: obj.id,
-            };
+            const newObj = { ...obj.toObject(), id: obj.id };
+            if ("src" in newObj) {
+              delete newObj.src;
+            }
+            return newObj;
           });
 
           socket.emit(
@@ -158,8 +159,7 @@ const Canvas = (props) => {
               obj = new fabric.Textbox(objData.text, { ...objData });
               break;
             case "image":
-              console.log("Image object not implemented yet");
-              break;
+              return objData;
             default:
               throw new Error(`Invalid object type: ${objData.type}`);
           }
@@ -186,7 +186,7 @@ const Canvas = (props) => {
     if (editor) {
       saveCanvasState();
     }
-  }, [ editor, selectedObjects, realtimeObject]);
+  }, [editor, selectedObjects, realtimeObject]);
 
   //send paintbrush realtime data
   useEffect(() => {
@@ -239,6 +239,14 @@ const Canvas = (props) => {
               case "textbox":
                 obj.set({ text: realtimeObject.text, ...realtimeObject });
                 break;
+              case "image":
+                obj.set({
+                  src: obj.src,
+                  width: realtimeObject.width,
+                  height: realtimeObject.height,
+                  ...realtimeObject,
+                });
+                break;
               default:
                 obj.set({ ...realtimeObject });
                 break;
@@ -261,7 +269,14 @@ const Canvas = (props) => {
           .some((obj) => obj.id === newObject.id);
         // If the object doesn't exist in the canvas, add it
         if (!isExistingObject) {
-          editor.canvas.add(newObject);
+          if (newObject.type === "image") {
+            fabric.Image.fromURL(newObject.src, (img) => {
+              img.set({ ...newObject });
+              editor.canvas.add(img);
+            });
+          } else {
+            editor.canvas.add(newObject);
+          }
         }
       }
     }
@@ -300,7 +315,6 @@ const Canvas = (props) => {
       editor.canvas.on("selection:updated", handleObjectSelection);
       editor.canvas.on("selection:cleared", clearSelection);
 
-      
       const handleKeys = (event) => {
         if (event.ctrlKey && event.key === "c") {
           copyObjects();
@@ -317,9 +331,10 @@ const Canvas = (props) => {
           selectedObjects
             .filter((obj) => obj.type !== "textbox")
             .forEach((obj) => {
-              enableConnection && socket.emit("deleteObject", obj.id, props.roomId)
+              enableConnection &&
+                socket.emit("deleteObject", obj.id, props.roomId);
               editor.canvas.remove(obj);
-              editor.canvas.discardActiveObject()
+              editor.canvas.discardActiveObject();
             });
           setSelectedObjects([]);
           editor.canvas.renderAll();
@@ -350,7 +365,7 @@ const Canvas = (props) => {
   };
   //handle object selection
   const handleObjectSelection = () => {
-    const activeObjects = editor?.canvas?.getActiveObjects() || [];   
+    const activeObjects = editor?.canvas?.getActiveObjects() || [];
     setSelectedObjects(activeObjects);
 
     // Get color of the first selected object, assuming all selected objects have the same color
@@ -460,22 +475,25 @@ const Canvas = (props) => {
       };
 
       const json = customToJSON(editor.canvas);
-      if (json === canvasState[canvasState.length - 1]) return // Check if the current state is the same as the last state
+      if (json === canvasState[canvasState.length - 1]) return; // Check if the current state is the same as the last state
       setCanvasState((prevState) => [...prevState, json]);
     }
   };
-  
+
   // Function to undo the last action
   const undo = () => {
     if (canvasState.length > 0) {
       // ToDO: in realtime undo, we need to send the last state to the server and update the canvas
       const newCanvasState = canvasState;
-      const lastCanvasState = newCanvasState.pop() // Remove the last state from the history
-      const parsedLastCanvasState = JSON.parse(lastCanvasState)
-      editor.canvas.loadFromJSON(parsedLastCanvasState, editor.canvas.renderAll.bind(editor.canvas)); // Load the last state to the canvas
+      const lastCanvasState = newCanvasState.pop(); // Remove the last state from the history
+      const parsedLastCanvasState = JSON.parse(lastCanvasState);
+      editor.canvas.loadFromJSON(
+        parsedLastCanvasState,
+        editor.canvas.renderAll.bind(editor.canvas)
+      ); // Load the last state to the canvas
       setCanvasState(newCanvasState);
-      };
-    };
+    }
+  };
 
   return (
     <div>
@@ -507,6 +525,8 @@ const Canvas = (props) => {
           handleDrawing={handleDrawing}
           isDrawing={isDrawing}
           handleEraseObject={handleEraseObject}
+          socket={socket}
+          roomId={props.roomId}
         />
       )}
       <div className="flex  bg-pink-200 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl ">

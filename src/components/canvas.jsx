@@ -87,6 +87,21 @@ const Canvas = (props) => {
           props.roomId
         );
 
+        const removeSrcFromGroups = (objects) => {
+          objects.forEach((obj) => {
+            if (obj.type === 'image') {
+              delete obj.src;
+            }
+            if (obj.type === 'group') {
+              // If it's a group, remove src property and recursively process nested groups
+              delete obj.src;
+              if (obj.objects && obj.objects.length > 0) {
+                removeSrcFromGroups(obj.objects);
+              }
+            }
+          });
+        };
+        
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
           const activeObjectsData = activeObjects.map((obj) => {
@@ -95,12 +110,8 @@ const Canvas = (props) => {
               delete newObj.src;
             }
             if (obj.type === 'group') {
-              // If it's a group, iterate through its objects to remove src property
-              newObj.objects.forEach((groupObj) => {
-                if (groupObj.type === 'image') {
-                  delete groupObj.src;
-                }
-              });
+              // Recursively remove src property from nested groups
+              removeSrcFromGroups(newObj.objects);
             }
             return newObj;
           });
@@ -111,6 +122,7 @@ const Canvas = (props) => {
             props.roomId
           );
         }
+        
       };
 
       document.addEventListener("mousemove", handleMouseMove);

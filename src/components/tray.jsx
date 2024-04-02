@@ -10,7 +10,8 @@ import {
 import { handleFileChange } from "@/constants/actions";
 
 const Tray = (props) => {
-  const socket = props.socket; 
+  const {color, stroke, fill } = props.properties;
+  const socket = props.socket;
   const fileInputRef = useRef(null);
   const [active, setActive] = React.useState(Tools[1]);
   const completed = () => {
@@ -18,32 +19,57 @@ const Tray = (props) => {
   };
 
   const sendImage = (obj) => {
-    socket.emit("realtimeObject",JSON.stringify([{
-      ...obj.toObject(),
-      id: obj.id,
-    }]), props.roomId);
-  }
+    if (!socket) return;
+    socket.emit(
+      "realtimeObject",
+      JSON.stringify([
+        {
+          ...obj.toObject(),
+          id: obj.id,
+        },
+      ]),
+      props.roomId
+    );
+  };
 
   useEffect(() => {
     if (active.name === "Paintbrush") {
       active.action(
         props.editor,
-        props.color,
-        props.stroke,
-        props.bgColor,
+        color,
+        stroke,
+        fill,
         completed,
         props.isDrawing
       );
     }
-  }, [props.color, props.stroke, props.bgColor]);
+  }, [color, stroke, fill]);
 
   const openFilePicker = () => {
     fileInputRef.current.click();
   };
 
   const handleclick = (tool) => {
-    tool.name === "Paintbrush" ? props.handleDrawing(true) : props.handleDrawing(false);
-    tool.action === "openFilePicker"  ? openFilePicker() : tool.action(props.editor,props.color,props.stroke,props.bgColor,completed, props.isDrawing,props.handleEraseObject);
+    tool.name === "Paintbrush"
+      ? props.handleDrawing(true)
+      : props.handleDrawing(false);
+    tool.action === "openFilePicker"
+      ? openFilePicker()
+      : tool.name === "Paintbrush"
+      ? tool.action(
+          props.editor,
+          color,
+          stroke,
+          fill,
+          completed,
+          props.isDrawing
+        )
+      : tool.action(
+          props.editor,
+          completed,
+          props.isDrawing,
+          props.handleEraseObject
+        );
     setActive(tool);
   };
   return (
@@ -53,8 +79,17 @@ const Tray = (props) => {
           <TooltipProvider key={index} delayDuration={100}>
             <Tooltip>
               <TooltipTrigger asChild>
-              <button name={tool.name}  className={`hover:bg-gray-200 py-3 px-2 m-1 rounded-xl flex justify-center items-end gap-1 ${ active.name === tool.name  ? "bg-gray-300":"bg-transparent"} `} key={index} onClick={() => handleclick(tool)}>
-                 {tool.icon} <span className="text-xs text-slate-500 ">{index<9? index+1 : 0 }</span>
+                <button
+                  name={tool.name}
+                  className={`hover:bg-gray-200 py-3 px-2 m-1 rounded-xl flex justify-center items-end gap-1 ${
+                    active.name === tool.name ? "bg-gray-300" : "bg-transparent"
+                  } `}
+                  key={index}
+                  onClick={() => handleclick(tool)}>
+                  {tool.icon}{" "}
+                  <span className="text-xs text-slate-500 ">
+                    {index < 9 ? index + 1 : 0}
+                  </span>
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -69,7 +104,9 @@ const Tray = (props) => {
         accept="image/*"
         ref={fileInputRef}
         style={{ display: "none" }}
-        onChange={(e) => handleFileChange(e, props.editor, completed,sendImage)}
+        onChange={(e) =>
+          handleFileChange(e, props.editor, completed, sendImage)
+        }
       />
     </div>
   );

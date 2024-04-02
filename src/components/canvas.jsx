@@ -96,7 +96,7 @@ const Canvas = (props) => {
             }
             return newObj;
           });
-
+  
           socket.emit(
             "realtimeObject",
             JSON.stringify(activeObjectsData),
@@ -139,39 +139,11 @@ const Canvas = (props) => {
 
       // to receive realtime object from other clients
       socket.on("realtimeObject", (data) => {
-        const receivedObjectsData = JSON.parse(data);
-        const receivedObjects = receivedObjectsData.map((objData) => {
-          let obj;
-          switch (objData.type) {
-            case "circle":
-              obj = new fabric.Circle(objData);
-              break;
-            case "rect":
-              obj = new fabric.Rect(objData);
-              break;
-            case "path":
-              obj = new fabric.Path(`${objData.path}`, { ...objData });
-              break;
-            case "line":
-              obj = new fabric.Line(
-                [objData.x1, objData.y1, objData.x2, objData.y2],
-                { ...objData }
-              );
-              break;
-            case "textbox":
-              obj = new fabric.Textbox(objData.text, { ...objData });
-              break;
-            case "image":
-              return objData;
-            default:
-              throw new Error(`Invalid object type: ${objData.type}`);
-          }
-          obj.id = objData.id; // Ensure id property is set
-          return obj;
-        });
+        const receivedObjects = JSON.parse(data);
         setRealtimeObject(receivedObjects);
         setUpdate(true);
       });
+
       return () => {
         document.removeEventListener("mousemove", handleMouseMove);
       };
@@ -180,10 +152,6 @@ const Canvas = (props) => {
       // connection with server failed redirect to draw toast try again later server error
     }
   }, [editor]);
-
-  const isDrawing = (val) => {
-    setDrawing(val);
-  };
 
   useEffect(() => {
     if (editor) {
@@ -221,64 +189,81 @@ const Canvas = (props) => {
   //update the object in the canvas if realtime objects changes
   useEffect(() => {
     if (update && editor && realtimeObject) {
-      editor.canvas.getObjects().forEach((obj) => {
-        //check over every object in canvas
-        realtimeObject.forEach((realtimeObject) => {
-          //check over every object in realtime object mostlly one object but can be multiple
+      editor.canvas.getObjects().forEach((obj) => {   //check over every object in canvas
+        realtimeObject.forEach((realtimeObject) => {  //check over every object in realtime object mostlly one object but can be multiple         
           if (realtimeObject.id === obj.id) {
             switch (realtimeObject.type) {
               case "line":
-                obj.set({
-                  x1: realtimeObject.x1,
-                  y1: realtimeObject.y1,
-                  x2: realtimeObject.x2,
-                  y2: realtimeObject.y2,
-                  ...realtimeObject,
-                });
+                obj.set({x1: realtimeObject.x1, y1: realtimeObject.y1,x2: realtimeObject.x2, y2: realtimeObject.y2, ...realtimeObject,});
                 break;
               case "path":
-                obj.set({ path: obj.path, ...realtimeObject });
+                obj.set({path: obj.path, ...realtimeObject });
                 break;
               case "textbox":
-                obj.set({ text: realtimeObject.text, ...realtimeObject });
+                obj.set({text: realtimeObject.text, ...realtimeObject });
                 break;
               case "image":
-                obj.set({
-                  src: obj.src,
-                  width: realtimeObject.width,
-                  height: realtimeObject.height,
-                  ...realtimeObject,
-                });
+                obj.set({src: obj.src, width: realtimeObject.width, height: realtimeObject.height, ...realtimeObject,});
                 break;
               default:
                 obj.set({ ...realtimeObject });
                 break;
             }
-            obj.setCoords(); // Update object coordinates
+            obj.setCoords(); 
             editor.canvas.renderAll();
           }
         });
       });
+
       // Add new object to the canvas if id is not matched
       if (realtimeObject.length > 0) {
         let newObject = realtimeObject[0];
-        if (newObject.type === "path") {
-          // If it's a path, take the last path object from the real-time data becasue we are receiving all the path objects when drawn
+        if (newObject.type === "path") {   // If it's a path, take the last path object from the real-time data becasue we are receiving all the path objects when drawn
           newObject = realtimeObject[realtimeObject.length - 1];
         }
-        // Check if the object with the same ID exists in the canvas
-        const isExistingObject = editor.canvas
+        const isExistingObject = editor.canvas  // Check if the object with the same ID exists in the canvas
           .getObjects()
           .some((obj) => obj.id === newObject.id);
-        // If the object doesn't exist in the canvas, add it
-        if (!isExistingObject) {
-          if (newObject.type === "image") {
-            fabric.Image.fromURL(newObject.src, (img) => {
-              img.set({ ...newObject });
-              editor.canvas.add(img);
-            });
-          } else {
-            editor.canvas.add(newObject);
+
+        if (!isExistingObject) {  // If the object doesn't exist in the canvas, add it
+          switch (newObject.type) {
+            case "circle":
+              editor.canvas.add( new fabric.Circle({...newObject}));
+              break
+            case "rect":
+              editor.canvas.add( new fabric.Rect({...newObject}));
+              break
+            case "path":
+              editor.canvas.add( new fabric.Path(`${newObject.path}`, { ...newObject }));
+              break
+            case "line":
+              editor.canvas.add( new fabric.Line([newObject.x1, newObject.y1, newObject.x2, newObject.y2], { ...newObject }));
+              break
+            case "textbox":
+              editor.canvas.add( new fabric.Textbox(newObject.text, { ...newObject }));
+              break
+            case "image":
+              fabric.Image.fromURL(newObject.src, (img) => {img.set({ ...newObject }); editor.canvas.add(img)});
+              break
+            case "group":
+              const groupobj = newObject.objects.map((obj) => {
+                if (obj.type === "path") {
+                  return new fabric.Path(`${obj.path}`, { ...obj });
+                } else if (obj.type === "line") {
+                  return new fabric.Line([obj.x1, obj.y1, obj.x2, obj.y2], { ...obj });
+                } else if (obj.type === "textbox") {
+                  return new fabric.Textbox(obj.text, { ...obj });
+                } else if (obj.type === "image") {
+                  return new fabric.Image.fromURL(obj.src, (img) => {img.set({ ...obj })});
+                } else if ( obj.type === "circle") {
+                  return new fabric.Circle({...obj});
+                } else if (obj.type === "rect") {
+                  return new fabric.Rect({...obj});
+                } 
+              });
+              const group = new fabric.Group(groupobj,{ ...newObject });
+              editor.canvas.add(group);
+              break 
           }
         }
       }
@@ -337,11 +322,15 @@ const Canvas = (props) => {
             editor.canvas.requestRenderAll();
           }
         } else if (event.ctrlKey && event.key === "g") {
+          event.preventDefault();
           const activeObjects = editor?.canvas?.getActiveObject();
           if (!activeObjects) return;
           if (activeObjects?.type === "activeSelection") {
-            activeObjects.toGroup();
-            editor.canvas.requestRenderAll();
+              const obj = activeObjects.toGroup();
+              obj.set({ ...obj, id: uuidv4() });
+              socket.emit("realtimeObject", JSON.stringify([{ ...obj.toObject(), id: obj.id }]), props.roomId);
+              editor.canvas.discardActiveObject();
+              editor.canvas.requestRenderAll();
           }
         }
       };
@@ -386,8 +375,6 @@ const Canvas = (props) => {
   const handleObjectSelection = () => {
     const activeObjects = editor?.canvas?.getActiveObject();
     setSelectedObjects(activeObjects);
-
-    // Get color of the first selected object, assuming all selected objects have the same color
     if (activeObjects) {
       if (activeObjects.type === "image") return;
       const color = activeObjects.get("stroke");
@@ -396,6 +383,9 @@ const Canvas = (props) => {
       const opacity = activeObjects.get("opacity");
       setProperties({ color, stroke, fill, opacity });
     }
+  };
+  const isDrawing = (val) => {
+    setDrawing(val);
   };
 
   const clearSelection = () => {

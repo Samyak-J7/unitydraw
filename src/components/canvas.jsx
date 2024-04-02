@@ -7,7 +7,7 @@ import Settings from "./settings";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@clerk/nextjs";
-import { handleKeyPress } from "@/helper";
+import { addObj, handleKeyPress } from "@/helper";
 import { getUserById } from "@/lib/actions/user.action";
 import { useToast } from "@/components/ui/use-toast";
 const Canvas = (props) => {
@@ -226,45 +226,7 @@ const Canvas = (props) => {
           .some((obj) => obj.id === newObject.id);
 
         if (!isExistingObject) {  // If the object doesn't exist in the canvas, add it
-          switch (newObject.type) {
-            case "circle":
-              editor.canvas.add( new fabric.Circle({...newObject}));
-              break
-            case "rect":
-              editor.canvas.add( new fabric.Rect({...newObject}));
-              break
-            case "path":
-              editor.canvas.add( new fabric.Path(`${newObject.path}`, { ...newObject }));
-              break
-            case "line":
-              editor.canvas.add( new fabric.Line([newObject.x1, newObject.y1, newObject.x2, newObject.y2], { ...newObject }));
-              break
-            case "textbox":
-              editor.canvas.add( new fabric.Textbox(newObject.text, { ...newObject }));
-              break
-            case "image":
-              fabric.Image.fromURL(newObject.src, (img) => {img.set({ ...newObject }); editor.canvas.add(img)});
-              break
-            case "group":
-              const groupobj = newObject.objects.map((obj) => {
-                if (obj.type === "path") {
-                  return new fabric.Path(`${obj.path}`, { ...obj });
-                } else if (obj.type === "line") {
-                  return new fabric.Line([obj.x1, obj.y1, obj.x2, obj.y2], { ...obj });
-                } else if (obj.type === "textbox") {
-                  return new fabric.Textbox(obj.text, { ...obj });
-                } else if (obj.type === "image") {
-                  return new fabric.Image.fromURL(obj.src, (img) => {img.set({ ...obj })});
-                } else if ( obj.type === "circle") {
-                  return new fabric.Circle({...obj});
-                } else if (obj.type === "rect") {
-                  return new fabric.Rect({...obj});
-                } 
-              });
-              const group = new fabric.Group(groupobj,{ ...newObject });
-              editor.canvas.add(group);
-              break 
-          }
+          addObj(newObject, editor);
         }
       }
     }
@@ -328,7 +290,7 @@ const Canvas = (props) => {
           if (activeObjects?.type === "activeSelection") {
               const obj = activeObjects.toGroup();
               obj.set({ ...obj, id: uuidv4() });
-              socket.emit("realtimeObject", JSON.stringify([{ ...obj.toObject(), id: obj.id }]), props.roomId);
+              enableConnection && socket && socket.emit("realtimeObject", JSON.stringify([{ ...obj.toObject(), id: obj.id }]), props.roomId);
               editor.canvas.discardActiveObject();
               editor.canvas.requestRenderAll();
           }

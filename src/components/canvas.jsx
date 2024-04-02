@@ -91,12 +91,20 @@ const Canvas = (props) => {
         if (activeObjects.length > 0) {
           const activeObjectsData = activeObjects.map((obj) => {
             const newObj = { ...obj.toObject(), id: obj.id };
-            if ("src" in newObj) {
+            if (obj.type === 'image' || obj.type === 'group') {
               delete newObj.src;
+            }
+            if (obj.type === 'group') {
+              // If it's a group, iterate through its objects to remove src property
+              newObj.objects.forEach((groupObj) => {
+                if (groupObj.type === 'image') {
+                  delete groupObj.src;
+                }
+              });
             }
             return newObj;
           });
-  
+          
           socket.emit(
             "realtimeObject",
             JSON.stringify(activeObjectsData),

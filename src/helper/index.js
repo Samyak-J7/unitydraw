@@ -44,7 +44,7 @@ export const handleKeyPress = (event) => {
         
   };
 
-export const createFabricObject = (obj) => {
+  export const createFabricObject = (obj, editor) => {
     switch (obj.type) {
         case 'path':
             return new fabric.Path(obj.path, { ...obj });
@@ -53,39 +53,64 @@ export const createFabricObject = (obj) => {
         case 'textbox':
             return new fabric.Textbox(obj.text, { ...obj });
         case 'image':
-            return new fabric.Image.fromURL(obj.src, img => img.set({ ...obj }));
+            return new Promise(resolve => {
+                fabric.Image.fromURL(obj.src, img => {
+                    img.set({...obj});
+                    resolve(img);
+                });
+            });
         case 'circle':
             return new fabric.Circle({ ...obj });
         case 'rect':
             return new fabric.Rect({ ...obj });
         case 'group':
-            return new fabric.Group(obj.objects.map(createFabricObject), { ...obj });
+            return Promise.all(obj.objects.map(innerObj => createFabricObject(innerObj, editor)))
+                .then(objects => {
+                    const group = new fabric.Group(objects, { ...obj });
+                    return group;
+                })
+                .catch(error => {
+                    console.error('Error creating group:', error);
+                    return null;
+                });
         default:
             return null;
     }
 }
 
-export const addObj = (newObject , editor) => {switch (newObject.type) {
-  case "circle":
-    editor.canvas.add( new fabric.Circle({...newObject}));
-    break
-  case "rect":
-    editor.canvas.add( new fabric.Rect({...newObject}));
-    break
-  case "path":
-    editor.canvas.add( new fabric.Path(`${newObject.path}`, { ...newObject }));
-    break
-  case "line":
-    editor.canvas.add( new fabric.Line([newObject.x1, newObject.y1, newObject.x2, newObject.y2], { ...newObject }));
-    break
-  case "textbox":
-    editor.canvas.add( new fabric.Textbox(newObject.text, { ...newObject }));
-    break
-  case "image":
-    fabric.Image.fromURL(newObject.src, (img) => {img.set({ ...newObject }); editor.canvas.add(img)});
-    break
-  case "group":            
-    const group = new fabric.Group(newObject.objects.map(createFabricObject).filter(obj => obj), { ...newObject });            
-    editor.canvas.add(group);
-}
+export const addObj = async (newObject, editor) => {
+    switch (newObject.type) {
+        case "circle":
+            editor.canvas.add(new fabric.Circle({...newObject}));
+            break;
+        case "rect":
+            editor.canvas.add(new fabric.Rect({...newObject}));
+            break;
+        case "path":
+            editor.canvas.add(new fabric.Path(`${newObject.path}`, { ...newObject }));
+            break;
+        case "line":
+            editor.canvas.add(new fabric.Line([newObject.x1, newObject.y1, newObject.x2, newObject.y2], { ...newObject }));
+            break;
+        case "textbox":
+            editor.canvas.add(new fabric.Textbox(newObject.text, { ...newObject }));
+            break;
+        case "image":
+            const img = await new Promise(resolve => {
+                fabric.Image.fromURL(newObject.src, (img) => {
+                    img.set({ ...newObject });
+                    resolve(img);
+                });
+            });
+            editor.canvas.add(img);
+            break;
+        case "group":
+            const group = await createFabricObject(newObject, editor);
+            if (group) {
+                editor.canvas.add(group);
+            }
+            break;
+        default:
+            console.error('Unknown object type:', newObject.type);
+    }
 }

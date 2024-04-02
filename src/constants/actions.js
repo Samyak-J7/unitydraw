@@ -203,7 +203,7 @@ const eraser = (editor, completed, isDrawing,handleEraseObject) => {
 };
 
 // clearAll function is used to remove all the objects from the canvas.
-const clearAll = (editor, handleEraseObject) => {
+const clearAll = (editor, completed, isDrawing, handleEraseObject) => {
   editor.canvas.off("mouse:down");
   editor?.canvas.clear();
   localStorage.removeItem("canvasState");

@@ -20,17 +20,12 @@ const Tray = (props) => {
 
   const sendImage = (obj) => {
     if (!socket) return;
-    socket.emit(
-      "realtimeObject",
-      JSON.stringify([
-        {
-          ...obj.toObject(),
-          id: obj.id,
-        },
-      ]),
-      props.roomId
-    );
-  };
+    socket.emit("realtimeObject",JSON.stringify([{ ...obj.toObject(), id: obj.id, }]),props.roomId)}
+
+  const handleEraseObject = (obj) => {
+      if (!socket) return;
+      socket.emit("deleteObject", obj, props.roomId);    
+  }
 
   useEffect(() => {
     if (active.name === "Paintbrush") {
@@ -68,7 +63,7 @@ const Tray = (props) => {
           props.editor,
           completed,
           props.isDrawing,
-          props.handleEraseObject
+          handleEraseObject
         );
     setActive(tool);
   };

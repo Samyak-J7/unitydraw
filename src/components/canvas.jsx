@@ -23,7 +23,6 @@ const Canvas = (props) => {
   const { userId } = useAuth();
   const [socket, setSocket] = useState(null);
   const [user, setUser] = useState(null);
-  const [eraseObject, setEraseObject] = useState(null);
   const [clipboard, setClipboard] = useState(null);
   const [canvasState, setCanvasState] = useState([]); // State to store the history of the canvas
   const { toast } = useToast();
@@ -361,7 +360,7 @@ const Canvas = (props) => {
             editor.canvas.renderAll();
             return;
           }
-          enableConnection && socket.emit("deleteObject", obj.id, props.roomId);
+          enableConnection && socket.emit("deleteObject", selectedObjects.id, props.roomId);
           editor.canvas.remove(selectedObjects);
           editor.canvas.discardActiveObject();
           setSelectedObjects(null);
@@ -383,15 +382,7 @@ const Canvas = (props) => {
     }
   }, [editor, selectedObjects]);
 
-  useEffect(() => {
-    if (!enableConnection || !socket || !eraseObject) return;
-    socket.emit("deleteObject", eraseObject, props.roomId);
-  }, [eraseObject]);
-
-  const handleEraseObject = (id) => {
-    setEraseObject(id);
-  };
-  //handle object selection
+   //handle object selection
   const handleObjectSelection = () => {
     const activeObjects = editor?.canvas?.getActiveObject();
     setSelectedObjects(activeObjects);
@@ -555,7 +546,6 @@ const Canvas = (props) => {
           properties={properties}
           handleDrawing={handleDrawing}
           isDrawing={isDrawing}
-          handleEraseObject={handleEraseObject}
           socket={socket}
           roomId={props.roomId}
         />

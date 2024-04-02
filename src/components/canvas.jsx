@@ -12,12 +12,9 @@ import { getUserById } from "@/lib/actions/user.action";
 import { useToast } from "@/components/ui/use-toast";
 const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
-  const [color, setColor] = useState("#000000" /* black */);
-  const [stroke, setStroke] = useState(1);
-  const [bgColor, setBgColor] = useState("transparent" /* white */);
-  const [selectedObjects, setSelectedObjects] = useState([]);
+  const [properties, setProperties] = useState({color: "#000000",stroke: 1,fill: "rgba(0,0,0,0)",opacity: 1,});
+  const [selectedObjects, setSelectedObjects] = useState(null);
   const [zoom, setZoom] = useState(1);
-  const [opacity, setOpacity] = useState(1);
   const [isPainting, setIsPainting] = useState(false);
   const [Drawing, setDrawing] = useState(false);
   const [cursorPositions, setCursorPositions] = useState({});
@@ -135,7 +132,10 @@ const Canvas = (props) => {
       });
 
       socket.on("undo", (data) => {
-        editor.canvas.loadFromJSON(data, editor.canvas.renderAll.bind(editor.canvas));
+        editor.canvas.loadFromJSON(
+          data,
+          editor.canvas.renderAll.bind(editor.canvas)
+        );
       });
 
       // to receive realtime object from other clients
@@ -305,10 +305,7 @@ const Canvas = (props) => {
     editor,
     selectedObjects,
     Drawing,
-    color,
-    stroke,
-    bgColor,
-    opacity,
+    properties,
     realtimeObject,
   ]);
 
@@ -340,23 +337,36 @@ const Canvas = (props) => {
             editor.canvas.discardActiveObject();
             editor.canvas.requestRenderAll();
           }
-        } 
+        } else if (event.ctrlKey && event.key === "g") {
+          const activeObjects = editor?.canvas?.getActiveObject();
+          if (!activeObjects) return;
+          if (activeObjects?.type === "activeSelection") {
+            activeObjects.toGroup();
+            editor.canvas.requestRenderAll();
+          }
+        }
       };
 
       // Add keyboard event listener for backspace key
       const deleteObject = (event) => {
         if (event.code === "Backspace" || event.code === "Delete") {
-          selectedObjects
-            .filter((obj) => obj.type !== "textbox")
-            .forEach((obj) => {
-              enableConnection &&
-                socket.emit("deleteObject", obj.id, props.roomId);
+          if (!selectedObjects || (selectedObjects.type === "textbox" && selectedObjects.isEditing)) return;
+          if (selectedObjects.type === "activeSelection") {
+            selectedObjects._objects.forEach((obj) => {
+              enableConnection && socket.emit("deleteObject", obj.id, props.roomId);
               editor.canvas.remove(obj);
-              editor.canvas.discardActiveObject();
             });
-          setSelectedObjects([]);
+            editor.canvas.discardActiveObject();
+            setSelectedObjects(null);
+            editor.canvas.renderAll();
+            return;
+          }
+          enableConnection && socket.emit("deleteObject", obj.id, props.roomId);
+          editor.canvas.remove(selectedObjects);
+          editor.canvas.discardActiveObject();
+          setSelectedObjects(null);
           editor.canvas.renderAll();
-        }
+        } 
       };
       window.addEventListener("keydown", handleKeys);
       window.addEventListener("keydown", handleKeyPress);
@@ -383,52 +393,65 @@ const Canvas = (props) => {
   };
   //handle object selection
   const handleObjectSelection = () => {
-    const activeObjects = editor?.canvas?.getActiveObjects() || [];
+    const activeObjects = editor?.canvas?.getActiveObject();
     setSelectedObjects(activeObjects);
 
     // Get color of the first selected object, assuming all selected objects have the same color
-    if (activeObjects.length > 0) {
-      const color = activeObjects[0].get("stroke");
-      const stroke = activeObjects[0].get("strokeWidth");
-      const bgColor = activeObjects[0].get("fill");
-      const opacity = activeObjects[0].get("opacity");
-      setColor(color);
-      setStroke(stroke);
-      setBgColor(bgColor);
-      setOpacity(opacity);
+    if (activeObjects) {
+      if (activeObjects.type === "image") return;
+      const color = activeObjects.get("stroke");
+      const stroke = activeObjects.get("strokeWidth");
+      const fill = activeObjects.get("fill");
+      const opacity = activeObjects.get("opacity");
+      setProperties({ color, stroke, fill, opacity });
     }
   };
 
   const clearSelection = () => {
-    setSelectedObjects([]);
+    setSelectedObjects(null);
   };
 
   const handleDrawing = (val) => {
     setIsPainting(val);
   };
 
-  const onColorChange = (newColor) => {
-    setColor(newColor);
-    selectedObjects.forEach((obj) => {
-      obj.set("stroke", newColor);
-    });
+  const changeProperty = (property, value) => {
+    if (!selectedObjects) return;
+    if (selectedObjects._objects) {
+      selectedObjects._objects.forEach((obj) => {
+        obj.set(property, value);
+      });
+    } else {
+      selectedObjects.set(property, value);
+    }
     editor.canvas.renderAll();
-  };
+  }
 
-  const onStrokeChange = (newStroke) => {
-    setStroke(newStroke);
-    selectedObjects.forEach((obj) => {
-      obj.set("strokeWidth", newStroke);
-    });
-    editor.canvas.renderAll();
-  };
-
-  const onBgColorChange = (newBgColor) => {
-    setBgColor(newBgColor);
-    selectedObjects.forEach((obj) => {
-      obj.set("fill", newBgColor);
-    });
-    editor.canvas.renderAll();
+  const onPropertyChange = (property, value) => {
+    switch (property) {
+      case "stroke":
+        setProperties({ ...properties, color: value });
+        changeProperty(property, value);
+        break;
+      case "strokeWidth":
+        setProperties({ ...properties, stroke: parseInt(value) });
+        changeProperty(property, parseInt(value));
+        break;
+      case "fill":
+        setProperties({ ...properties, fill: value });
+        changeProperty(property, value);
+        break;
+      case "opacity":
+        setProperties({ ...properties, opacity: parseFloat(value) });
+        changeProperty(property, parseFloat(value));
+        break;
+      case "transparent":
+        setProperties({ ...properties, fill: "transparent" });
+        changeProperty("fill", value);
+        break;
+      default:
+        break;
+    }
   };
 
   const zoomIn = () => {
@@ -439,14 +462,6 @@ const Canvas = (props) => {
   const zoomOut = () => {
     setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.1));
     editor.canvas.setZoom(editor.canvas.getZoom() - 0.1);
-  };
-
-  const onOpacityChange = (newOpacity) => {
-    setOpacity(newOpacity);
-    selectedObjects.forEach((obj) => {
-      obj.set("opacity", newOpacity);
-    });
-    editor.canvas.renderAll();
   };
 
   const copyObjects = () => {
@@ -509,8 +524,9 @@ const Canvas = (props) => {
         parsedLastCanvasState,
         editor.canvas.renderAll.bind(editor.canvas)
       ); // Load the last state to the canvas
-      socket.emit("undo", lastCanvasState, props.roomId); // Send the last state to the server to update other clients
       setCanvasState(newCanvasState);
+      if (!enableConnection) return;
+      socket.emit("undo", lastCanvasState, props.roomId); // Send the last state to the server to update other clients
     }
   };
 
@@ -536,10 +552,7 @@ const Canvas = (props) => {
       {user && (
         <Tray
           editor={editor}
-          color={color}
-          stroke={stroke}
-          bgColor={bgColor}
-          opacity={opacity}
+          properties={properties}
           handleDrawing={handleDrawing}
           isDrawing={isDrawing}
           handleEraseObject={handleEraseObject}
@@ -560,16 +573,10 @@ const Canvas = (props) => {
           <ZoomOut />
         </button>
       </div>
-      {selectedObjects.length > 0 || isPainting ? (
+      {selectedObjects || isPainting ? (
         <Settings
-          color={color}
-          stroke={stroke}
-          bgColor={bgColor}
-          opacity={opacity}
-          oncolor={onColorChange}
-          onstroke={onStrokeChange}
-          onbgColor={onBgColorChange}
-          onOpacity={onOpacityChange}
+          properties={properties}
+          onPropertyChange={onPropertyChange}
         />
       ) : null}
 

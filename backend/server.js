@@ -37,6 +37,11 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("deleteObject", data);
   });
 
+  socket.on("undo", (data, roomId) => {
+    if (!roomId) return;
+    socket.to(roomId).emit("undo", data);
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });

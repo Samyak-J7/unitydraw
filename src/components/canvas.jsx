@@ -134,6 +134,10 @@ const Canvas = (props) => {
         }));
       });
 
+      socket.on("undo", (data) => {
+        editor.canvas.loadFromJSON(data, editor.canvas.renderAll.bind(editor.canvas));
+      });
+
       // to receive realtime object from other clients
       socket.on("realtimeObject", (data) => {
         const receivedObjectsData = JSON.parse(data);
@@ -336,7 +340,7 @@ const Canvas = (props) => {
             editor.canvas.discardActiveObject();
             editor.canvas.requestRenderAll();
           }
-        }
+        } 
       };
 
       // Add keyboard event listener for backspace key
@@ -505,6 +509,7 @@ const Canvas = (props) => {
         parsedLastCanvasState,
         editor.canvas.renderAll.bind(editor.canvas)
       ); // Load the last state to the canvas
+      socket.emit("undo", lastCanvasState, props.roomId); // Send the last state to the server to update other clients
       setCanvasState(newCanvasState);
     }
   };

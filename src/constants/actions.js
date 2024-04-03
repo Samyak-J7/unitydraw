@@ -22,7 +22,7 @@ const objectdraw = (canvas) => {
   canvas.freeDrawingBrush.color = "rgba(0,0,0,0)";
 }
 // onAddCircle function is used to add a circle to the canvas and call the repeat function.
-const onAddCircle = (editor, color, stroke, bgColor, completed) => {
+const onAddCircle = (editor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -34,9 +34,9 @@ const onAddCircle = (editor, color, stroke, bgColor, completed) => {
       left: pointer.x,
       top: pointer.y,
       radius: 50,
-      fill: bgColor,
-      stroke: color,
-      strokeWidth: stroke,
+      fill: "rgba(0,0,0,0)",
+      stroke: "#000000",
+      strokeWidth: 1,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
       id: uuidv4(),
       // shadow:{
@@ -67,7 +67,7 @@ const onAddCircle = (editor, color, stroke, bgColor, completed) => {
 };
 
 // onAddRectangle function is used to add a rectangle to the canvas and call the repeat function.
-const onAddRectangle = (editor, color, stroke, bgColor, completed) => {
+const onAddRectangle = (editor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -78,9 +78,9 @@ const onAddRectangle = (editor, color, stroke, bgColor, completed) => {
     const rect = new fabric.Rect({
       left: pointer.x,
       top: pointer.y,
-      fill: bgColor,
-      stroke: color,
-      strokeWidth: stroke,
+      fill: "rgba(0,0,0,0)",
+      stroke: "#000000",
+      strokeWidth: 1,
       width: 50,
       height: 50,
       shadow: "rgba(0,0,0,0.3) 2px 2px 2px",
@@ -109,7 +109,7 @@ const onAddRectangle = (editor, color, stroke, bgColor, completed) => {
 };
 
 // addLine function is used to add a line to the canvas and call the repeat function.
-const addLine = (editor, color, stroke, bgColor, completed) => {
+const addLine = (editor, completed) => {
   repeat(editor.canvas);
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
@@ -119,9 +119,8 @@ const addLine = (editor, color, stroke, bgColor, completed) => {
     const pointer = canvas.getPointer(event.e);
     const points = [pointer.x, pointer.y, pointer.x, pointer.y];
     const line = new fabric.Line(points, {
-      strokeWidth: stroke,
-      stroke: color,
-      fill: bgColor,
+      strokeWidth: 1,
+      stroke: "#000000",
       id: uuidv4(),
     });
     canvas.add(line);
@@ -144,7 +143,7 @@ const addLine = (editor, color, stroke, bgColor, completed) => {
 };
 
 // onAddText function is used to add text to the canvas and call the repeat function.
-const onAddText = (editor, color, stroke, bgColor, completed) => {
+const onAddText = (editor, completed) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "text";
@@ -156,9 +155,9 @@ const onAddText = (editor, color, stroke, bgColor, completed) => {
       top: pointer.y,
       width: 100,
       height: 50,
-      strokeWidth: stroke,
-      stroke: color,
-      fill: bgColor,
+      strokeWidth: 1,
+      stroke: "#000000",
+      fill: "#000000",
       textAlign: "center",
       id: uuidv4(),
     });
@@ -171,7 +170,7 @@ const onAddText = (editor, color, stroke, bgColor, completed) => {
     completed();
   });
 };
-const paintBrush = (editor, color, stroke, bgColor, completed, isDrawing) => {
+const paintBrush = (editor, color, stroke, fill, completed, isDrawing) => {
   const canvas = editor.canvas;
   repeat(canvas);
   canvas.defaultCursor = "crosshair";
@@ -188,7 +187,7 @@ const paintBrush = (editor, color, stroke, bgColor, completed, isDrawing) => {
 };
 
 // eraser function is used to remove the object from the canvas when the mouse is clicked on the object.
-const eraser = (editor, color, stroke, bgColor, completed, isDrawing,handleEraseObject) => {
+const eraser = (editor, completed, isDrawing,handleEraseObject) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "url('https://img.icons8.com/skeuomorphism/32/experimental-eraser-skeuomorphism.png'), auto"
   canvas.hoverCursor =   "url('https://img.icons8.com/skeuomorphism/32/experimental-eraser-skeuomorphism.png'), auto";
@@ -204,7 +203,7 @@ const eraser = (editor, color, stroke, bgColor, completed, isDrawing,handleErase
 };
 
 // clearAll function is used to remove all the objects from the canvas.
-const clearAll = (editor, color, stroke, bgColor, completed, isDrawing,handleEraseObject) => {
+const clearAll = (editor, completed, isDrawing, handleEraseObject) => {
   editor.canvas.off("mouse:down");
   editor?.canvas.clear();
   localStorage.removeItem("canvasState");
@@ -244,7 +243,7 @@ const pan = (editor) => {
 };
 
 // arrow function is used to add an arrow to the canvas and call the repeat function.
-const arrow = (editor, color, stroke, bgColor, completed) => {
+const arrow = (editor, completed) => {
   const canvas = editor.canvas;
   canvas.defaultCursor = "crosshair";
   repeat(canvas);
@@ -290,7 +289,7 @@ const arrow = (editor, color, stroke, bgColor, completed) => {
 };
 
 // handleFileChange function is used to handle the file change event and add the image to the canvas.
-const handleFileChange = (e, editor, completed) => {
+const handleFileChange = (e, editor, completed,sendImage) => {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = "";
@@ -299,12 +298,14 @@ const handleFileChange = (e, editor, completed) => {
     const imageUrl = event.target.result;
     fabric.Image.fromURL(imageUrl, (img) => {
       img.set({
+        id: uuidv4(),
         top: editor.canvas.height / 4,
         left: editor.canvas.width / 4,
         scaleX: 0.3,
         scaleY: 0.3,
       });
       editor.canvas.add(img);
+      sendImage(img);
     });
   };
   reader.readAsDataURL(file);

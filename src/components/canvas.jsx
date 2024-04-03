@@ -7,17 +7,14 @@ import Settings from "./settings";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@clerk/nextjs";
-import { handleKeyPress } from "@/helper";
+import { addObj, handleKeyPress } from "@/helper";
 import { getUserById } from "@/lib/actions/user.action";
 import { useToast } from "@/components/ui/use-toast";
 const Canvas = (props) => {
   const [editor, setEditor] = useState(null);
-  const [color, setColor] = useState("#000000" /* black */);
-  const [stroke, setStroke] = useState(1);
-  const [bgColor, setBgColor] = useState("transparent" /* white */);
-  const [selectedObjects, setSelectedObjects] = useState([]);
+  const [properties, setProperties] = useState({color: "#000000",stroke: 1,fill: "rgba(0,0,0,0)",opacity: 1,});
+  const [selectedObjects, setSelectedObjects] = useState(null);
   const [zoom, setZoom] = useState(1);
-  const [opacity, setOpacity] = useState(1);
   const [isPainting, setIsPainting] = useState(false);
   const [Drawing, setDrawing] = useState(false);
   const [cursorPositions, setCursorPositions] = useState({});
@@ -26,7 +23,6 @@ const Canvas = (props) => {
   const { userId } = useAuth();
   const [socket, setSocket] = useState(null);
   const [user, setUser] = useState(null);
-  const [eraseObject, setEraseObject] = useState(null);
   const [clipboard, setClipboard] = useState(null);
   const [canvasState, setCanvasState] = useState([]); // State to store the history of the canvas
   const { toast } = useToast();
@@ -88,24 +84,45 @@ const Canvas = (props) => {
         socket.emit(
           "cursor",
           { x, y, userId: user.username, randomcolor },
-          props.roomId,
+          props.roomId
         );
 
+        const removeSrcFromGroups = (objects) => {
+          objects.forEach((obj) => {
+            if (obj.type === 'image') {
+              delete obj.src;
+            }
+            if (obj.type === 'group') {
+              // If it's a group, remove src property and recursively process nested groups
+              delete obj.src;
+              if (obj.objects && obj.objects.length > 0) {
+                removeSrcFromGroups(obj.objects);
+              }
+            }
+          });
+        };
+        
         const activeObjects = editor?.canvas?.getActiveObjects() || [];
         if (activeObjects.length > 0) {
           const activeObjectsData = activeObjects.map((obj) => {
-            return {
-              ...obj.toObject(),
-              id: obj.id,
-            };
+            const newObj = { ...obj.toObject(), id: obj.id };
+            if (obj.type === 'image' || obj.type === 'group') {
+              delete newObj.src;
+            }
+            if (obj.type === 'group') {
+              // Recursively remove src property from nested groups
+              removeSrcFromGroups(newObj.objects);
+            }
+            return newObj;
           });
-
+          
           socket.emit(
             "realtimeObject",
             JSON.stringify(activeObjectsData),
             props.roomId
           );
         }
+        
       };
 
       document.addEventListener("mousemove", handleMouseMove);
@@ -133,42 +150,20 @@ const Canvas = (props) => {
         }));
       });
 
+      socket.on("undo", (data) => {
+        editor.canvas.loadFromJSON(
+          data,
+          editor.canvas.renderAll.bind(editor.canvas)
+        );
+      });
+
       // to receive realtime object from other clients
       socket.on("realtimeObject", (data) => {
-        const receivedObjectsData = JSON.parse(data);
-        const receivedObjects = receivedObjectsData.map((objData) => {
-          let obj;
-          switch (objData.type) {
-            case "circle":
-              obj = new fabric.Circle(objData);
-              break;
-            case "rect":
-              obj = new fabric.Rect(objData);
-              break;
-            case "path":
-              obj = new fabric.Path(`${objData.path}`, { ...objData });
-              break;
-            case "line":
-              obj = new fabric.Line(
-                [objData.x1, objData.y1, objData.x2, objData.y2],
-                { ...objData }
-              );
-              break;
-            case "textbox":
-              obj = new fabric.Textbox(objData.text, { ...objData });
-              break;
-            case "image":
-              console.log("Image object not implemented yet");
-              break;
-            default:
-              throw new Error(`Invalid object type: ${objData.type}`);
-          }
-          obj.id = objData.id; // Ensure id property is set
-          return obj;
-        });
+        const receivedObjects = JSON.parse(data);
         setRealtimeObject(receivedObjects);
         setUpdate(true);
       });
+
       return () => {
         document.removeEventListener("mousemove", handleMouseMove);
       };
@@ -178,15 +173,11 @@ const Canvas = (props) => {
     }
   }, [editor]);
 
-  const isDrawing = (val) => {
-    setDrawing(val);
-  };
-
   useEffect(() => {
     if (editor) {
       saveCanvasState();
     }
-  }, [ editor, selectedObjects, realtimeObject]);
+  }, [editor, selectedObjects, realtimeObject]);
 
   //send paintbrush realtime data
   useEffect(() => {
@@ -218,50 +209,57 @@ const Canvas = (props) => {
   //update the object in the canvas if realtime objects changes
   useEffect(() => {
     if (update && editor && realtimeObject) {
-      editor.canvas.getObjects().forEach((obj) => {
-        //check over every object in canvas
-        realtimeObject.forEach((realtimeObject) => {
-          //check over every object in realtime object mostlly one object but can be multiple
+      editor.canvas.getObjects().forEach((obj) => {   //check over every object in canvas
+        realtimeObject.forEach((realtimeObject) => {  //check over every object in realtime object mostlly one object but can be multiple         
           if (realtimeObject.id === obj.id) {
             switch (realtimeObject.type) {
+              case "circle":
+                obj.set({ ...realtimeObject });
+                break;
+              case "rect":
+                obj.set({ ...realtimeObject });
+                break;
               case "line":
-                obj.set({
-                  x1: realtimeObject.x1,
-                  y1: realtimeObject.y1,
-                  x2: realtimeObject.x2,
-                  y2: realtimeObject.y2,
-                  ...realtimeObject,
-                });
+                obj.set({x1: realtimeObject.x1, y1: realtimeObject.y1,x2: realtimeObject.x2, y2: realtimeObject.y2, ...realtimeObject,});
                 break;
               case "path":
-                obj.set({ path: obj.path, ...realtimeObject });
+                obj.set({path: obj.path, ...realtimeObject });
                 break;
               case "textbox":
-                obj.set({ text: realtimeObject.text, ...realtimeObject });
+                obj.set({text: realtimeObject.text, ...realtimeObject });
+                break;
+              case "image":
+                obj.set({src: obj.src, width: realtimeObject.width, height: realtimeObject.height, ...realtimeObject,});
+                break;
+              case "group":
+                obj.getObjects().forEach((groupObj, index) => {
+                  console.log(groupObj, realtimeObject.objects[index]);
+                  groupObj.set({ ...realtimeObject.objects[index] });
+                });
+                obj.set({ ...realtimeObject })
                 break;
               default:
                 obj.set({ ...realtimeObject });
                 break;
             }
-            obj.setCoords(); // Update object coordinates
+            obj.setCoords(); 
             editor.canvas.renderAll();
           }
         });
       });
+
       // Add new object to the canvas if id is not matched
       if (realtimeObject.length > 0) {
         let newObject = realtimeObject[0];
-        if (newObject.type === "path") {
-          // If it's a path, take the last path object from the real-time data becasue we are receiving all the path objects when drawn
+        if (newObject.type === "path") {   // If it's a path, take the last path object from the real-time data becasue we are receiving all the path objects when drawn
           newObject = realtimeObject[realtimeObject.length - 1];
         }
-        // Check if the object with the same ID exists in the canvas
-        const isExistingObject = editor.canvas
+        const isExistingObject = editor.canvas  // Check if the object with the same ID exists in the canvas
           .getObjects()
           .some((obj) => obj.id === newObject.id);
-        // If the object doesn't exist in the canvas, add it
-        if (!isExistingObject) {
-          editor.canvas.add(newObject);
+
+        if (!isExistingObject) {  // If the object doesn't exist in the canvas, add it
+          addObj(newObject, editor);
         }
       }
     }
@@ -286,10 +284,7 @@ const Canvas = (props) => {
     editor,
     selectedObjects,
     Drawing,
-    color,
-    stroke,
-    bgColor,
-    opacity,
+    properties,
     realtimeObject,
   ]);
 
@@ -300,7 +295,6 @@ const Canvas = (props) => {
       editor.canvas.on("selection:updated", handleObjectSelection);
       editor.canvas.on("selection:cleared", clearSelection);
 
-      
       const handleKeys = (event) => {
         if (event.ctrlKey && event.key === "c") {
           copyObjects();
@@ -308,22 +302,54 @@ const Canvas = (props) => {
           pasteObjects();
         } else if (event.ctrlKey && event.key === "z") {
           undo();
+        } else if (event.ctrlKey && event.key === "]") {
+          const activeObjects = editor?.canvas?.getActiveObject();
+          if (activeObjects) {
+            activeObjects.bringForward();
+            editor.canvas.discardActiveObject();
+            editor.canvas.requestRenderAll();
+          }
+        } else if (event.ctrlKey && event.key === "[") {
+          const activeObjects = editor?.canvas?.getActiveObject();
+          if (activeObjects) {
+            activeObjects.sendBackwards();
+            editor.canvas.discardActiveObject();
+            editor.canvas.requestRenderAll();
+          }
+        } else if (event.ctrlKey && event.key === "g") {
+          event.preventDefault();
+          const activeObjects = editor?.canvas?.getActiveObject();
+          if (!activeObjects) return;
+          if (activeObjects?.type === "activeSelection") {
+              const obj = activeObjects.toGroup();
+              obj.set({ ...obj, id: uuidv4() });
+              enableConnection && socket && socket.emit("realtimeObject", JSON.stringify([{ ...obj.toObject(), id: obj.id }]), props.roomId);
+              editor.canvas.discardActiveObject();
+              editor.canvas.requestRenderAll();
+          }
         }
       };
 
       // Add keyboard event listener for backspace key
       const deleteObject = (event) => {
         if (event.code === "Backspace" || event.code === "Delete") {
-          selectedObjects
-            .filter((obj) => obj.type !== "textbox")
-            .forEach((obj) => {
-              enableConnection && socket.emit("deleteObject", obj.id, props.roomId)
+          if (!selectedObjects || (selectedObjects.type === "textbox" && selectedObjects.isEditing)) return;
+          if (selectedObjects.type === "activeSelection") {
+            selectedObjects._objects.forEach((obj) => {
+              enableConnection && socket.emit("deleteObject", obj.id, props.roomId);
               editor.canvas.remove(obj);
-              editor.canvas.discardActiveObject()
             });
-          setSelectedObjects([]);
+            editor.canvas.discardActiveObject();
+            setSelectedObjects(null);
+            editor.canvas.renderAll();
+            return;
+          }
+          enableConnection && socket.emit("deleteObject", selectedObjects.id, props.roomId);
+          editor.canvas.remove(selectedObjects);
+          editor.canvas.discardActiveObject();
+          setSelectedObjects(null);
           editor.canvas.renderAll();
-        }
+        } 
       };
       window.addEventListener("keydown", handleKeys);
       window.addEventListener("keydown", handleKeyPress);
@@ -340,62 +366,69 @@ const Canvas = (props) => {
     }
   }, [editor, selectedObjects]);
 
-  useEffect(() => {
-    if (!enableConnection || !socket || !eraseObject) return;
-    socket.emit("deleteObject", eraseObject, props.roomId);
-  }, [eraseObject]);
-
-  const handleEraseObject = (id) => {
-    setEraseObject(id);
-  };
-  //handle object selection
+   //handle object selection
   const handleObjectSelection = () => {
-    const activeObjects = editor?.canvas?.getActiveObjects() || [];   
+    const activeObjects = editor?.canvas?.getActiveObject();
     setSelectedObjects(activeObjects);
-
-    // Get color of the first selected object, assuming all selected objects have the same color
-    if (activeObjects.length > 0) {
-      const color = activeObjects[0].get("stroke");
-      const stroke = activeObjects[0].get("strokeWidth");
-      const bgColor = activeObjects[0].get("fill");
-      const opacity = activeObjects[0].get("opacity");
-      setColor(color);
-      setStroke(stroke);
-      setBgColor(bgColor);
-      setOpacity(opacity);
+    if (activeObjects) {
+      if (activeObjects.type === "image") return;
+      const color = activeObjects.get("stroke");
+      const stroke = activeObjects.get("strokeWidth");
+      const fill = activeObjects.get("fill");
+      const opacity = activeObjects.get("opacity");
+      setProperties({ color, stroke, fill, opacity });
     }
+  };
+  
+  const isDrawing = (val) => {
+    setDrawing(val);
   };
 
   const clearSelection = () => {
-    setSelectedObjects([]);
+    setSelectedObjects(null);
   };
 
   const handleDrawing = (val) => {
     setIsPainting(val);
   };
 
-  const onColorChange = (newColor) => {
-    setColor(newColor);
-    selectedObjects.forEach((obj) => {
-      obj.set("stroke", newColor);
-    });
+  const changeProperty = (property, value) => {
+    if (!selectedObjects) return;
+    if (selectedObjects._objects) {
+      selectedObjects._objects.forEach((obj) => {
+        obj.set(property, value);
+      });
+    } else {
+      selectedObjects.set(property, value);
+    }
     editor.canvas.renderAll();
-  };
+  }
 
-  const onStrokeChange = (newStroke) => {
-    setStroke(newStroke);
-    selectedObjects.forEach((obj) => {
-      obj.set("strokeWidth", newStroke);
-    });
-    editor.canvas.renderAll();
-  };
-
-  const onBgColorChange = (newBgColor) => {
-    setBgColor(newBgColor);
-    selectedObjects.forEach((obj) => {
-      obj.set("fill", newBgColor);
-    });
-    editor.canvas.renderAll();
+  const onPropertyChange = (property, value) => {
+    switch (property) {
+      case "stroke":
+        setProperties({ ...properties, color: value });
+        changeProperty(property, value);
+        break;
+      case "strokeWidth":
+        setProperties({ ...properties, stroke: parseInt(value) });
+        changeProperty(property, parseInt(value));
+        break;
+      case "fill":
+        setProperties({ ...properties, fill: value });
+        changeProperty(property, value);
+        break;
+      case "opacity":
+        setProperties({ ...properties, opacity: parseFloat(value) });
+        changeProperty(property, parseFloat(value));
+        break;
+      case "transparent":
+        setProperties({ ...properties, fill: "transparent" });
+        changeProperty("fill", value);
+        break;
+      default:
+        break;
+    }
   };
 
   const zoomIn = () => {
@@ -406,14 +439,6 @@ const Canvas = (props) => {
   const zoomOut = () => {
     setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.1));
     editor.canvas.setZoom(editor.canvas.getZoom() - 0.1);
-  };
-
-  const onOpacityChange = (newOpacity) => {
-    setOpacity(newOpacity);
-    selectedObjects.forEach((obj) => {
-      obj.set("opacity", newOpacity);
-    });
-    editor.canvas.renderAll();
   };
 
   const copyObjects = () => {
@@ -428,6 +453,7 @@ const Canvas = (props) => {
       clipboard.clone((cloned) => {
         editor.canvas.discardActiveObject();
         cloned.set({
+          id: uuidv4(),
           left: cloned.left + 10,
           top: cloned.top + 10,
           evented: true,
@@ -441,6 +467,7 @@ const Canvas = (props) => {
           editor.canvas.add(cloned);
         }
         setClipboard(cloned);
+        enableConnection && socket && socket.emit("realtimeObject", JSON.stringify([{ ...cloned.toObject(), id: cloned.id }]), props.roomId);
         editor.canvas.setActiveObject(cloned);
         editor.canvas.renderAll();
       });
@@ -460,22 +487,27 @@ const Canvas = (props) => {
       };
 
       const json = customToJSON(editor.canvas);
-      if (json === canvasState[canvasState.length - 1]) return // Check if the current state is the same as the last state
+      if (json === canvasState[canvasState.length - 1]) return; // Check if the current state is the same as the last state
       setCanvasState((prevState) => [...prevState, json]);
     }
   };
-  
+
   // Function to undo the last action
   const undo = () => {
     if (canvasState.length > 0) {
       // ToDO: in realtime undo, we need to send the last state to the server and update the canvas
       const newCanvasState = canvasState;
-      const lastCanvasState = newCanvasState.pop() // Remove the last state from the history
-      const parsedLastCanvasState = JSON.parse(lastCanvasState)
-      editor.canvas.loadFromJSON(parsedLastCanvasState, editor.canvas.renderAll.bind(editor.canvas)); // Load the last state to the canvas
+      const lastCanvasState = newCanvasState.pop(); // Remove the last state from the history
+      const parsedLastCanvasState = JSON.parse(lastCanvasState);
+      editor.canvas.loadFromJSON(
+        parsedLastCanvasState,
+        editor.canvas.renderAll.bind(editor.canvas)
+      ); // Load the last state to the canvas
       setCanvasState(newCanvasState);
-      };
-    };
+      if (!enableConnection) return;
+      socket.emit("undo", lastCanvasState, props.roomId); // Send the last state to the server to update other clients
+    }
+  };
 
   return (
     <div>
@@ -490,8 +522,7 @@ const Canvas = (props) => {
             left: x,
             top: y,
             color: randomcolor || red,
-          }}
-        >
+          }}>
           <MousePointer2 style={{ fill: randomcolor || red }} />
           <span className="text-xs ml-3">{userId}</span>
         </div>
@@ -500,13 +531,11 @@ const Canvas = (props) => {
       {user && (
         <Tray
           editor={editor}
-          color={color}
-          stroke={stroke}
-          bgColor={bgColor}
-          opacity={opacity}
+          properties={properties}
           handleDrawing={handleDrawing}
           isDrawing={isDrawing}
-          handleEraseObject={handleEraseObject}
+          socket={socket}
+          roomId={props.roomId}
         />
       )}
       <div className="flex  bg-pink-200 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl ">
@@ -522,16 +551,10 @@ const Canvas = (props) => {
           <ZoomOut />
         </button>
       </div>
-      {selectedObjects.length > 0 || isPainting ? (
+      {selectedObjects || isPainting ? (
         <Settings
-          color={color}
-          stroke={stroke}
-          bgColor={bgColor}
-          opacity={opacity}
-          oncolor={onColorChange}
-          onstroke={onStrokeChange}
-          onbgColor={onBgColorChange}
-          onOpacity={onOpacityChange}
+          properties={properties}
+          onPropertyChange={onPropertyChange}
         />
       ) : null}
 

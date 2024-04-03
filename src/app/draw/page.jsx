@@ -36,7 +36,7 @@ const Draw = () => {
           router.push("/draw");
         });
     }
-  }, [user._id]);
+  }, [user._id, searchParams, router, toast]);
 
   useEffect(() => {
     if (!userId) return;
@@ -49,7 +49,7 @@ const Draw = () => {
           description: "Please Login or Refresh the page.",
         });
       });
-  }, [userId]);
+  }, [userId, toast]);
 
   //create team on button click
   const createTeam = async () => {
@@ -79,7 +79,7 @@ const Draw = () => {
         description: "Share this URL with your friends to add members.",
       });
     }
-  }, [roomId]);
+  }, [roomId, router, toast]);
 
   const changeCanvasName = (name) => {
     setCanvasName(name);
@@ -131,35 +131,46 @@ const Draw = () => {
   };
 
   return (
-    <div>
-      <div className="px-4 py-2 flex justify-between items-center w-full absolute top-0 my-1">
+    <div className="h-screen w-screen ">
+      <div className=" px-4 py-2 flex justify-between items-center w-full absolute top-0 my-1 ">
         <span className="z-10">
           <Button
             onClick={() => router.push("/home")}
-            className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black">
+            className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
+          >
             <Home />
           </Button>
         </span>
         <span className="z-10">
           <CanvasNameInput title={changeCanvasName} />
         </span>
-        <span className="z-10 flex gap-2">
+        <span className="z-10 flex gap-2 ">
+          
           <Button
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
-            onClick={() => save(null)}>
+            onClick={() => save(null)}
+          >
             <Save className="m-1" size={20} />
-           {saving?  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :"Save"}
+            {saving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Save"
+            )}
           </Button>
           <Button
             className=" shadow-2xl bg-blue-200 text-black border-2 border-blue-500 hover:bg-blue-400 hover:border-gray-600"
-            onClick={createTeam}>
+            onClick={createTeam}
+          >
             <Users className="m-1" size={20} />
             Make a Team
           </Button>
         </span>
       </div>
-      <span className="absolute m-3 mx-7 z-10 bottom-0"><UserButton afterSignOutUrl="/" /></span>
-      
+
+      <span className="absolute m-3 mx-7 z-10 bottom-0 ">
+        <UserButton afterSignOutUrl="/" />
+      </span>
+       
       {canvasData !== null ? (
         <Canvas data={canvasData} />
       ) : (
@@ -167,7 +178,8 @@ const Draw = () => {
           <Canvas />
         </>
       )}
-    </div>
+      
+    </div>   
   );
 };
 

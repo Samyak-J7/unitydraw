@@ -5,8 +5,8 @@ import { useToast } from "@/components/ui/use-toast";
 import Canvas from "@/components/canvas";
 import { Share } from "@/components/share";
 import { Button } from "@/components/ui/button";
-import { Save, Home, Loader2 } from "lucide-react";
-import { useAuth } from "@clerk/nextjs";
+import { Save, Home, Loader2, VideoIcon } from "lucide-react";
+import { useAuth, useUser } from "@clerk/nextjs";
 import {
   fetchCanvasByroomId,
   saveCanvasbyroomID,
@@ -14,8 +14,26 @@ import {
   validateRoom,
 } from "@/lib/actions/room.action";
 import { CanvasNameInput } from "@/components/CanvasNameInput";
+import {
+  StreamCall,
+  StreamTheme,
+  useStreamVideoClient,
+} from "@stream-io/video-react-sdk";
+import Loader from "@/components/Loader";
+import VideoWrapper from "@/components/videos/VideoWrapper";
+import VideoLayout from "@/components/videos/VideoLayout";
+import Meeting from "@/components/videos/Meeting";
 
 export default function Page({ params }) {
+  const client = useStreamVideoClient();
+  const { user, isLoaded } = useUser();
+  // console.log("client",client);
+  const [calls, setCalls] = useState();
+  const [participantCount, setParticipantCount] = useState(0);
+  const date = new Date();
+  const [show, setShow] = useState(false);
+
+  // console.log('user',user.id);
   const { toast } = useToast();
   const [isValidRoomId, setIsValidRoomId] = useState(false);
   const [showToast, setShowToast] = useState(false); // State to control when to show toast
@@ -56,16 +74,16 @@ export default function Page({ params }) {
           const data = await fetchCanvasByroomId(params.id);
           setCanvasData(data.canvasData);
         } else {
-          setShowToast(true)
+          setShowToast(true);
           router.push("/draw");
         }
       } catch (err) {
         setShowToast(true);
       }
     };
-  
+
     fetchData();
-  }, []);
+  }, [params.id, router, userId]);
 
   const changeCanvasName = (name) => {
     setCanvasName(name);
@@ -81,13 +99,33 @@ export default function Page({ params }) {
         description: "Invalid Url or Server Error. Please try again.",
       });
     }
-  }, [showToast]);
+  }, [showToast, toast]);
 
   // Prevent rendering if room is invalid
   //todo set loader
   if (!isValidRoomId) {
     return <div> Loading Team Canvas </div>;
   }
+
+  const createMeeting = async () => {
+    if (!user || !client) return;
+    try {
+      const call = client.call("default", params.id);
+      if (!call) throw new Error("Failed to create call");
+      const startsAt = new Date(Date.now()).toISOString();
+      await call.getOrCreate({
+        data: {
+          starts_at: startsAt,
+        },
+      });
+      setCalls(call);
+      console.log("call created for meeting", call);
+      setShow(true);
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Failed to create meeting" });
+    }
+  };
 
   return (
     <div>
@@ -103,18 +141,46 @@ export default function Page({ params }) {
         <span className="z-10">
           <CanvasNameInput title={changeCanvasName} roomId={params.id} />
         </span>
-        <span className="z-10 flex gap-2">
+        <span className="z-10 flex gap-2 border-2">
+          <Button
+            onClick={() => {
+              createMeeting();
+              console.log("clicked");
+            }}
+          >
+            <VideoIcon></VideoIcon>
+          </Button>
           <Button
             className="bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
             onClick={save}
           >
             <Save className=" m-1" size={20} />
-            {saving?  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :"Save"}
+            {saving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Save"
+            )}
           </Button>
           <Share link={`${process.env.NEXT_PUBLIC_DOMAIN}/draw/${params.id}`} />
         </span>
       </div>
       {canvasData && <Canvas data={canvasData} roomId={params.id} />}
+      <div className="absolute right-2 top-16  min-w-[15rem] max-w-[15rem] xl:min-h-0 mx-auto flex items-center xl:flex-col gap-3 text-white  ">
+        {show ? (
+          <VideoLayout id={params.id} setShow={setShow} userId={userId} />
+        ) : null}
+      </div>
     </div>
   );
+}
+
+// {calls ? <Meeting id ={params.id} userId={userId} /> :null}
+
+{
+  /* <VideoWrapper userData = {user} callId = {params.id}>
+                <VideoLayout setParticipantCount = {setParticipantCount} />
+            </VideoWrapper> */
+}
+{
+  /* <VideoLayout setParticipantCount={setParticipantCount} id={params.id} /> */
 }

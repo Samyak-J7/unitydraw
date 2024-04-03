@@ -213,6 +213,12 @@ const Canvas = (props) => {
         realtimeObject.forEach((realtimeObject) => {  //check over every object in realtime object mostlly one object but can be multiple         
           if (realtimeObject.id === obj.id) {
             switch (realtimeObject.type) {
+              case "circle":
+                obj.set({ ...realtimeObject });
+                break;
+              case "rect":
+                obj.set({ ...realtimeObject });
+                break;
               case "line":
                 obj.set({x1: realtimeObject.x1, y1: realtimeObject.y1,x2: realtimeObject.x2, y2: realtimeObject.y2, ...realtimeObject,});
                 break;
@@ -224,6 +230,13 @@ const Canvas = (props) => {
                 break;
               case "image":
                 obj.set({src: obj.src, width: realtimeObject.width, height: realtimeObject.height, ...realtimeObject,});
+                break;
+              case "group":
+                obj.getObjects().forEach((groupObj, index) => {
+                  console.log(groupObj, realtimeObject.objects[index]);
+                  groupObj.set({ ...realtimeObject.objects[index] });
+                });
+                obj.set({ ...realtimeObject })
                 break;
               default:
                 obj.set({ ...realtimeObject });
@@ -366,6 +379,7 @@ const Canvas = (props) => {
       setProperties({ color, stroke, fill, opacity });
     }
   };
+  
   const isDrawing = (val) => {
     setDrawing(val);
   };
@@ -439,6 +453,7 @@ const Canvas = (props) => {
       clipboard.clone((cloned) => {
         editor.canvas.discardActiveObject();
         cloned.set({
+          id: uuidv4(),
           left: cloned.left + 10,
           top: cloned.top + 10,
           evented: true,
@@ -452,6 +467,7 @@ const Canvas = (props) => {
           editor.canvas.add(cloned);
         }
         setClipboard(cloned);
+        enableConnection && socket && socket.emit("realtimeObject", JSON.stringify([{ ...cloned.toObject(), id: cloned.id }]), props.roomId);
         editor.canvas.setActiveObject(cloned);
         editor.canvas.renderAll();
       });

@@ -294,11 +294,11 @@ const Canvas = (props) => {
       editor.canvas.on("selection:cleared", clearSelection);
 
       const handleKeys = (event) => {
-        if (event.ctrlKey && event.key === "c") {
+        if (event.ctrlKey && (event.key === "c" || event.key === "C")) {
           copyObjects();
-        } else if (event.ctrlKey && event.key === "v") {
+        } else if (event.ctrlKey &&(event.key === "v" || event.key === "V")) {
           pasteObjects();
-        } else if (event.ctrlKey && event.key === "z") {
+        } else if (event.ctrlKey && (event.key === "z" || event.key === "Z")) {
           undo();
         } else if (event.ctrlKey && event.key === "]") {
           const activeObjects = editor?.canvas?.getActiveObject();
@@ -314,7 +314,7 @@ const Canvas = (props) => {
             editor.canvas.discardActiveObject();
             editor.canvas.requestRenderAll();
           }
-        } else if (event.ctrlKey && event.key === "g") {
+        } else if (event.ctrlKey && (event.key === "g" || event.key === "G")) {
           event.preventDefault();
           const activeObjects = editor?.canvas?.getActiveObject();
           if (!activeObjects) return;
@@ -370,6 +370,8 @@ const Canvas = (props) => {
     setSelectedObjects(activeObjects);
     if (activeObjects) {
       if (activeObjects.type === "image") return;
+      if (activeObjects.type === "group") return;
+      if (activeObjects.type === "activeSelection") return;
       const color = activeObjects.get("stroke");
       const stroke = activeObjects.get("strokeWidth");
       const fill = activeObjects.get("fill");

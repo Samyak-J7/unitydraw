@@ -528,6 +528,7 @@ const Canvas = (props) => {
             position: "absolute",
             left: x,
             top: y,
+            zIndex: 10,
             color: randomcolor || red,
           }}>
           <MousePointer2 style={{ fill: randomcolor || red }} />

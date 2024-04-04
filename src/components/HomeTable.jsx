@@ -30,8 +30,8 @@ const HomeTable = (props) => {
   };
 
   return (
-    <div className="w-full mt-20 flex justify-center items-center relative z-10">
-      <div className="w-1/2">
+    <div className="w-full mt-20 flex justify-center items-center relative z-10 p-2">
+      <div className="sm:w-1/2 w-full ">
         <Table className="bg-black border border-gray-800 ">
           <TableCaption>Your Canvas List </TableCaption>
           <TableHeader>

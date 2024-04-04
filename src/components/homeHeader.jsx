@@ -10,9 +10,9 @@ const HomeHeader = (props) => {
     <nav className='flex justify-between items-center p-4 px-8 bg-black border-gray-500 border-b-2 mb-2  relative z-10' >
         <div className='flex justify-between items-center gap-4' >
             <UserButton afterSignOutUrl='/' />
-            <p><span className='text-slate-200'>Hi ,</span> <span className='font-semibold font-sans text-white text-xl'> {props.username} </span></p>
+            <p className='sm:block hidden' ><span className='text-slate-200'>Hi ,</span> <span className='font-semibold font-sans text-white text-xl'> {props.username} </span></p>
         </div>
-        <a href="/" > UnityDraw </a>
+
         <Button className="bg-black hover:bg-zinc-900 hover:border-white  border-2 border-gray-400" onClick={()=>router.push("/draw")} >
             <Plus size={24} />
             New Canvas

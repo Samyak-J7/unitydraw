@@ -117,7 +117,6 @@ export const addObj = async (newObject, editor) => {
       }
       break;
     case "activeSelection":
-        console.log("money sir ki den hai")
         break;
     default:
       console.error("Unknown object type:", newObject.type);

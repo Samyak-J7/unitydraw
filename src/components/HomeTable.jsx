@@ -21,7 +21,7 @@ const HomeTable = (props) => {
     fetchAllCanvas(userId).then((data) => {
       setAllCanvas(data);
     }).catch((error) => {
-      console.log(error);
+      //TODO: handle error
     })
   },[userId])
 

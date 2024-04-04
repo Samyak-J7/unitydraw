@@ -8,7 +8,7 @@ import Spinner from "./Spinner";
 const RemoteParticipantVideoList = (props) => {
   const { participants } = props;
   return (
-    <div className="relative h-32 w-44">
+    <div className="flex  gap-2 relative h-32 ">
       {participants.map((participant) => (
         <ParticipantView
           participant={participant}

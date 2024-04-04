@@ -21,7 +21,7 @@ const MeetingSetup = (props) => {
   }),[setup,call?.camera, call?.microphone]
 
   return(
-    <div className=" flex flex-col items-center justify-center gap-3 text-white bg-neutral-950 p-10 rounded-2xl border-4 absolute left-[-900px] z-50 px-20 ">
+    <div className=" absolute top-[-700px] flex flex-col items-center justify-center gap-3 text-white bg-neutral-950 p-10 rounded-2xl border-4  z-50 px-20  ">
       <h1 className="text-2xl font-bold">Setup</h1>
       <VideoPreview />
       <div className="flex h-16 items-center justify-center gap-3">

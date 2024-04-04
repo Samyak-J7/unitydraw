@@ -37,7 +37,7 @@ const VideoLayout = (props) => {
   if (!isLoaded || isCallLoading) return <Spinner />;
   console.log("call from video layout page", call);
   return (
-    <StreamCall call={call}>
+    <StreamCall  call={call}>
       <StreamTheme>
         {isSetup ? <MeetingRoom setShow={setShow} /> : <MeetingSetup setIsSetup={setIsSetup} />}
       </StreamTheme>

@@ -15,6 +15,7 @@ import {
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
 import { useRouter } from "next/navigation";
+import { PhoneOff } from "lucide-react";
 
 const MeetingRoom = (props) => {
   const { setShow } = props;
@@ -39,11 +40,14 @@ const MeetingRoom = (props) => {
   // if(callingState !== CallingState.JOINED) return <Spinner />;
 
   const CallControls = ({ onLeave }) => (
-    <div className="str-video__call-controls">
+    <div className="flex p-2 gap-2 items-center w-full overflow-hidden" >
+      <div className="flex flex-col gap-2">
       <SpeakingWhileMutedNotification>
         <ToggleAudioPublishingButton />
       </SpeakingWhileMutedNotification>
       <ToggleVideoPublishingButton />
+      </div>
+      <div className="w-full">
       <CancelCallButton
         onClick={async() => {
             await call.leave();
@@ -51,14 +55,15 @@ const MeetingRoom = (props) => {
         }}
         onLeave={onLeave}
       />
+      </div>
     </div>
   );
 
   return (
-    <div className="flex flex-col">
+    <div className="flex gap-2 items-center w-full  ">
       <LocalParticipantVideo participant={localParticipant} />
       <RemoteParticipantVideoList participants={remoteParticipants} />
-      <div className=" absolute bottom-[-400px] left-[-700px] ">
+      <div className="">
         {
           <CallControls
             onLeave={() => {

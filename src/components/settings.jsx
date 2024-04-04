@@ -11,7 +11,7 @@ const Settings = (props) => {
   }
   return (
     // TODO: Implement styling for the settings panel
-    <div className="absolute right-0 m-4 rounded-xl p-4 shadow-2xl top-32 flex flex-col border-2 border-slate-200  bg-slate-100 z-10">
+    <div className=" m-4 rounded-xl p-4 shadow-2xl top-32 flex flex-col border-2 border-slate-200  bg-slate-100 z-10">
       Stroke{" "}
       <input
         className="bg-transparent w-[20%]"

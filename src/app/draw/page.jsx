@@ -131,20 +131,18 @@ const Draw = () => {
   };
 
   return (
-    <div className="h-screen w-screen ">
-      <div className=" px-4 py-2 flex justify-between items-center w-full absolute top-0 my-1 ">
-        <span className="z-10">
+    <div className="h-screen w-screen flex flex-col ">
+      <div className="py-2 px-3 flex justify-between items-center w-full bg-transparent border-2 border-b-slate-100">
+      <span className="z-10 flex items-center gap-2">
           <Button
             onClick={() => router.push("/home")}
-            className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
+            className="flex items-center gap-1 bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
           >
-            <Home />
+            <Home /> Home
           </Button>
+          <CanvasNameInput title={changeCanvasName}  />
         </span>
-        <span className="z-10">
-          <CanvasNameInput title={changeCanvasName} />
-        </span>
-        <span className="z-10 flex gap-2 ">
+        <span className="z-50 flex gap-2 ">
           
           <Button
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
@@ -167,10 +165,7 @@ const Draw = () => {
         </span>
       </div>
 
-      <span className="absolute m-3 mx-7 z-10 bottom-0 ">
-        <UserButton afterSignOutUrl="/" />
-      </span>
-       
+      
       {canvasData !== null ? (
         <Canvas data={canvasData} />
       ) : (

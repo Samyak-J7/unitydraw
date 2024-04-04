@@ -9,13 +9,15 @@ export function CanvasNameInput(props) {
   const [canvasName, setCanvasName] = useState(null);
 
   useEffect(() => {
-    if (props.roomId){
-      fetchCanvasByroomId(props.roomId).then((data) => {
-        setCanvasName(data.canvasName);
-        props.title(data.canvasName);
-      }).catch((error) => {
-        setCanvasName("Untitled");
-      });
+    if (props.roomId) {
+      fetchCanvasByroomId(props.roomId)
+        .then((data) => {
+          setCanvasName(data.canvasName);
+          props.title(data.canvasName);
+        })
+        .catch((error) => {
+          setCanvasName("Untitled");
+        });
     }
     const canvasID = `${searchParams}`.slice(0, -1);
     if (!canvasID) return;
@@ -30,14 +32,13 @@ export function CanvasNameInput(props) {
   }, []);
 
   return (
-
-      <input className=" text-end text-gray-400 underline outline-none bg-transparent "
-        type="text"
-        onChange={(e) => {
-          props.title(e.target.value);
-        }}
-        placeholder={canvasName || "Untitled"}
-      />
-
+    <input
+      className="text-gray-400 underline outline-none bg-transparent w-max"
+      type="text"
+      onChange={(e) => {
+        props.title(e.target.value);
+      }}
+      placeholder={canvasName || "Untitled"}
+    />
   );
 }

@@ -27,13 +27,10 @@ import Meeting from "@/components/videos/Meeting";
 export default function Page({ params }) {
   const client = useStreamVideoClient();
   const { user, isLoaded } = useUser();
-  // console.log("client",client);
   const [calls, setCalls] = useState();
   const [participantCount, setParticipantCount] = useState(0);
   const date = new Date();
   const [show, setShow] = useState(false);
-
-  // console.log('user',user.id);
   const { toast } = useToast();
   const [isValidRoomId, setIsValidRoomId] = useState(false);
   const [showToast, setShowToast] = useState(false); // State to control when to show toast
@@ -119,7 +116,6 @@ export default function Page({ params }) {
         },
       });
       setCalls(call);
-      console.log("call created for meeting", call);
       setShow(true);
     } catch (error) {
       console.error(error);
@@ -128,29 +124,19 @@ export default function Page({ params }) {
   };
 
   return (
-    <div>
-      <div className="px-4 py-2 flex justify-between w-full absolute top-0 my-1">
-        <span className="z-10">
+    <div className="h-screen w-screen flex flex-col ">
+    <div className="py-2 px-3 flex justify-between items-center w-full bg-transparent border-2 border-b-slate-100">
+        <span className="z-10 flex items-center gap-2">
           <Button
             onClick={() => router.push("/home")}
-            className=" bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
+            className="flex items-center gap-1 bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
           >
-            <Home />
+            <Home /> Home
           </Button>
-        </span>
-        <span className="z-10">
           <CanvasNameInput title={changeCanvasName} roomId={params.id} />
         </span>
-        <span className="z-10 flex gap-2 border-2">
-          <Button
-            onClick={() => {
-              createMeeting();
-              console.log("clicked");
-            }}
-          >
-            <VideoIcon></VideoIcon>
-          </Button>
-          <Button
+        <span className="z-10 flex gap-2 ">
+        <Button
             className="bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
             onClick={save}
           >
@@ -161,13 +147,22 @@ export default function Page({ params }) {
               "Save"
             )}
           </Button>
+          <Button 
+            className="flex gap-1 shadow-2xl bg-violet-200 text-black border-2 border-violet-500 hover:bg-violet-400 hover:border-gray-600"
+            onClick={() => {
+              createMeeting();
+            }}
+          >
+            <VideoIcon></VideoIcon> Join Call
+          </Button>
+         
           <Share link={`${process.env.NEXT_PUBLIC_DOMAIN}/draw/${params.id}`} />
         </span>
       </div>
       {canvasData && <Canvas data={canvasData} roomId={params.id} />}
-      <div className="absolute right-2 top-16  min-w-[15rem] max-w-[15rem] xl:min-h-0 mx-auto flex items-center xl:flex-col gap-3 text-white  ">
+      <div className="mb-1 z-10 absolute left-[100px] bottom-0 w-4/5 xl:min-h-0 mx-auto flex items-center  gap-3 text-white  ">
         {show ? (
-          <VideoLayout id={params.id} setShow={setShow} userId={userId} />
+          <VideoLayout  id={params.id} setShow={setShow} userId={userId} />
         ) : null}
       </div>
     </div>

@@ -233,7 +233,6 @@ const Canvas = (props) => {
                 break;
               case "group":
                 obj.getObjects().forEach((groupObj, index) => {
-                  console.log(groupObj, realtimeObject.objects[index]);
                   groupObj.set({ ...realtimeObject.objects[index] });
                 });
                 obj.set({ ...realtimeObject })
@@ -510,7 +509,15 @@ const Canvas = (props) => {
   };
 
   return (
-    <div>
+
+    <div className="relative flex flex-col w-full h-full">
+  {user && (
+    <FabricJSCanvas
+      className="absolute inset-0 z-10 bg-white"
+      onReady={(canvas) => setEditor({ canvas })}
+    />
+  )}
+    
       {Object.values(cursorPositions).map(({ x, y, userId, randomcolor }) => (
         <div
           key={userId}
@@ -527,7 +534,7 @@ const Canvas = (props) => {
           <span className="text-xs ml-3">{userId}</span>
         </div>
       ))}
-
+      <div className="px-3 flex-grow  flex items-center gap-1 justify-between w-full">
       {user && (
         <Tray
           editor={editor}
@@ -538,7 +545,16 @@ const Canvas = (props) => {
           roomId={props.roomId}
         />
       )}
-      <div className="flex  bg-pink-200 gap-2 absolute right-0 bottom-0 z-10 m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl ">
+      {selectedObjects || isPainting ? (
+        <Settings
+          properties={properties}
+          onPropertyChange={onPropertyChange}
+        />
+      ) : null}
+      </div>
+
+      <div className="flex justify-end items-center z-10 p-3 "  >
+          <div className="flex z-10 bg-pink-200 gap-2m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl " >
         <button onClick={zoomIn} className="hover:bg-pink-400 p-4 rounded-md">
           <ZoomIn />
         </button>
@@ -550,20 +566,11 @@ const Canvas = (props) => {
         <button onClick={zoomOut} className="hover:bg-pink-400 p-4 rounded-md">
           <ZoomOut />
         </button>
+        </div>
       </div>
-      {selectedObjects || isPainting ? (
-        <Settings
-          properties={properties}
-          onPropertyChange={onPropertyChange}
-        />
-      ) : null}
+      
 
-      {user && (
-        <FabricJSCanvas
-          className="h-[100vh] bg-white"
-          onReady={(canvas) => setEditor({ canvas })}
-        />
-      )}
+      
     </div>
   );
 };

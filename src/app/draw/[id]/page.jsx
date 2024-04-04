@@ -124,14 +124,14 @@ export default function Page({ params }) {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col ">
+    <div className="h-screen w-screen flex flex-col overflow-hidden ">
     <div className="py-2 px-3 flex justify-between items-center w-full bg-transparent border-2 border-b-slate-100">
         <span className="z-10 flex items-center gap-2">
           <Button
             onClick={() => router.push("/home")}
             className="flex items-center gap-1 bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
           >
-            <Home /> Home
+            <Home /><span className="sm:block hidden" > Home </span> 
           </Button>
           <CanvasNameInput title={changeCanvasName} roomId={params.id} />
         </span>
@@ -144,7 +144,7 @@ export default function Page({ params }) {
             {saving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              "Save"
+              <span className="sm:block hidden" > Save </span> 
             )}
           </Button>
           <Button 
@@ -153,7 +153,7 @@ export default function Page({ params }) {
               createMeeting();
             }}
           >
-            <VideoIcon></VideoIcon> Join Call
+            <VideoIcon></VideoIcon> <span className="sm:block hidden" > Join Call </span> 
           </Button>
          
           <Share link={`${process.env.NEXT_PUBLIC_DOMAIN}/draw/${params.id}`} />

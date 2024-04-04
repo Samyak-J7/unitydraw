@@ -67,11 +67,10 @@ const Canvas = (props) => {
       if (!socket) return;
       // attach listener event for joining
       socket.on("userJoined", (data) => {
-        console.log("You joined:", data);
+          // toast to notify everyone that a user joined
       });
       // attach listener event for joining
       socket.on("roomJoined", (data) => {
-        console.log("User joined:", data);
         // toast to notify everyone that a user joined
       });
 
@@ -168,7 +167,7 @@ const Canvas = (props) => {
         document.removeEventListener("mousemove", handleMouseMove);
       };
     } catch (error) {
-      console.log("Error , Something went wrong");
+
       // connection with server failed redirect to draw toast try again later server error
     }
   }, [editor]);
@@ -546,6 +545,7 @@ const Canvas = (props) => {
           roomId={props.roomId}
         />
       )}
+  
       {selectedObjects || isPainting ? (
         <Settings
           properties={properties}
@@ -554,7 +554,7 @@ const Canvas = (props) => {
       ) : null}
       </div>
 
-      <div className="flex justify-end items-center z-10 p-3 "  >
+      <div className="sm:flex hidden justify-end items-center z-10 p-3 "  >
           <div className="flex z-10 bg-pink-200 gap-2m-4 items-center hover:border-black hover:bg-pink-300 border-pink-500 rounded-lg border-2 shadow-2xl " >
         <button onClick={zoomIn} className="hover:bg-pink-400 p-4 rounded-md">
           <ZoomIn />

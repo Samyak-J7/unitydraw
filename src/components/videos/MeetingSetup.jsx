@@ -7,7 +7,6 @@ const MeetingSetup = (props) => {
   const { setIsSetup } = props;
   const [setup,setSetup] = useState(false);
   const call = useCall();
-  console.log("call from meeting setup", call);
   if (!call) throw new Error("Use call outside of StreamCall");
   
   useEffect(()=>{
@@ -38,7 +37,7 @@ const MeetingSetup = (props) => {
       <Button className="rounded-md bg-green-500 px-4 py-2.5" onClick={async()=>{
         await call.join();
         setIsSetup(true);
-        console.log("call joining")
+
       }}>
         Join meeting
       </Button>

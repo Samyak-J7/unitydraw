@@ -26,7 +26,6 @@ const VideoWrapper = ({children}) => {
         },
         token,
       });
-      console.log(video_client ,"vclient");
       setClient(video_client);
       // const call = video_client.call("default", callId);
       // // await call.camera.disable();
@@ -40,7 +39,6 @@ const VideoWrapper = ({children}) => {
 
   useEffect(() => {
     if (isLoaded && user) {
-      console.log("hello");
       initVideoCall();
     }
   }, [initVideoCall, isLoaded, user]);

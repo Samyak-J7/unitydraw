@@ -6,9 +6,8 @@ import MeetingSetup from "./MeetingSetup";
 
 const Meeting = (props) => {
     const{participant,participants,id} = props;
-    console.log("meeting",participant,participants,id);
   const [isSetup, setIsSetup] = useState(false);
-  console.log("isSetup", isSetup);
+
 
   return (
     <main className="">

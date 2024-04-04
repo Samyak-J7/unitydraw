@@ -24,18 +24,12 @@ const VideoLayout = (props) => {
     useRemoteParticipants,
   } = useCallStateHooks();
 
-  // const callingState = useCallCallingState();
-  // const localParticipant = useLocalParticipant();
-  // const remoteParticipants = useRemoteParticipants();
-  // const participantCount = useParticipantCount();
   const { id } = props;
-  // console.log("local participant", localParticipant);
   const { call, isCallLoading } = useCallGetById(id);
   const { user, isLoaded } = useUser();
   const [isSetup, setIsSetup] = useState();
 
   if (!isLoaded || isCallLoading) return <Spinner />;
-  console.log("call from video layout page", call);
   return (
     <StreamCall  call={call}>
       <StreamTheme>

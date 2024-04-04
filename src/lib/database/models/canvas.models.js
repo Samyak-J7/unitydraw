@@ -22,7 +22,6 @@ const CanvasSchema = new Schema(
     },
     roomId: {
       type: String,
-      unique: true,
     },
   },
   { timestamps: true }

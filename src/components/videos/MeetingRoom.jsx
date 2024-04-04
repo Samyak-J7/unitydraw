@@ -19,8 +19,6 @@ import { PhoneOff } from "lucide-react";
 
 const MeetingRoom = (props) => {
   const { setShow } = props;
-  // const { participant, participants, id } = props;
-  //   console.log("meeting room", participant, participants, id);
   const {
     useCallCallingState,
     useParticipantCount,
@@ -29,14 +27,12 @@ const MeetingRoom = (props) => {
   } = useCallStateHooks();
   const { callingState } = useCallCallingState();
   const localParticipant = useLocalParticipant();
-  console.log("loca", localParticipant);
   const remoteParticipants = useRemoteParticipants();
   // const participantCount = useParticipantCount();
 
-  console.log("calling", callingState);
   const router = useRouter();
   const call = useCall();
-  console.log("meeting room");
+
   // if(callingState !== CallingState.JOINED) return <Spinner />;
 
   const CallControls = ({ onLeave }) => (

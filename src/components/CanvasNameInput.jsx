@@ -33,7 +33,7 @@ export function CanvasNameInput(props) {
 
   return (
     <input
-      className="text-gray-400 underline outline-none bg-transparent w-max"
+      className="text-gray-400 underline outline-none bg-transparent sm:w-max  w-[70px]"
       type="text"
       onChange={(e) => {
         props.title(e.target.value);

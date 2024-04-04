@@ -2,8 +2,8 @@
 import Canvas from "@/components/canvas";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { UserButton, useAuth } from "@clerk/nextjs";
-import { Home, Loader2, Save, Users } from "lucide-react";
+import {  useAuth } from "@clerk/nextjs";
+import {  Home, Loader2, Save, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -138,11 +138,11 @@ const Draw = () => {
             onClick={() => router.push("/home")}
             className="flex items-center gap-1 bg-red-200 shadow-2xl text-black border-2 border-red-500 hover:bg-red-300 hover:border-black"
           >
-            <Home /> Home
+            <Home /> <span className="sm:block hidden" > Home </span> 
           </Button>
           <CanvasNameInput title={changeCanvasName}  />
         </span>
-        <span className="z-50 flex gap-2 ">
+        <span className="flex z-50  gap-2 ">
           
           <Button
             className=" bg-green-200 shadow-2xl text-black border-2 border-green-500 hover:bg-green-400 hover:border-gray-600"
@@ -152,7 +152,7 @@ const Draw = () => {
             {saving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              "Save"
+              <span className="sm:block hidden" > Save </span> 
             )}
           </Button>
           <Button
@@ -160,9 +160,10 @@ const Draw = () => {
             onClick={createTeam}
           >
             <Users className="m-1" size={20} />
-            Make a Team
+            <span className="sm:block hidden" > Live Collaboration </span> 
           </Button>
         </span>
+        
       </div>
 
       

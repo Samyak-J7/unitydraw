@@ -15,10 +15,8 @@ const useCallGetById = (id) => {
         const { calls } = await client.queryCalls({
           filter_conditions: { id },
         });
-        console.log("calls from hookgetcallid", calls);
         if (calls.length > 0) {
           setCall(calls[0]);
-          console.log("calls from getbyid hook", calls);
           setIsCallLoading(false);
         }
       } catch (error) {

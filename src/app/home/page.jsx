@@ -27,7 +27,8 @@ export default function Home() {
 
   return (
     <div className="bg-zinc-950 h-screen text-white">
-      {user &&<><HomeHeader username={user.firstName + " " + user.lastName} /><HomeTable userId={user._id} /></> }
+      {user &&<><HomeHeader username={user.firstName + " " + user.lastName} />
+      <HomeTable userId={user._id} /></> }
       <BackgroundBeams/>
     </div>
   );

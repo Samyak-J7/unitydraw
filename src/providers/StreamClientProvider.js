@@ -10,11 +10,9 @@ const StreamClientProvider = ({children}) => {
   const [videoClient, setVideoClient] = useState();
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
   const { user, isLoaded } = useUser();
-  console.log("user from stream client provider", user);
 
   useEffect(() => {
     if (!isLoaded || !user) {
-      console.log("User not found");
       return;
     }
     if (!apiKey) {
@@ -30,7 +28,6 @@ const StreamClientProvider = ({children}) => {
         tokenProvider,
     });
     setVideoClient(client);
-    console.log("video client from provider", client);
   }, [apiKey, isLoaded, user]);
 
   if(!videoClient) return <Loader />;

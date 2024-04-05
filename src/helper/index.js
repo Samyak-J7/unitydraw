@@ -1,5 +1,6 @@
-export const handleKeyPress = (event) => {
-  switch (event.code) {
+export const handleKeyPress = (event,selected) => {
+  if (selected && selected.type === "textbox" && selected.isEditing) return;
+  switch (event.code) {   
     case "Digit1":
       const button0 = document.querySelector('button[name="Panning"]');
       button0.dispatchEvent(new MouseEvent("click", { bubbles: true }));

@@ -176,7 +176,7 @@ const Canvas = (props) => {
     if (editor) {
       saveCanvasState();
     }
-  }, [editor, selectedObjects, realtimeObject]);
+  }, [editor, selectedObjects, realtimeObject,Drawing]);
 
   //send paintbrush realtime data
   useEffect(() => {
@@ -265,6 +265,7 @@ const Canvas = (props) => {
 
   //save the canvas state to local storage
   useEffect(() => {
+    try {   
     if (editor) {
       editor.canvas.getObjects().map((obj) => {
         if (!obj.id) {
@@ -277,6 +278,13 @@ const Canvas = (props) => {
 
       const json = customToJSON(editor.canvas);
       localStorage.setItem("canvasState", json);
+    } } catch (error) {
+      toast({
+        variant: "destructive",
+        duration: 5000,
+        title: "Free Limit Reached",
+        description: "Please delete some heavy images or objects to continue drawing.",
+      });
     }
   }, [
     editor,
@@ -350,7 +358,7 @@ const Canvas = (props) => {
         } 
       };
       window.addEventListener("keydown", handleKeys);
-      window.addEventListener("keydown", handleKeyPress);
+      window.addEventListener("keydown", (e)=>handleKeyPress(e,editor.canvas.getActiveObject()));
       window.addEventListener("keydown", deleteObject);
       return () => {
         // Cleanup: remove event listeners

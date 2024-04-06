@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# UnityDraw
 
-## Getting Started
+UnityDraw is a real-time collaborative whiteboard application with video calling capabilities, allowing users to create and edit objects and images together in real-time. It is built using Next.js, MongoDB, Express, GetStream.io, Socket.io, Shadcn, Fabric.js, Clerk, and Aceternity UI.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Real-time collaboration: Users can collaborate in real-time on a shared whiteboard, making it ideal for brainstorming sessions, meetings, and remote teamwork.
+- Video calling: UnityDraw includes video calling functionality, enabling users to communicate face-to-face while working together on the whiteboard.
+- Authentication: User authentication is handled securely using Clerk, ensuring that only authorized users can access the application.
+- Data storage: Next.js server actions are implemented to store and retrieve data from MongoDB, allowing for seamless data management.
+- Canvas features: UnityDraw offers a variety of canvas features, including Undo, Copy Paste, grouping, and more, with keyboard shortcuts for efficient use.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+<img src="https://skillicons.dev/icons?i=nextjs,react,nodejs,express,mongodb,tailwind,heroku,vercel">
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Next.js: A React framework for building server-side rendered and static web applications.
+- MongoDB: A NoSQL database for storing and managing data.
+- Express: A Node.js web application framework used for building APIs and server-side applications.
+- GetStream.io: A service for building scalable & fast API for building social networks, activity feeds, activity streams and chat apps.
+- Socket.io: A library that enables real-time, bidirectional and event-based communication between web clients and servers.
+- Shadcn/Aceternity UI: A library that provides beautifully designed, accessible, and customizable UI components for web applications.
+- Fabric.js: A powerful and simple JavaScript canvas library.
+- Clerk: A secure and easy-to-use authentication and user management system.
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+The Socket.io server is written in Express.js and deployed on Heroku for easy access.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+To use UnityDraw, simply visit the deployed application and sign in using your Clerk credentials. Once logged in, you can create or join a whiteboard session, invite collaborators, and start collaborating in real-time.
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions to UnityDraw are welcome! If you have any ideas for new features, improvements, or bug fixes, please feel free to open an issue or submit a pull request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
